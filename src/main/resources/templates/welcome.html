@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Home</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="mx-auto col-3 mt-5 mb-5">
+		<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+			data-bs-target="#objectBrowser">Let's Start</button>
+	</div>
+	<div class="modal fade" id="objectBrowser" tabindex="-1"
+		aria-labelledby="objectBrowserLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div id="objectBrowsering"></div>
+			</div>
+		</div>
+	</div>
+	<div id="includeFooter" style="margin-top: 300px;"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8"/>
+<title th:text="${page_title}">Preview</title>
+<!-- Import CSS -->
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/custom/css/inlinestyles.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/main.css">
+<link
+	href="static/assets/DataTables/DataTables-1.13.1/css/dataTables.bootstrap5.min.css"
+	rel="stylesheet">
+<link
+	href="static/assets/DataTables/DataTables-1.13.1/css/jquery.dataTables.min.css"
+	rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/ckeditor_4.2.1/ckeditor/ckeditor.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/Viewerjs_1.11/js/viewer.js"></script>
+<script src="static/assets/Viewerjs_1.11/js/main.js"></script>
+<link href="static/assets/custom/css/modern-ticker.css" type="text/css" rel="stylesheet">
+<script src="static/assets/js/ticker.js"></script>
+<script src="static/assets/js/font-size.js"></script>
+
+<script src="static/assets/DataTables/DataTables-1.13.1/js/dataTables.bootstrap5.min.js" type="text/javascript"></script>
+<script src="static/assets/DataTables/DataTables-1.13.1/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script>
+	$(function() {
+		debugger;
+		$(".ticker1").modernTicker({
+			effect : "scroll",
+			scrollInterval : 20,
+			transitionTime : 500,
+			autoplay : true
+		});
+	});
+</script>
+<script>
+	$(function() {
+		debugger;
+		new DataTable('.customTable');
+	});
+</script>
+</head>
+<script>
+	$(function() {
+		$("#includeFooter").load("static/footer.html");
+		$("#includeMsgBox").load("static/msgBox.html");
+
+	});
+</script>
+<!--<script>
+	function marqueePopup(el) {
+		showAlertBox('info');
+		//	debugger;$('.myTest').parent().prev('dt').text();
+		//		console.log($(el).parent().prev('marquee').html());
+		$('#messageBoxText').html($(el).parent().prev('marquee').html());
+	}
+</script>
+-->
+
+
+<body id="fontSize">
+	<div class="flex-wrapper" style="overflow-x: hidden;">
+		<div class="preloader"></div>
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div id="includeMsgBox"></div>
+		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}"
+			th:value="${_csrf.token}" />
+		<div class="fadein">
+			<div th:utext="${viewObject}"></div>
+		</div>
+		<div id="includeFooter"></div>
+		<textarea name="content" id="editor" style="display: none;"></textarea>
+	</div>
+</body>
+
+<script>
+	var cke = CKEDITOR.replace('editor', {
+		toolbarGroups : [
+				{
+					name : 'clipboard',
+					groups : [ 'clipboard', 'undo' ]
+				},
+				{
+					name : 'editing',
+					groups : [ 'find', 'selection', 'spellchecker', 'editing' ]
+				},
+				{
+					name : 'links',
+					groups : [ 'links' ]
+				},
+				{
+					name : 'insert',
+					groups : [ 'insert' ]
+				},
+				{
+					name : 'forms',
+					groups : [ 'forms' ]
+				},
+				{
+					name : 'tools',
+					groups : [ 'tools' ]
+				},
+				{
+					name : 'document',
+					groups : [ 'mode', 'document', 'doctools' ]
+				},
+				{
+					name : 'others',
+					groups : [ 'others' ]
+				},
+				{
+					name : 'basicstyles',
+					groups : [ 'basicstyles', 'cleanup' ]
+				},
+				{
+					name : 'paragraph',
+					groups : [ 'list', 'indent', 'blocks', 'align', 'bidi',
+							'paragraph' ]
+				}, {
+					name : 'styles',
+					groups : [ 'styles' ]
+				}, {
+					name : 'colors',
+					groups : [ 'colors' ]
+				} ],
+		removeButtons : 'Subscript,Superscript,Source,Styles'
+	});
+
+	cke.on("instanceReady", function() {
+		document.getElementById("cke_editor").setAttribute("style", "display:none;");
+	});
+</script>
+<script>
+	function marqueePopup(el) {
+		debugger;
+		var ul = el.parentElement.querySelector('ul');
+		localStorage.setItem("listItem", ul.innerHTML)
+	}
+</script>
+
+<script>
+	$(document).ready(function() {
+		debugger;
+	var listItems = localStorage.getItem('listItem');
+	document.getElementById("listSelectedToDisplay").innerHTML = '<ul>' + listItems + '</ul>';
+	});
+</script>
+<script>
+	debugger;
+         // create the back to top button
+         $('body').prepend('<a href="#" class="back-to-top">Back to Top</a>');
+         
+         var amountScrolled = 300;
+         
+         $(window).scroll(function() {
+             if ( $(window).scrollTop() > amountScrolled ) {
+                 $('a.back-to-top').fadeIn('slow');
+             } else {
+                 $('a.back-to-top').fadeOut('slow');
+             }
+         });
+         
+         $('a.back-to-top, a.simple-back-to-top').click(function() {
+             $('html, body').animate({
+                 scrollTop: 0
+             }, 700);
+             return false;
+         });
+      </script>
+<script>
+	debugger;
+	$(window).on('load', function() {
+		$(".preloader").fadeOut("slow");
+	});
+</script>
+</html>

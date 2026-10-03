@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<!-- <style>
+
+
+
+/* Object container styles */
+/* Scrollbar */
+.scroll-container {
+	overflow-x: hidden;
+}
+
+.scroll-container:hover {
+	overflow-x: scroll;
+	scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+	width: 6px; /* Set the width of the scrollbar */
+	height: 6px;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+	background-color: orange;
+	border-radius: 3px;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+	background-color: #ff8c00;
+	cursor: pointer;
+	opacity: 0.3;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+	background-color: #f1f1f1;
+}
+
+.card-buttons .btn {
+	position: relative;
+	overflow: hidden;
+	padding: 1;
+	margin-right: 5px;
+}
+
+.card-buttons .btn .button-content {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding-left: 5px;
+	text-align: center;
+	color: black;
+}
+
+.card-buttons .btn:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin-right: 0px;
+	background-repeat: no-repeat;
+	background-position: left;
+	background-size: 50px 50px; /* Adjust the size as needed */
+	z-index: 0;
+}
+
+.table-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your table icon */
+}
+
+.para-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.ulist-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.olist-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.picture-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your ordered list icon */
+}
+/* Add similar styles for other buttons */
+.opase {
+	opacity: 0.8;
+	background-color: rgba(250, 250, 250, 0.4);
+}
+
+.list-group-horizontal {
+	padding-top: 15px;
+	display: flex;
+	flex-direction: row;
+	background-image: url('card_bg.png');
+	/*opacity:0.9;*/
+}
+
+.button-caption {
+	font-weight: bold;
+	padding-left: 30px;
+	margin-bottom: 4px;
+}
+
+.button-description {
+	padding-left: 25px;
+	font-size: 10px;
+}
+
+.filter-control {
+	display: flex;
+	flex: 1;
+	flex-direction: row;
+	align-items: right;
+	margin-left: auto;
+	padding: 5px;
+	height: 25px;
+	vertical-align: middle;
+	border: 1px solid #ccc; /* Light border color */
+	border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+.card-title {
+	flex: 1;
+	align-items: left;
+}
+
+/* Add this CSS code to style the toggle switch */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 20px;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 2px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input:checked+.slider {
+	background-color: #2196F3;
+}
+
+input:focus+.slider {
+	box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+	-webkit-transform: translateX(20px);
+	-ms-transform: translateX(20px);
+	transform: translateX(20px);
+}
+
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+.cardC {
+	/* display: flex; */
+	overflow-x: auto;
+	overflow-y: auto;
+	max-height: calc(70vh - 10px); /* Set the desired maximum height */
+	border-style: inset;
+	border-width: 1px;
+	border-radius: 3px;
+	border-color: red;
+}
+
+.item {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	width: 150px !important;
+	margin: 10px;
+	border: 1px solid #ccc; /* Add border style */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow style */
+	padding: 10px; /* Add padding for spacing */
+	padding-right: 10px ! important;
+	transition: box-shadow 0.1s ease;
+	/* Add transition for smooth effect */
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.item.selected {
+	border-style: dotted;
+	border-color: green;
+	background-color: #f3f0f0; /* Add selected background color */
+}
+
+.item:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+	/* Change box shadow on hover */
+}
+
+.item-icon {
+	font-size: 40px;
+	margin-bottom: 0px;
+}
+
+.item-title {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: green;
+	border-bottom: 1px solid #f00;
+}
+
+.item-description {
+	font-size: 14px;
+	color: #888;
+}
+
+.card-container>.card {
+	display: none;
+	border: none;
+	/* 
+	flex: 0 0 auto;
+	margin-right: 5px;
+	width: 60vh !important;
+	height: 60vh !important; */
+}
+
+.card-body {
+	margin-top: 5px;
+	/*height: 90%; /* Adjust the height based on your requirements */
+	/* 	display: flex; */
+	/* 	justify-content: space-between; */
+	/* 	flex-direction: row; */
+	/* 	justify-content: center; */
+}
+/* End of Object container styles */
+</style> -->
+<style>
+/* on hover card-header, card-footer display none */
+#viewItems .card {
+	max-height: 300px;
+}
+
+#viewItems .card:hover {
+	max-height: 300px;
+}
+
+#viewItems .card-header {
+	background: #c76957;
+}
+
+#viewItems .card-body {
+	overflow: hidden;
+}
+
+#viewItems .card-body:hover {
+	overflow: auto;
+}
+
+#viewItems .col {
+	min-width: calc(33.33% - 10px);
+	margin-bottom: 20px;
+}
+
+#viewItems .row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+.langIconBg {
+	border-radius: 3px;
+	background: #54081e;
+	align-items: center;
+}
+
+.langIconBg .NA {
+	background: grey;
+}
+
+.langIcon {
+	width: 17px;
+	height: 16px;
+	margin-bottom: 3px;
+	padding: 2px;
+	border: 0.03rem solid red;
+	border-width: thin;
+}
+
+.langIconBg.English {
+	background-image: url('static/assets/icons/lang_en.png');
+	background-size: 12px 11px;
+	background-position: center;
+	display: inline-block;
+	background-repeat: no-repeat;
+	border-radius: 3px 0 0 3px;
+}
+
+.langIconBg.Hindi {
+	background-image: url('static/assets/icons/hindi.png');
+	background-size: 12px 11px;
+	background-position: center;
+	display: inline-block;
+	background-repeat: no-repeat;
+	border-radius: 0 3px 3px 0;
+}
+
+.objContainer {
+	overflow: hidden;
+	flex-direction: row;
+	display: flex;
+	/* justify-content: center; */
+	align-items: center;
+}
+
+.objContainer label {
+	text-align: center;
+}
+
+.objItems {
+	margin: 5px;
+	opacity: 0.8;
+	background-color: rgba(250, 250, 250, 0.4);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transition: box-shadow 0.3s ease-in-out;
+}
+
+.objItems:hover {
+	background-color: #f2f2f2;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.dropdown-item .fa-edit {
+	color: blue;
+	margin-right: 5px;
+}
+.dropdown-item .fa-pen-to-square {
+	color: blue;
+	margin-right: 5px;
+}
+.dropdown-item .fa-trash {
+	color: red;
+	margin-right: 5px;
+}
+.dropdown-item .fa-check {
+	color: green;
+	margin-right: 5px;
+}
+.dropdown-hover:hover .dropdown-menu {
+	display: block;
+}
+</style>
+</head>
+
+<body>
+	<!-- Navigation buttons -->
+	<!-- <div
+		class="container pb-3 border border-2 scroll-container list-group-horizontal"
+		id="navigationButtons">
+		<div class="card-buttons">
+			<a class="btn btn-primary table-button opase" data-card="card1"
+				onclick="selectItem('1',this);"> <span class="button-content">
+					<span class="button-caption">Tables</span> <span
+					class="button-description">Select tables</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-success table-button opase" data-card="card1"
+				onclick="selectItem('3',this);"> <span class="button-content">
+					<span class="button-caption">OList</span> <span
+					class="button-description">Select O List</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-info table-button opase" data-card="card1"
+				onclick="selectItem('6',this);"> <span class="button-content">
+					<span class="button-caption">Paragraph</span> <span
+					class="button-description">Select Videos</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-danger table-button opase" data-card="card1"
+				onclick="selectItem('2',this);"> <span class="button-content">
+					<span class="button-caption">Pictures</span> <span
+					class="button-description">Select picture</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-danger table-button opase" data-card="card1"
+				onclick="selectItem('5',this);"> <span class="button-content">
+					<span class="button-caption">Carousals</span> <span
+					class="button-description">Select Carousals</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-info table-button opase" data-card="card1"
+				onclick="selectItem('7',this);"> <span class="button-content">
+					<span class="button-caption">Videos</span> <span
+					class="button-description">Select Video</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-danger table-button opase" data-card="card1"
+				onclick="selectItem('8',this);"> <span class="button-content">
+					<span class="button-caption">Audio</span> <span
+					class="button-description">Select Audio</span>
+			</span>
+			</a>
+		</div>
+		<div class="card-buttons">
+			<a class="btn btn-success table-button opase" data-card="card1"
+				onclick="selectItem('9',this);"> <span class="button-content">
+					<span class="button-caption">Documents</span> <span
+					class="button-description">Select Documents</span>
+			</span>
+			</a>
+		</div>
+	</div> -->
+	<div class="container objContainer p-3 text-center">
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				id="item1" autocomplete="off" onclick="selectItem('1',this);">
+			<label class="btn btn-outline-success" for="item1"> <i
+				class="fas fa-table fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Table</span><br> <span
+				class="text-center selectText">View Items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('6',this);" id="item2" autocomplete="off">
+			<label class="btn btn-outline-danger" for="item2"> <i
+				class="fas fa-paragraph fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Paragraph</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('3',this);" id="item3" autocomplete="off">
+			<label class="btn btn-outline-primary" for="item3"> <i
+				class="fas fa-list fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">List</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('5',this);" id="item4" autocomplete="off">
+			<label class="btn btn-outline-warning" for="item4"> <i
+				class="fas fa-panorama fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Carousel</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('2',this);" id="item5" autocomplete="off">
+			<label class="btn btn-outline-info" for="item5"> <i
+				class="fas fa-images fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Picture</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('7',this);" id="item6" autocomplete="off">
+			<label class="btn btn-outline-secondary" for="item6"> <i
+				class="fas fa-video fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Video</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('8',this);" id="item7" autocomplete="off">
+			<label class="btn btn-outline-danger" for="item7"> <i
+				class="fas fa-microphone fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Audio</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('9',this);" id="item8" autocomplete="off">
+			<label class="btn btn-outline-warning" for="item8"> <i
+				class="fas fa-file-pdf fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Document</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('10',this);" id="item9" autocomplete="off">
+			<label class="btn btn-outline-secondary" for="item9"> <i
+				class="fas fa-code fa-3x ml-0"></i><br> <span
+				class="fw-bold text-center">Custom HTML</span><br> <span
+				class="text-center selectText">View items</span>
+			</label>
+		</div>
+	</div>
+	<!-- Selection cards -->
+	<div class="card-container cardC">
+		<div class=" selectObj" id="card1">
+			<div class="container border border-2 parent d-none" id="addDiv">
+				<span class="fa-layers fa-fw fa-5x m-3" onClick="location.href=''"
+					id="addNewItem"> <i class="fas fa-circle"
+					style="color: black"></i> <i class="fas fa-circle"
+					data-fa-transform="shrink-3" style="color: Tomato"></i> <i
+					class="fa-inverse fas fa-plus" data-fa-transform="shrink-6"></i>
+				</span>
+			</div>
+			<div class="d-flex flex-row justify-content-end">
+				<div class="float-end my-2">
+					<div class="input-group">
+						<input type="text" placeholder="Search" id="searchBarInput"
+							class="form-control border border-success-subtle rounded-start-pill"
+							onkeyup="searchBar()" aria-label="Search"
+							aria-describedby="searchHere"> <span
+							class="input-group-text border border-success-subtle rounded-end-pill"
+							id="searchHere"><i class="fas fa-search"></i></span>
+					</div>
+				</div>
+			</div>
+			<div class=" scroll-container">
+				<div id="viewItems"></div>
+			</div>
+		</div>
+	</div>
+	<script>		
+		function searchBar() {
+			debugger;
+			const searchBar = document.getElementById("searchBarInput");
+			const searchQuery = searchBar.value.toLowerCase();
+			const divs = document.querySelectorAll('.col'); // Replace '.item' with the actual class/attribute of your divs
+
+			divs.forEach(div => {
+				const content = div.textContent.toLowerCase();
+				if (content.includes(searchQuery)) {
+					div.style.display = 'block';
+				} else {
+					div.style.display = 'none';
+				}
+			});
+		}
+	</script>
+	<script> 
+        $(document).ready(function () { 
+            $('.dropdown-hover').hover(function () { 
+                $(this).addClass('show'); 
+                $(this).find('.dropdown-menu').addClass('show'); 
+            }, function () { 
+                $(this).removeClass('show'); 
+                $(this).find('.dropdown-menu').removeClass('show'); 
+            }); 
+        }); 
+    </script>
+</body>
+
+</html>

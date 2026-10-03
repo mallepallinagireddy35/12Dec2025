@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="ISO-8859-1">
+<title>Pages</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/jQuery-1.11.3/jquery-ui.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+
+<!-- Import ViewerJS Plugin-->
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/main.css">
+<script src="static/assets/Viewerjs_1.11/js/viewer.js"></script>
+<script src="static/assets/Viewerjs_1.11/js/main.js"></script>
+</head>
+<script>
+	$(function () {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("static/footer.html");
+		//	$("#includeObjSelector").load("objectSelector.html");
+		$("#includeMsgBox").load("static/msgBox.html");
+
+		// 		$("#objectBrowsering").load("object-selector.html");
+	});
+</script>
+<style>
+body {
+	color: #000080;
+}
+
+/* Scrollbar */
+.scroll-container {
+	overflow-x: hidden;
+}
+
+.scroll-container:hover {
+	overflow-x: scroll;
+	scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+	width: 6px;
+	/* Set the width of the scrollbar */
+	height: 6px;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+	background-color: orange;
+	border-radius: 3px;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+	background-color: #ff8c00;
+	cursor: pointer;
+	opacity: 0.3;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+	background-color: #f1f1f1;
+}
+
+.card-buttons .btn {
+	position: relative;
+	overflow: hidden;
+	padding: 1;
+	margin-right: 5px;
+}
+
+.card-buttons .btn .button-content {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding-left: 5px;
+	text-align: center;
+	color: #fff;
+}
+
+.card-buttons .btn:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin-right: 0px;
+	background-repeat: no-repeat;
+	background-position: left;
+	background-size: 50px 50px;
+	/* Adjust the size as needed */
+	z-index: 0;
+}
+
+.table-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your table icon */
+}
+
+.para-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.ulist-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.olist-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your paragraph icon */
+}
+
+.picture-button:before {
+	background-image: url('table.png');
+	/* Replace with the path to your ordered list icon */
+}
+
+/* Add similar styles for other buttons */
+.opase {
+	opacity: 0.8;
+}
+
+.list-group-horizontal {
+	padding-top: 15px;
+	display: flex;
+	flex-direction: row;
+	/* 	background-image: url('card_bg.png'); */
+	/*opacity:0.9;*/
+}
+
+.button-caption {
+	font-weight: bold;
+	padding-left: 30px;
+	margin-bottom: 4px;
+}
+
+.button-description {
+	padding-left: 25px;
+	font-size: 10px;
+}
+
+.filter-control {
+	display: flex;
+	flex: 1;
+	flex-direction: row;
+	align-items: right;
+	margin-left: auto;
+	padding: 5px;
+	height: 25px;
+	vertical-align: middle;
+	border: 1px solid #ccc;
+	/* Light border color */
+	border-radius: 4px;
+	/* Optional: Add rounded corners */
+}
+
+.card-title {
+	flex: 1;
+	align-items: left;
+}
+
+/* Add this CSS code to style the toggle switch */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 20px;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 2px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input:checked+.slider {
+	background-color: #2196F3;
+}
+
+input:focus+.slider {
+	box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+	-webkit-transform: translateX(20px);
+	-ms-transform: translateX(20px);
+	transform: translateX(20px);
+}
+
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+.cardC {
+	display: flex;
+	overflow-x: auto;
+	overflow-y: auto;
+	max-height: calc(70vh - 10px);
+	/* Set the desired maximum height */
+	border-style: inset;
+	border-width: 1px;
+	border-radius: 3px;
+	border-color: red;
+}
+
+.item {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	width: 150px !important;
+	margin: 10px;
+	border: 1px solid #ccc;
+	/* Add border style */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	/* Add box shadow style */
+	padding: 10px;
+	/* Add padding for spacing */
+	padding-right: 10px !important;
+	transition: box-shadow 0.1s ease;
+	/* Add transition for smooth effect */
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.item.selected {
+	border-style: dotted;
+	border-color: green;
+	background-color: #f3f0f0;
+	/* Add selected background color */
+}
+
+.item:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+	/* Change box shadow on hover */
+}
+
+.item-icon {
+	font-size: 40px;
+	margin-bottom: 0px;
+}
+
+.item-title {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: green;
+	border-bottom: 1px solid #f00;
+}
+
+.item-description {
+	font-size: 14px;
+	color: #888;
+}
+
+.card-container>.card {
+	display: none;
+	border: none;
+	/* 
+	flex: 0 0 auto;
+	margin-right: 5px;
+	width: 60vh !important;
+	height: 60vh !important; */
+}
+
+.card-body {
+	margin-top: 5px;
+	/*height: 90%; /* Adjust the height based on your requirements */
+	/* 	display: flex; */
+	/* 	justify-content: space-between; */
+	/* 	flex-direction: row; */
+	/* 	justify-content: center; */
+}
+
+/* Custom styles for draggable popup */
+.modal-dialog {
+	width: 90vh !important;
+	/* Set the desired width */
+	height: 70vh !important;
+	/* Set the desired height */
+	margin: 0 auto;
+}
+
+.ui-widget-content {
+	box-sizing: content-box !important;
+}
+
+/* Custom styles for modal footer */
+.modal-footer {
+	justify-content: space-between;
+	align-items: right;
+}
+
+#selectedCount {
+	text-align: left;
+}
+
+.modal-header, .modal-footer {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.dropdown-item .fa-edit {
+	color: blue;
+	margin-right: 5px;
+}
+
+.dropdown-item .fa-pen-to-square {
+	color: blue;
+	margin-right: 5px;
+}
+
+.dropdown-item .fa-trash {
+	color: red;
+	margin-right: 5px;
+}
+
+.dropdown-item .fa-eye-slash {
+	color: green;
+	margin-right: 5px;
+}
+
+.viewPage .card {
+	max-height: 400px;
+}
+
+.viewPage .card-header {
+	background: #c76957;
+}
+
+.viewPage .card-body {
+	overflow: hidden;
+}
+
+.viewPage .card-body:hover {
+	overflow: auto;
+}
+</style>
+
+<style>
+</style>
+<script>
+	$(document).ready(function () {
+		const test = document.getElementById("text").outerHTML;
+		document.getElementById("test").value = test;
+	});
+</script>
+<script>
+	function deletePage(page_id, el) {
+		var cnfrm = confirm("Are you sure of deleting this Page?");
+		if (cnfrm) {
+			var type = {
+				'page_id': page_id
+			};
+			$.ajax({
+				type: "POST",
+				url: "/deletePage",
+				data: JSON.stringify(type),
+				dataType: 'text',
+				headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+				contentType: "application/json",
+				success: function (data) {
+					debugger;
+					$(el).parent().parent().remove();
+					alert("Removed Successfully");
+					location.reload();
+				},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+							}
+					}
+			});
+		}
+	}
+	function editable() {
+		var mainContent = document.getElementById('page'); // Replace 'myTable' with the ID of your HTML table
+		debugger;
+		var spans = mainContent.getElementsByTagName('span');
+		console.log(spans);
+
+		for (i = 1; i <= spans.length; i++) {
+			let spanClose = document.createElement('i');
+			spanClose.setAttribute("onClick", "getid(this);");
+			spanClose.setAttribute("data-bs-target", "#selectionPopup");
+			spanClose.setAttribute("data-bs-toggle", "modal");
+			spanClose.setAttribute("style", "cursor:pointer;");
+			spanClose.innerText = '';
+			spanClose.classList.add("text-right", "bg-danger", "border",
+				"border-danger", "p-1", "text-white", "far", "fa-2xl",
+				"fa-circle-xmark");
+			document.getElementById("s" + i).insertBefore(spanClose,
+			document.getElementById("s" + i).firstChild);
+		}
+	}
+	function getid(e) {
+		var id = $(e).parent().attr('id');
+		document.getElementById("plusign_id").value = id;
+
+	}
+	function archivePage(page_id, el) {
+		var cnfrm = confirm("Are you sure of archive this Page?");
+		if (cnfrm) {
+			var archive = {
+				'page_id': page_id
+			};
+			$.ajax({
+				type: "POST",
+				url: "/archivePage",
+				data: JSON.stringify(archive),
+				dataType: 'text',
+				headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+				contentType: "application/json",
+				success: function (data) {
+					debugger;
+					$(el).parent().parent().remove();
+					alert("Archived Successfully");
+					location.reload();
+				},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							alert("=="+JSON.stringify(xhr)+"==="+JSON.stringify(textStatus)+"==="+JSON.stringify(errorThrown))
+							window.location.reload();
+							}
+					}
+			});
+		}
+	}
+	function unarchivePage(page_id, el) {
+		var cnfrm = confirm("Are you sure of Unarchive this Page?");
+		if (cnfrm) {
+			var archive = {
+				'page_id': page_id
+			};
+			$.ajax({
+				type: "POST",
+				url: "/unarchivePage",
+				data: JSON.stringify(archive),
+				dataType: 'text',
+				headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+				contentType: "application/json",
+				success: function (data) {
+					debugger;
+					$(el).parent().parent().remove();
+					alert("Removed Archive Successfully");
+					location.reload();
+				},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+							}
+					}
+			});
+		}
+	}
+</script>
+<script>
+	var jsonStringLatest = [];
+	function list1(objectid) {
+		var type = {
+			'objectid': objectid
+		};
+		let dv = document.createElement("div");
+		var pid = document.getElementById("plusign_id").value;
+		$.ajax({
+			type: "POST",
+			url: "/getindividualobject",
+			data: JSON.stringify(type),
+			dataType: 'json',
+			headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+			contentType: "application/json",
+			success: function (data) {
+				document.getElementById(pid).innerHTML = '';
+				dv.innerHTML = data[0][0];
+				document.getElementById(pid).appendChild(dv);
+				jsonStringLatest.push("'" + objectid + "'");
+			},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+							}
+					}
+		});
+		debugger;
+		changeItem(pid);
+	}
+	function lists(typeGiven) {
+		document.getElementById("viewItems").innerHTML = '';
+		var type = {
+			'type': typeGiven
+		};
+		select = document.getElementById("viewItems");
+
+		document.getElementById("card1").style.display = "block";
+
+		var container = document.createElement("div");
+		container.classList.add("container");
+
+		var row = document.createElement("div");
+		row.classList.add("row", "row-cols-1", "row-cols-md-3", "g-4");
+
+		$.ajax({
+			type: "POST",
+			url: "/getObjectsTypeWise",
+			data: JSON.stringify(type),
+			dataType: 'json',
+			headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+			contentType: "application/json",
+			success: function (data) {
+				for (let i = 0; i < data.length; i++) {
+					var col = document.createElement("div");
+					col.classList.add("col");
+					/* col.classList.add("col", "my-auto"); */
+					// 					if (i == 0) {
+					// 						col.innerHTML = data[i];
+					// 						row.appendChild(col);
+					// 						continue;
+					// 					}
+					// 					var card = document.createElement("div");
+					// 					card.classList.add("card", "h-100");
+					// 					var cardHeader = document.createElement("div");
+					// 					cardHeader.classList.add("card-header");
+					// 					var closeButton = document.createElement("button");
+					// 					closeButton.classList.add("btn", "btn-sm", "float-end");
+					// 					closeButton.innerHTML = '<i class="fas fa-times"></i>';
+					// 					closeButton.addEventListener("click",
+					// 							(function(clickedCard) {
+					// 								return function() {
+					// 									clickedCard.remove();
+					// 								};
+					// 							})(card));
+					var cardBody = document.createElement("div");
+					cardBody.classList.add("card", "text-center");
+					cardBody.innerHTML = data[i][0];
+					cardBody.setAttribute("onClick", "list1('" + data[i].object_id
+						+ "')")
+					// 					var cardFooter = document.createElement("div");
+					// 					cardFooter.classList.add("card-footer");
+
+					// 					var iconsLeft = document.createElement("div");
+					// 					iconsLeft.classList.add("icons-left");
+
+					// 					var iconT = document.createElement("i");
+					// 					iconT.classList.add("fas", "fa-t", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "text-white",
+					// 							"bg-primary");
+					// 					iconT.setAttribute('onclick', 'showTitle(this)');
+					// 					iconT.setAttribute('title', 'Title');
+					// 					iconsLeft.appendChild(iconT);
+
+					// 					var iconD = document.createElement("i");
+					// 					/* iconD.classList.add("fas", "fa-d","p-1", "border", "border-2", "rounded-circle", "border-secondary"); */
+					// 					iconD.classList.add("fas", "fa-d", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "bg-warning");
+					// 					iconD.setAttribute('onclick', 'showDescription(this)');
+					// 					iconD.setAttribute('title', 'Description');
+					// 					iconsLeft.appendChild(iconD);
+
+					// 					var iconS = document.createElement("i");
+					// 					iconS.classList.add("fas", "fa-s", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "text-white",
+					// 							"bg-success");
+					// 					iconS.setAttribute('onclick', 'showStyle(this)');
+					// 					iconS.setAttribute('title', 'Style');
+					// 					iconsLeft.appendChild(iconS);
+
+					// 					var iconCaretDown = document.createElement("i");
+					// 					iconCaretDown.classList.add("fas", "fa-bars", "p-1",
+					// 							"border", "fa-fw", "fa-2xs", "rounded",
+					// 							"text-white", "bg-info");
+					// 					iconCaretDown.setAttribute('onclick', 'showMore(this)');
+					// 					iconCaretDown.setAttribute('title', 'More');
+
+					// 					cardFooter.appendChild(iconsLeft);
+					// 					cardFooter.appendChild(iconCaretDown);
+
+					// 					cardHeader.appendChild(closeButton);
+					// 					card.appendChild(cardHeader);
+					// 					card.appendChild(cardBody);
+					// 					card.appendChild(cardFooter);
+
+					col.appendChild(cardBody);
+					row.appendChild(col);
+					debugger;
+
+				}
+
+				container.appendChild(row);
+				select.appendChild(container);
+
+			},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+							}
+					}
+		});
+	}
+
+	function changeItem(id) {
+		let bool = confirm("Are you sure of updating the Page");
+		if (!bool)
+			return null;
+		var type = {
+			'id': id,
+			'value': document.getElementById(id).value,
+			'page_id': document.getElementById("page_id_selected").value
+		};
+		$.ajax({
+			type: "POST",
+			url: "/updateItem",
+			data: JSON.stringify(type),
+			// 			dataType : 'json',
+			contentType: "application/json",
+			headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+			success: function (data) {
+				debugger;
+				const newItem = document.createElement('span');
+				newItem.innerHTML = data;
+				document.getElementById(id).parentNode.replaceChild(newItem,
+					document.getElementById(id));
+			},
+			error: function (request, error) {
+				alert(error);
+			}
+		});
+	}
+</script>
+<script>
+	function edit(el) {
+		debugger;
+		let id = $(el).parent().parent();
+		let id_selected = $(el).parent().attr('id');
+		console.log($(el).parent());
+		console.log($(el).parent().parent());
+
+		$(el).parent().remove();
+
+		let select = document.createElement("select");
+		select.setAttribute("id", id_selected);
+		select.classList.add("form-select");
+		$.ajax({
+			type: "GET",
+			url: "/getObjects",
+			success: function (data) {
+				var option = document.createElement("option");
+				select.setAttribute("onChange", "changeItem('" + id_selected
+					+ "')");
+				option.value = "";
+				option.text = "--Select--";
+				select.appendChild(option);
+				for (let i = 0; i < data.length; i++) {
+
+					var option = document.createElement("option");
+					select.setAttribute("onChange", "changeItem('"
+						+ id_selected + "')");
+					option.value = data[i].object_id;
+					option.text = data[i].name;
+					select.appendChild(option);
+				}
+				id.append(select);
+			}
+		});
+	}
+</script>
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div id="includeMsgBox"></div>
+		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+		<div class="mb-5 container mt-5">
+			<div class="mt-3 mb-3 container">
+				<div class="float-end mb-2">
+					<div class="input-group">
+						<input type="text" placeholder="Search" id="searchBarInput"
+							class="form-control border border-success-subtle rounded-start-pill"
+							onkeyup="searchBar()" aria-label="Search"
+							aria-describedby="searchHere"> <span
+							class="input-group-text border border-success-subtle rounded-end-pill"
+							id="searchHere"><i class="fas fa-search"></i></span>
+					</div>
+				</div>
+				<div class="mx-auto">
+					<div class="row">
+						<div class="col-3" onClick="location.href='getPage'">
+							<span class="fa-layers fa-fw fa-5x"> <i
+								class="fas fa-circle" style="color: black"></i> <i
+								class="fas fa-circle" data-fa-transform="shrink-3"
+								style="color: Tomato"></i> <i class="fa-inverse fas fa-plus"
+								data-fa-transform="shrink-6"></i>
+							</span>
+						</div>
+					</div>
+					<div class="row">
+						<!--				<input type="text" placeholder="Search" id="searchBarInput" class="form-control w-25 float-end"-->
+						<!--					onkeyup="searchBar()"> <a href="#" target="_self"><img src="static/assets/img/magnifier.png"-->
+						<!--						alt="Magnifier"></a>-->
+						<div class="col-6" th:each="template : ${optionsNew}">
+							<div class="viewPage">
+								<div class="card mb-3">
+									<div class="card-header">
+										<div class="d-flex justify-content-between">
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox"
+													th:checked="${template.published==true}"
+													th:disabled="${template.published==true}" title="Publish"
+													th:value="${template.page_id}" onChange="publish(this);">
+												<label class="form-check-label"
+													th:text="${template.page_name}"> </label>
+											</div>
+											<div>
+												<i
+													class="fas fa-t p-1 border fa-fw fa-2xs rounded text-white bg-primary"
+													data-bs-toggle="tooltip" data-bs-placement="bottom"
+													th:title="${template.page_name}"></i> <i
+													class="fas fa-d p-1 border fa-fw fa-2xs rounded bg-success"
+													data-bs-toggle="tooltip" data-bs-placement="bottom"
+													th:title="${template.description}"></i> <i
+													class="fas fa-s p-1 border fa-fw fa-2xs rounded text-white bg-warning"
+													data-bs-toggle="tooltip" data-bs-placement="bottom"
+													th:title="${template.keywords}"></i> <i
+													class="svg-inline--fa langIconBg langIcon English"
+													data-bs-toggle="tooltip" data-bs-placement="bottom"
+													title="English available"></i> <i
+													class="svg-inline--fa langIconBg langIcon Hindi NA"
+													data-bs-toggle="tooltip" data-bs-placement="bottom"
+													title="Hindi available"></i> <a
+													class="dropdown dropdown-hover"> <a class="" href="#"
+													role="button" data-bs-toggle="dropdown"
+													aria-expanded="false"> <i
+														class="fas fa-bars p-1 border fa-fw fa-2xs rounded text-white bg-info"
+														data-bs-toggle="tooltip" data-bs-placement="bottom"
+														title="Options"></i>
+												</a>
+													<ul
+														class="dropdown-menu dropdown-menu-end dropdown-menu-theme">
+														<li><a class="dropdown-item" th:attr="onclick=|location.href='@{designPage?page_id=}${template.page_id}'|"><i class="fas fa-edit"></i>Edit</a></li>
+														<li><a class="dropdown-item" th:attr="onclick=|deletePage(${template.page_id},this);|"><i class="fas fa-trash"></i>Delete</a></li>
+														<li><a class="dropdown-item" th:attr="onclick=|archivePage(${template.page_id},this);|"><i class="fas fa-eye-slash"></i>Archive</a></li>
+														<li><a class="dropdown-item" th:attr="onclick=|unarchivePage(${template.page_id},this);|"><i class="fas fa-eye-slash"></i>UnArchive</a></li>
+													</ul>
+												</a>
+											</div>
+										</div>
+									</div>
+									<div class="card-body" style="font-size: 7px; text: wrap;">
+										<div th:utext="${template.page_data}"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 			</form> -->
+				<div class="col-3 mt-4">
+					<!-- 			<button class="btn btn-secondary" onClick="editable()">Edit -->
+					<!-- 				Page Items</button> -->
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="selectionPopup" data-bs-backdrop="static"
+			data-bs-keyboard="false" tabindex="-1"
+			aria-labelledby="selectionPopupLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="selectionPopupLabel">Select
+							Items</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div id="includeObjSelector"></div>
+					</div>
+					<div class="modal-footer">
+						<!-- Selected item count -->
+						<div id="selectedCount">0 items selected</div>
+						<div>
+							<label class="switch"> <input type="checkbox"
+								id="toggleSelection"> <span class="slider round"></span>
+							</label> <span id="toggleLabel">Selection Mode</span>
+						</div>
+						<div>
+							<button type="button" class="btn btn-primary btn-sm">Select</button>
+							<button type="button" class="btn btn-warning btn-sm"
+								data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div th:utext="${viewObject}" id="text"></div>
+		<input type='hidden' value="" id='test' /> <input type="hidden"
+			id="plusign_id" /> <input type="hidden" th:value="${page_id}"
+			id="page_id_selected" name="page_id_selected">
+		<script>
+		function publish(el) {
+			var checked = el.checked;
+			var value = el.value;
+			if (checked) {
+				showMessageBox('warning');
+				document.getElementById('messageBoxText').innerHTML = 'Are you sure of Publishing this Page?';
+
+				$('#messageBoxConfirmBtn').click(function () {
+
+					$.ajax({
+						type: "POST",
+						url: "/publishPage?page_id=" + value,
+						dataType: 'text',
+						headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+						contentType: "application/json",
+						success: function (data) {
+							location.reload();
+						},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+							}
+					}
+					});
+
+				});
+			}
+		}
+	</script>
+		<script>
+		function searchBar() {
+			debugger;
+			const searchBar = document.getElementById("searchBarInput");
+			const searchQuery = searchBar.value.toLowerCase();
+			const divs = document.querySelectorAll('.col-6'); // Replace '.item' with the actual class/attribute of your divs
+
+			divs.forEach(div => {
+				const content = div.textContent.toLowerCase();
+				if (content.includes(searchQuery)) {
+					div.style.display = 'block';
+				} else {
+					div.style.display = 'none';
+				}
+			});
+		}
+	</script>
+		<script> 
+        $(document).ready(function () { 
+            $('.dropdown').hover(function () { 
+                $(this).addClass('show'); 
+                $(this).find('.dropdown-menu').addClass('show'); 
+            }, function () { 
+                $(this).removeClass('show'); 
+                $(this).find('.dropdown-menu').removeClass('show'); 
+            }); 
+        }); 
+    </script>
+	</div>
+</body>
+
+</html>

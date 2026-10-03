@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>doc Uploader</title>
+	<!-- Import CSS -->
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+	<script	src="static/assets/Sortable.min.js"></script>
+
+	<script>
+		$(function () {
+			//$("#includeHeader").load("header.html");
+			$("#includemsgBox").load("msgBox.html");
+			$("#includeFooter").load("footer.html");
+		});
+	</script>
+	<style>
+		.Uploader {
+			background-color: #f9f9f9;
+			cursor: pointer;
+			text-transform: capitalize;
+		}
+
+		.Uploader span {
+			cursor: pointer;
+		}
+
+		.cardheader {
+			margin: 10px;
+			align-items: center;
+			margin: 10px;
+		}
+
+		.doc-container {
+			display: none;
+			flex-wrap: wrap;
+		}
+
+		.doc-item {
+			position: relative;
+			margin: 10px;
+			width: 200px;
+			flex: 0 0 calc(20% - 20px);
+			cursor: grab;
+		}
+
+		.doc-item:active {
+			cursor: grabbing;
+		}
+
+		.doc-card {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.doc-preview {
+			width: 100%;
+			height: 150px;
+			object-fit: cover;
+			border-radius: 4px 4px 0 0;
+		}
+
+		.doc-properties {
+			font-size: 12px;
+			margin-top: 10px;
+		}
+
+		.button-group {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 10px;
+		}
+
+		.button-group button {
+			flex-grow: 0;
+			margin-top: 0;
+		}
+
+		.delete-button {
+			margin-top: 0;
+		}
+
+		.options-icon {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			color: black;
+			cursor: pointer;
+			padding: 2px;
+			font-size: 12px;
+		}
+
+		.button-group {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.delete-button {
+			align-self: center;
+		}
+
+		.doc-container {
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+			padding: 10px;
+		}
+
+		.options-menu {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background-color: #fff;
+			border-radius: 4px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+			z-index: 1;
+			padding: 8px;
+		}
+
+		.options-menu ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.options-menu li {
+			cursor: pointer;
+			padding: 4px 8px;
+		}
+
+		.options-menu li:hover {
+			background-color: #f0f0f0;
+		}
+
+		.doc-uploader {
+			border: 2px dashed #ccc;
+			padding: 1rem;
+		}
+
+		.doc-uploader input[type="file"] {
+			display: none;
+		}
+
+		.drag-handle {
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			color: black;
+			cursor: move;
+			padding: 2px;
+			font-size: 12px;
+		}
+	</style>
+</head>
+
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+	<div id="includeMsgBox"></div>
+	<div class="mb-5 container mt-5">
+		<form th:action="@{/uploadDoc}" method="post" enctype="multipart/form-data" onsubmit="return uploadFiles()">
+			<input type="text" name="group_id" required="true"/>
+					    <input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+			<div class="doc-uploader">
+				<div class="text-center Uploader">
+					<input type="file" id="fileInput" name="file" class="form-control" placeholder="Group Name" multiple
+						accept=".pdf" required="true"/> <i class="fa fa-plus fa-2x"></i>
+				</div>
+				<div class="doc-container mb-4"></div>
+			</div>
+			<div class="mx-auto col-1 mt-3 mb-3">
+				<button type="submit" class="btn btn-success upload-button">Upload</button>
+			</div>
+		</form>
+	</div>
+	<!-- <span th:each="docFile : ${docFiles}" class="p-3 m-3"><doc
+width="320" height="240" controls>
+<source th:src="@{/gallery/doc/} + ${docFile}" type="video/mp4"
+class="rounded  border border-1">
+Your browser does not support the Video element.
+</video></span> -->
+	<script>
+		// Initialize SortableJS on the doc-container
+		const docContainer = document.querySelector('.doc-container');
+		const sortable = new Sortable(docContainer, {
+			animation: 150,
+		});
+		function handleFileSelect(event) {
+			const files = event.target.files;
+			const docContainer = document.querySelector('.doc-container');
+			if (files.length > 0) {
+				docContainer.style.display = 'flex'; // Show the container when docs are selected
+			}
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+				const reader = new FileReader();
+				reader.onload = (function (file) {
+					return function (e) {
+						const docUrl = e.target.result;
+						const docName = file.name;
+						const docSize = file.size;
+						// Check if the doc is duplicate
+						const existingdocs = docContainer.querySelectorAll('.doc-item');
+						const duplicatedoc = Array.from(existingdocs).find((docItem) => {
+							const preview = docItem.querySelector('.doc-preview');
+							return preview.src === docUrl;
+						});
+						if (!duplicatedoc) {
+							const docItem = createdocItem(docUrl, docName, docSize);
+							docContainer.appendChild(docItem);
+						} else {
+							showAlertBox('warning');
+							$('#messageBoxText').text("Duplicate Document:" + docName);
+						}
+					};
+				})(file);
+				reader.readAsDataURL(file);
+			}
+		}
+		function createdocItem(docUrl, docName, docSize) {
+			const docItem = document.createElement('div');
+			docItem.classList.add('doc-item');
+			const card = document.createElement('div');
+			card.classList.add('card', 'doc-card');
+			const doc = document.createElement('doc');
+			doc.classList.add('doc-preview');
+			/* doc.setAttribute("autoplay", "autoplay"); */
+			doc.setAttribute("controls", "controls");
+			doc.setAttribute("muted", "muted");
+			doc.setAttribute("loop", "loop");
+			doc.src = docUrl;
+			doc.alt = 'Preview';
+			const cardHeader = document.createElement('div');
+			cardHeader.classList.add('cardheader');
+			const buttonGroup = document.createElement('div');
+			buttonGroup.classList.add('button-group');
+			const optionsIcon = document.createElement('i');
+			optionsIcon.classList.add('fas', 'fa-ellipsis-v', 'options-icon');
+			optionsIcon.setAttribute('onclick', 'showOptions(this)');
+			optionsIcon.setAttribute('title', 'Options');
+			const cardBody = document.createElement('div');
+			cardBody.classList.add('card-body');
+			const cardTitle = document.createElement('h6');
+			cardTitle.classList.add('card-title');
+			cardTitle.textContent = docName;
+			const cardText = document.createElement('p');
+			cardText.classList.add('card-text');
+			cardText.textContent = `Size: ${Math.round(docSize / 1024)} KB`;
+			const descriptionInput = document.createElement('input');
+			descriptionInput.type = 'text';
+			descriptionInput.classList.add('form-control');
+			descriptionInput.placeholder = 'doc Description';
+			descriptionInput.setAttribute("name", "file_desc[]");
+			//descriptionInput.name='file_desc';
+			descriptionInput.required = 'true';
+			const dragHandle = document.createElement('i');
+			dragHandle.classList.add('fas', 'fa-grip-vertical', 'drag-handle');
+			dragHandle.setAttribute('title', 'Re-order');
+			cardHeader.appendChild(dragHandle);
+			buttonGroup.appendChild(optionsIcon);
+			cardBody.appendChild(cardTitle);
+			cardBody.appendChild(cardText);
+			cardBody.appendChild(descriptionInput);
+			cardHeader.appendChild(buttonGroup);
+			card.appendChild(cardHeader);
+			card.appendChild(doc);
+			card.appendChild(cardBody);
+			docItem.appendChild(card);
+			return docItem;
+		}
+		function showOptions(icon) {
+			const docItem = icon.closest('.doc-item');
+			if (docItem) {
+				const optionsMenu = document.createElement('div');
+				optionsMenu.classList.add('options-menu');
+				optionsMenu.innerHTML = `
+<ul>
+<li onclick="uploaddoc(this)"><i class="fas fa-upload mr-3"></i>Upload</li>
+<li onclick="changedoc(this)"><i class="fas fa-edit mr-3"></i>Change</li>
+<li onclick="deletedoc(this)"><i class="fas fa-trash-alt mr-3"></i> Delete</li>
+</ul>
+`;
+				docItem.appendChild(optionsMenu);
+				optionsMenu.addEventListener('mouseleave', function () {
+					optionsMenu.remove();
+				});
+			}
+		}
+		function uploaddoc(button) {
+			const docItem = button.closest('.doc-item');
+			if (docItem) {
+				const docName = docItem.querySelector('.card-title').textContent;
+				alert(`Upload doc: ${docName}`);
+			}
+		}
+		function deletedoc(button) {
+			const docItem = button.closest('.doc-item');
+			if (docItem) {
+				docItem.remove();
+			}
+		}
+		function changedoc(button) {
+			const docItem = button.closest('.doc-item');
+			if (docItem) {
+				const input = document.createElement('input');
+				input.type = 'file';
+				input.accept = 'doc/*';
+				input.addEventListener('change', function (event) {
+					const file = event.target.files[0];
+					if (file) {
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							const doc = docItem.querySelector('.doc-preview');
+							doc.src = e.target.result;
+							const docName = docItem.querySelector('.card-title');
+							docName.textContent = file.name;
+							const docSize = docItem.querySelector('.card-text');
+							docSize.textContent = `Size: ${Math.round(file.size / 1024)} KB`;
+						};
+						reader.readAsDataURL(file);
+					}
+				});
+				input.click();
+			}
+		}
+		function removedoc(element) {
+			const docItem = element.parentNode;
+			docItem.parentNode.removeChild(docItem);
+		}
+		const fileInput = document.getElementById('fileInput');
+		const UploaderContainer = document.querySelector('.Uploader');
+		UploaderContainer.addEventListener('click', function () {
+			fileInput.click();
+		});
+		fileInput.addEventListener('change', handleFileSelect);
+	</script>
+	<script>
+		function uploadFiles() {
+			var files = document.getElementById('fileInput').files;
+			var formData = new FormData();
+			var invalidFiles = [];
+			for (var i = 0; i < files.length; i++) {
+				var file = files[i];
+				if (file.type !== 'application/pdf') {
+					invalidFiles.push(file.name);
+				} else {
+					formData.append('files[]', file);
+				}
+			}
+			if (invalidFiles.length > 0) {
+				alert('Invalid file(s): ' + invalidFiles.join(', ') + '. Only PDF files are allowed.');
+				return false;
+			}
+		}
+	</script>
+	</div>
+</body>
+
+</html>

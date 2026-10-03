@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>123List Designer</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script src="static/assets/Sortable.min.js"></script>
+<style>
+div:hover .deleteStyle {
+	opacity: 1;
+}
+
+.deleteStyle {
+	opacity: 0;
+}
+.draggable {
+    cursor: grab;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.col-13 {
+  flex: 0 0 auto;
+  width: 4.15%;
+}
+</style>
+<script>
+		function convertTableToJSON(event) {
+			event.preventDefault();
+			var list_div = document.getElementById('myList'); // Replace 'myTable' with the ID of your HTML table
+			var rows = list_div.getElementsByClassName('item');
+			var jsonData = [];
+			var jsonData_hi = [];
+			var temp = '';
+			debugger;
+			var rowData = [];
+			if (document.getElementById("object_title").value == '') {
+				alert("Please fill title");
+				return false;
+			}
+			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+				var cells = rows[i].getElementsByTagName('td');
+				var columnValue = rows[i].value; // Assumes the first row contains column headers
+				if (columnValue == '') {
+						alert("Please fill all fields");
+						return false;
+					}
+				rowData[i] = encodeURIComponent(columnValue);
+			}
+			var rows_hi = document.getElementsByClassName('item_hi');
+			var rowData_hi = [];
+			for (var i = 0; i < rows_hi.length; i++) { // Start from 1 to skip the table header
+				var columnValue = rows_hi[i].value; // Assumes the first row contains column headers
+				//---------30-09-2026----------------------------------------
+				if ((columnValue.match(/"/g) || []).length % 2 !== 0) {
+					columnValue = columnValue.replace(/"/g, '');
+                }
+				rowData_hi[i] = encodeURIComponent(columnValue);
+			}
+			temp = rowData.join(',');
+			jsonData.push(temp);
+			var json = '[' + jsonData + ']';
+			document.getElementById("jsonString").value = JSON.stringify(json,
+				null, 2);
+			var temp_hi = rowData_hi.join(',');
+			jsonData_hi.push(temp_hi);
+			var json_hi = '[' + jsonData_hi + ']';
+			document.getElementById("jsonString_hi").value = JSON.stringify(
+				json_hi, null, 2);
+			jsonData = [];
+			rows = document.getElementsByClassName('link');
+			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+				var cells = rows[i].getElementsByTagName('td');
+				var columnValue = rows[i].value; // Assumes the first row contains column headers
+				if (columnValue == null || columnValue == '')
+					columnValue = '#';
+				rowData[i] = encodeURIComponent(columnValue);
+			}
+			temp = rowData.join(',');
+			jsonData.push(temp);
+			var json = '[' + jsonData + ']';
+			document.getElementById("linksString").value = JSON.stringify(json,
+				null, 2);
+			jsonData = [];
+			rows = document.getElementsByClassName('exp');
+			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+				var cells = rows[i].getElementsByTagName('td');
+				var columnValue = rows[i].value; // Assumes the first row contains column headers
+				if (columnValue == null || columnValue == '')
+					columnValue = '';
+				rowData[i] = encodeURIComponent(columnValue);
+			}
+			temp = rowData.join(',');
+			jsonData.push(temp);
+			var json = '[' + jsonData + ']';
+			document.getElementById("expString").value = JSON.stringify(json, null, 2);
+			var hindi_meta = {
+				"keywords": document.getElementById("keywords_hi").value,
+				"description": document.getElementById("description_hi").value,
+				"title": document.getElementById("object_title_hi").value,
+				"help_text": document.getElementById("help_text_hi").value
+			};
+			document.getElementById("meta_hi").value = JSON.stringify(hindi_meta,null, 2);
+			
+			
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+		    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');		    
+			var data = {
+				 "object_id":document.getElementById('page_id').value,						
+				 "imgType":"",				 
+				 "jsonString" : document.getElementById('jsonString').value,
+				 "type":document.getElementById('type').value,							 					
+				 "marquee":document.getElementById('marquee').value,	
+				 "linksString":document.getElementById('linksString').value,
+				 "newJson":"",						
+				 "list_type":document.getElementById('list_style').value,			 
+				 "expString":document.getElementById('expString').value,
+				 "object_title":document.getElementById('object_title').value, 					
+				 "object_title_hi":document.getElementById('object_title_hi').value,
+				 "styles":document.getElementById('styles').value,
+				 "classes":document.getElementById('classes').value,
+				 "description":document.getElementById('description').value,
+				 "help_text":document.getElementById('help_text').value,
+				 "alternate_text":"",
+				 "keywords":document.getElementById('keywords').value,
+				 "jsonString_hi":document.getElementById('jsonString_hi').value,
+				 "meta_hi":document.getElementById('meta_hi').value
+			};	
+			
+			/* alert("jsonString==="+document.getElementById('jsonString').value);
+			alert("jsonString_hi==="+document.getElementById('jsonString_hi').value); */
+			$.ajax({
+			type: "POST",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			url: "/save",								
+			contentType: "application/json",
+			data: JSON.stringify(data),			
+			success: function (response) {				
+				alert(response.success);
+				//return false;		
+			},
+			error: function (xhr, status, error) {
+	            console.error("Error:", error)	            
+	            //return false;	        
+			}
+		});
+			
+		}
+		function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {          
+            return false;
+        }
+        return true;
+    	}
+		function createList() {
+		    document.getElementById("designList").style.display = 'block';
+		    var rowCount = document.getElementById("rowCount").value;
+		    var myList = document.getElementById("myList");
+		    var myListHindi = document.getElementById("myList_Hindi");
+		    
+		    // Clear existing content
+		    myList.innerHTML = "";
+		    myListHindi.innerHTML = "";
+
+		    // Create rows for the specified count
+		    var englishRows = '';
+		    var hindiRows = '';
+
+		    for (var i = 0; i < rowCount; i++) {
+		        englishRows += `
+		            <div class="draggable row mt-1 g-1 list_items" draggable="true">
+		                <div class="col-13">
+		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                    <i class="fas fa-grip-vertical deleteStyle"></i>
+		                </div>
+		                <div class="col">
+		                    <input type="text" placeholder="Name of List item" class="form-control item" required>
+		                </div>
+		                <div class="col">
+		                    <div class="input-group">
+		                        <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                        <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+		                    </div>
+		                </div>
+		                <div class="col">
+		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		                </div>
+		            </div>
+		        `;
+
+		        hindiRows += `
+		            <div class="draggable row mt-1 g-1 list_items" draggable="true">
+		                <div class="col-13">
+		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                    <i class="fas fa-grip-vertical deleteStyle"></i>
+		                </div>
+		                <div class="col">
+		                    <input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" required>
+		                </div>
+		                <div class="col">
+		                    <div class="input-group">
+		                        <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                        <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+		                    </div>
+		                </div>
+		                <div class="col">
+		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		                </div>
+		            </div>
+		        `;
+		    }
+		    myList.innerHTML = englishRows;
+		    myListHindi.innerHTML = hindiRows;
+		}
+	</script>
+<script type="text/javascript">
+		async function translateIt() {
+			const url = 'https://api.mymemory.translated.net/get';
+			debugger;
+			//Hindi Meta
+			var englishContent = document.getElementById("object_title").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await
+				fetch(`${url}?${params}`);
+			var data = await
+				response.json();
+			document.getElementById("object_title_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("description").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await
+				fetch(`${url}?${params}`);
+			var data = await
+				response.json();
+			document.getElementById("description_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("keywords").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await
+				fetch(`${url}?${params}`);
+			var data = await
+				response.json();
+			document.getElementById("keywords_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("help_text").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await
+				fetch(`${url}?${params}`);
+			var data = await
+				response.json();
+			document.getElementById("help_text_hi").value = data.responseData.translatedText;
+			//Hindi Meta ends
+			var myTableInputs = document.getElementsByClassName("item");
+			var myTableInputs_hi = document.getElementsByClassName("item_hi");
+			for (var i = 0; i < myTableInputs.length; i++) {
+				var englishContent = myTableInputs[i].value;
+				const params = new URLSearchParams({
+					q: englishContent,
+					langpair: 'en|hi'
+				});
+				const response = await
+					fetch(`${url}?${params}`);
+				const data = await
+					response.json();
+				myTableInputs_hi[i].value = data.responseData.translatedText;
+			}
+		}
+	</script>
+<script>
+		$(function () {
+			//$("#includeHeader").load("header.html");
+			$("#includeFooter").load("footer.html");
+		});
+	</script>
+</head>
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div class="container">
+			<h3 class="pageHeading">Design your Lists</h3>
+			<form method="post">
+				<!--<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+				<div class="card">
+					<div class="card-header bg-danger-subtle">Properties</div>
+					<div class="card-body">
+						<div class="row g-2 d-flex justify-content-center mt-3">
+						<div class="col-3 mb-2 floating-label">
+							<input type="number" id="rowCount" name="rowCount" th:value="${rowCount}" required="true" autocomplete="off" onkeypress="return isNumber(event)" 
+								class="form-control" placeholder="No of List Items">
+							<label for="rowCount">Number of List items</label>
+						</div>
+						<div class="col-3">
+							<div class="floating-label"> <select class="form-select" id="marquee" name="marquee">
+									<option value="" th:selected="${marquee == null}">Normal
+										List</option>
+									<option value="marquee,left" th:selected="${marquee == 'ul,marquee,left'}">Horizontal
+										Scrolling</option>
+									<option value="marquee,up" th:selected="${marquee == 'ul,marquee,up'}">Vertical
+										Scrolling</option>
+								</select><label for="marquee">Scrolling type:</label></div>
+						</div>
+						<div class="col-3">
+							<div class="floating-label">
+								<select class="form-select" id="list_style" name="list_style">
+									<option value="ul">Unordered List</option>
+									<option value="ol">Ordered List</option>
+								</select>
+								<label for="type">Type of Lists:</label>
+							</div>
+						</div>
+					</div>
+					<hr>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+							
+								<input type="text" id="object_title" name="object_title"
+									th:value="${object_title}" required="true" class="form-control"
+									placeholder="Table title" /> <label for="object_title">Title</label>
+							</div>
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+							
+								<input type="text" id="description" name="description"
+									th:value="${description}" required="true" class="form-control"
+									placeholder="Description" /> <label for="description">Description</label>
+							</div>
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+							 
+								<input type="text" id="help_text" name="help_text"
+									th:value="${help_text}" class="form-control"
+									placeholder="Help text" /><label for="help_text">Help
+									Text</label>
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+							 
+								<input type="text" id="keywords" name="keywords"
+									th:value="${keywords}" class="form-control"
+									placeholder="Keywords" /><label for="keywords">Keywords</label>
+							</div>
+						</div>
+						<div class="d-flex flex-row justify-content-center">
+							<input type="checkbox" id="defineStyles">Define Styles
+						</div>
+						<div id="customStylesDiv" style="display: none;">
+							<hr>
+							<h6 class="text-center">Styles</h6>
+							<div class="row g-2 d-flex justify-content-center">
+								<div class="col-3 mb-3">
+									<div class=" input-group">
+										<span class="input-group-text"><input
+											class="form-check-input mt-0" type="checkbox" value=""
+											id="customSCheckBox" aria-label="checkbox"></span>
+									<div class=" floating-label">
+										<input type="text" id="styles" name="styles" th:value="${styles}"
+											class="form-control customS" readonly placeholder="Custom Styles" /> <label
+											for="custom Styles">Custom
+											Styles</label>
+									</div>
+ 
+									</div>
+									<div class="text-muted">
+										Syntax: semi-colon(;) seperated<br>Example: color: red;
+										text:white;
+									</div>
+								</div>
+								<div class="col-3 mb-3">
+									<div class="input-group">
+										<span class="input-group-text"><input class="form-check-input mt-0" type="checkbox"
+											id="customCCheckBox" aria-label="checkbox"></span>
+									<div class=" floating-label">
+										<input type="text" id="classes" name="classes" th:value="${classes}"
+											class="form-control customC" readonly placeholder="Custom Classes" /> <label
+											for="custom Classes">Custom
+											Classes</label>
+									</div>
+									</div>
+									<div class="text-muted">
+										Syntax: semi-colon(;) seperated<br>Example: color: red;
+										text:white;
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="d-flex flex-row justify-content-center">
+							<a class="btn btn-primary" onclick="createList()"><i
+								class="fas fa-object-group"></i> &nbsp;Design List</a>
+						</div>
+					</div>
+				</div>
+
+				<div id="designList"
+					th:attr="style=${list_items!=null ? 'display:block;' : 'display:none'}">
+					<div class="card mt-2">
+						<div class="card-header bg-danger-subtle">List</div>
+						<div class="card-body">
+							<a class="btn btn-primary mb-3" onClick="addRow()">Add new
+								Item</a>
+							<div class="row mb-3">
+								<div class="mx-auto">
+									<div>
+										<div class="row g-1">
+											<div class="col-13"></div>
+											<div class="col">
+												<button class="btn bnt-sm btn-warning" type="button" onclick="sortItems()"><i class="fas fa-arrow-right-arrow-left fa-rotate-90"></i></button> Item
+												Contents
+											</div>
+											<div class="col">Link URL</div>
+											<div class="col"><button class="btn bnt-sm btn-warning" type="button" id="sortButtonEnglish"><i class="fas fa-arrow-right-arrow-left fa-rotate-90"></i></button>Expiration Date</div>
+										</div>
+										<div id="myList">
+											<div th:each="row, rowStat : ${list_items}"
+												class="draggable row mt-1 g-1 list_items" draggable="true">
+												<div class="col-13">
+													<i class="fas fa-trash text-danger deleteStyle"
+														onClick="deleteRow(this);"></i>
+													<i class="fas fa-grip-vertical deleteStyle"></i>
+												</div>
+												<div class="col">
+													<input type="text" th:value="${row}" name="value"
+														class="item mr-3 form-control" required>
+												</div>
+												<div class="col">
+													<div class="input-group">
+														<input type="text" th:value="${link_items[rowStat.index]}"
+															name="value" placeholder="Paste Link here"
+															class="link form-control" required> <a
+															onclick="hyperlinksPopupMethod(this);"
+															data-bs-toggle="modal" data-bs-target="#hyperLinksPopup"
+															class="btn btn-primary">Insert HyperLink</a>
+													</div>
+												</div>
+												<div class="col">
+													<input type="datetime-local"
+														th:value="${exp_items[rowStat.index]}" name="value"
+														class="exp form-control"
+														placeholder="Select Expiration Date" required>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<input type="hidden" id="jsonString" name="jsonString">
+								<input type="hidden" id="linksString" name="linksString"
+									class="form-control"> <input type="hidden"
+									id="jsonString_hi" name="jsonString_hi"> <input
+									type="hidden" id="meta_hi" name="meta_hi"> <input
+									type="hidden" id="expString" name="expString"> <input
+									class="form-control" type="hidden" id="page_id"
+									th:value="${object_id}" name="object_id"> <input
+									type="hidden" id="type" class="form-control" th:value="3"
+									name="type">
+								<div class="d-flex flex-row justify-content-center">
+									<input type="checkbox" id="togglehindiCard"> Hindi
+									Context
+								</div>
+								<div class="d-flex flex-row justify-content-center">
+									<a class="btn btn-primary" onClick="convertTableToJSON(event)">
+										Save</a>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="col" id="hindiCard_2" style="display: none;">
+						<div class="card mt-2">
+							<div class="card-header bg-danger-subtle">Hindi</div>
+							<div class="card-body">
+								<div class="row g-2 d-flex justify-content-center">
+									<div class="col-6 mb-3 floating-label">
+									<input type="text" id="object_title_hi" name="object_title_hi"
+										th:value="${object_title_hi}" required class="form-control"
+										placeholder="तालिका शीर्षक" /> <label for="object_title_hi">शीर्षक</label>
+								</div>
+								</div>
+								<div class="row g-2 d-flex justify-content-center">
+										<div class="col-6 mb-3 floating-label">
+									<input type="text" id="description_hi" name="description_hi"
+										th:value="${description_hi}" class="form-control" placeholder="विवरण" />
+									<label for="description_hi">विवरण</label>
+								</div>
+								</div>
+								<div class="row g-2 d-flex justify-content-center">
+									<div class="col-6 mb-3 floating-label">
+									<input type="text" id="help_text_hi" name="help_text_hi" th:value="${help_text_hi}"
+										class="form-control" placeholder="मदद पाठ" />
+									<label for="help_text_hi">मदद
+										पाठ</label>
+								</div>
+								</div>
+								<div class="row g-2 d-flex justify-content-center">
+									<div class="col-6 mb-3 floating-label">
+									<input type="text" id="keywords_hi" name="keywords_hi" th:value="${keywords_hi}"
+										class="form-control" placeholder="कीवर्ड" />
+									<label for="keywords_hi">कीवर्ड</label>
+								</div>
+								</div>
+								<div class="row g-1">
+									<div class="col-13"></div>
+									<div class="col">
+										<button class="btn bnt-sm btn-warning" type="button" onclick="sortItems_hindi()"><i class="fas fa-arrow-right-arrow-left fa-rotate-90"></i></button> Item
+										Contents
+									</div>
+									<div class="col">Link URL</div>
+									<div class="col"><button class="btn bnt-sm btn-warning" type="button" id="sortButtonHindi"><i class="fas fa-arrow-right-arrow-left fa-rotate-90"></i></button>Expiration Date</div>
+									
+								</div>
+								<div id="myList_Hindi">
+									<div th:each="row, rowStat : ${list_items}"
+										class="draggable row mt-1 g-1 list_items" draggable="true">
+											<div class="col-13">
+												<i class="fas fa-trash text-danger deleteStyle"
+													onClick="deleteRow(this);"></i>
+												<i class="fas fa-grip-vertical"></i>
+											</div>
+											<div class="col">
+												<input type="text"
+													th:value="${list_items_hi[rowStat.index]}" name="value"
+													class="item_hi mr-3 form-control" required>
+											</div>
+											<div class="col">
+												<div class="input-group">
+													<input type="text" th:value="${link_items[rowStat.index]}"
+														name="value" placeholder="Paste Link here"
+														class="link form-control" required> <a
+														onclick="hyperlinksPopupMethod(this);"
+														data-bs-toggle="modal" data-bs-target="#hyperLinksPopup"
+														class="btn btn-primary">Insert HyperLink</a>
+												</div>
+											</div>
+											<div class="col">
+												<input type="datetime-local"
+													th:value="${exp_items[rowStat.index]}" name="value"
+													class="exp form-control"
+													placeholder="Select Expiration Date" required>
+											</div>
+									</div>
+								</div>
+								<input type="hidden" id="tempStorage" value=""> <a
+									class="btn btn-primary" onClick="translateIt()">Translate
+									English content to Hindi</a>
+							</div>
+						</div>
+					</div>
+				</div>
+		</div>
+		</form>
+		<!-- Button trigger modal -->
+
+		<div class="modal fade" id="hyperLinksPopup" tabindex="-1"
+			aria-labelledby="hyperLinksPopupLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="hyperLinksPopupLabel">Select
+							A Page</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<!--					<div id="pages-data" class="container">-->
+
+						<!--					</div>-->
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+							<li class="nav-item" role="presentation">
+								<button class="nav-link active" id="pages-data-tab"
+									data-bs-toggle="tab" data-bs-target="#pages-data" type="button"
+									role="tab" aria-controls="pages-data" aria-selected="true">Pages</button>
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="forms-data-tab"
+									data-bs-toggle="tab" data-bs-target="#forms-data" type="button"
+									role="tab" aria-controls="forms-data" aria-selected="false">Forms</button>
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="doc-data-tab" data-bs-toggle="tab"
+									data-bs-target="#doc-data" type="button" role="tab"
+									aria-controls="doc-data" aria-selected="false">Documents</button>
+							</li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active contaier" id="pages-data"
+								role="tabpanel" aria-labelledby="pages-data-tab"></div>
+							<div class="tab-pane fade container" id="forms-data"
+								role="tabpanel" aria-labelledby="forms-data-tab"></div>
+							<div class="tab-pane fade container" id="doc-data"
+								role="tabpanel" aria-labelledby="doc-data-tab"></div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<form th:action="@{/fetch}" method="get"></form>
+</div>
+<script>
+		$(document).ready(function () {
+			$('#togglehindiCard').click(function () {
+				alert("in side hindi");
+				if ($(this).is(':checked')) {
+					$('#hindiCard').show();
+					$('.item_hi').show();
+					$('#hindiCard_2').show();
+				} else {
+					$('#hindiCard').hide();
+					$('.item_hi').hide();
+					$('#hindiCard_2').hide();
+				}
+			});
+		});
+		function deleteRow(el) {
+		    $(el).closest('.list_items').remove(); // Adjusting to remove the closest .list_items div
+		}
+	</script>
+<script>
+		function addRow() {
+		    var myList = document.getElementById("myList");
+		    var myListHindi = document.getElementById("myList_Hindi");
+		    
+		    // Create a new row for the English list
+		    var newRow = `
+		        <div class="draggable row g-1 mt-1 list_items" draggable="true">
+		            <div class="col-13">
+		                <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                <i class="fas fa-grip-vertical deleteStyle"></i>
+		            </div>
+		            <div class="col">
+		                <input type="text" placeholder="Name of List item" class="form-control item" required>
+		            </div>
+		            <div class="col">
+		                <div class="input-group">
+		                    <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                    <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+		                </div>
+		            </div>
+		            <div class="col">
+		                <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		            </div>
+		        </div>
+		    `;
+		    
+		    // Append the new row to the English list
+		    myList.innerHTML += newRow;
+
+		    // Create a new row for the Hindi list
+		    var newRowHindi = `
+		        <div class="draggable row g-1 mt-1 list_items" draggable="true">
+		            <div class="col-13">
+		                <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                <i class="fas fa-grip-vertical deleteStyle"></i>
+		            </div>
+		            <div class="col">
+		                <input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" required>
+		            </div>
+		            <div class="col">
+		                <div class="input-group">
+		                    <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                    <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+		                </div>
+		            </div>
+		            <div class="col">
+		                <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		            </div>
+		        </div>
+		    `;
+
+		    // Append the new row to the Hindi list
+		    myListHindi.innerHTML += newRowHindi;
+		}
+	</script>
+<script>
+		$('#defineStyles').change(function () {
+			$('#customStylesDiv').fadeToggle();
+		});
+		$('#customSCheckBox').click(function () {
+			$('.customS').prop('readonly', function (i, v) {
+				return !v;
+			});
+		});
+		$('#customCCheckBox').click(function () {
+			$(".customC").prop('readonly', function (i, v) {
+				return !v;
+			});
+		});
+	</script>
+<script>
+		var inputElement;
+		var selectedButton;
+		function hyperlinksPopupMethod(el) {
+			event.preventDefault();
+			selectedButton = el;
+			getPages();
+			getForms();
+			getDocs();
+
+		};
+		function itemSelected(link) {
+			console.log(selectedButton.previousSibling);
+			selectedButton.previousSibling.value = link;
+		}
+		function getPages() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListPages",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("pages-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = data[i].page_id;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].page_name;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].status;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].link);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Page";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].link + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		};
+
+
+		function getForms() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListForms",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("forms-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = data[i].form_id;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].form_name;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].status;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].link);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Form";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].link + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		}
+		function getDocs() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListDocs",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("doc-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = i + 1;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].original_filename;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].description;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].file);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Document";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].file + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		}
+	</script>
+<script>
+$(document).ready(function() {
+    var myListSortable = new Sortable(document.getElementById('myList'), {
+        animation: 150,
+        handle: '.fa-grip-vertical', // Only drag using the grip icon
+        draggable: '.list_items', // Make sure only your row divs are draggable
+        ghostClass: 'sortable-ghost'
+    });
+
+    var myListHindiSortable = new Sortable(document.getElementById('myList_Hindi'), {
+        animation: 150,
+        handle: '.fa-grip-vertical',
+        draggable: '.list_items',
+        ghostClass: 'sortable-ghost'
+    });
+});
+</script>
+<script>
+//Flags to track current order
+var isAscEnglish = true;
+var isAscHindi = true;
+
+function sortItems() {
+    var container = document.getElementById('myList');
+    var items = Array.from(container.getElementsByClassName('list_items'));
+
+    items.sort(function(a, b) {
+        var textA = a.querySelector('.item')?.value?.toLowerCase() || '';
+        var textB = b.querySelector('.item')?.value?.toLowerCase() || '';
+        if (isAscEnglish) {
+            return textA.localeCompare(textB);
+        } else {
+            return textB.localeCompare(textA);
+        }
+    });
+
+    container.innerHTML = '';
+    items.forEach(function(item) {
+        container.appendChild(item);
+    });
+
+    // Toggle for next click
+    isAscEnglish = !isAscEnglish;
+}
+
+function sortItems_hindi() {
+    var container = document.getElementById('myList_Hindi');
+    var items = Array.from(container.getElementsByClassName('list_items'));
+
+    items.sort(function(a, b) {
+        var textA = a.querySelector('.item_hi')?.value?.toLowerCase() || '';
+        var textB = b.querySelector('.item_hi')?.value?.toLowerCase() || '';
+        if (isAscHindi) {
+            return textA.localeCompare(textB, 'hi');
+        } else {
+            return textB.localeCompare(textA, 'hi');
+        }
+    });
+
+    container.innerHTML = '';
+    items.forEach(function(item) {
+        container.appendChild(item);
+    });
+
+    // Toggle for next click
+    isAscHindi = !isAscHindi;
+}
+
+</script>
+<script>
+let ascendingEnglish = true;
+let ascendingHindi = true;
+
+document.getElementById('sortButtonEnglish').addEventListener('click', function() {
+	sortListEnglish('myList', ascendingEnglish);
+    ascendingEnglish = !ascendingEnglish;
+});
+
+document.getElementById('sortButtonHindi').addEventListener('click', function() {
+	sortListHindi('myList_Hindi', ascendingHindi);
+    ascendingHindi = !ascendingHindi;
+});
+
+function sortListEnglish(listId, ascending) {
+    const list = document.getElementById(listId);
+    const items = Array.from(list.querySelectorAll('.draggable'));
+
+    items.sort((a, b) => {
+        const aValue = a.querySelector('input.item').value.trim().toLowerCase();
+        const bValue = b.querySelector('input.item').value.trim().toLowerCase();
+        if (aValue < bValue) return ascending ? -1 : 1;
+        if (aValue > bValue) return ascending ? 1 : -1;
+        return 0;
+    });
+
+    items.forEach(item => list.appendChild(item));
+}
+function sortListHindi(listId, ascending) {
+    const list = document.getElementById(listId);
+    const items = Array.from(list.querySelectorAll('.draggable'));
+
+    items.sort((a, b) => {
+        const aValue = a.querySelector('input.item_hi').value.trim().toLowerCase();
+        const bValue = b.querySelector('input.item_hi').value.trim().toLowerCase();
+        if (aValue < bValue) return ascending ? -1 : 1;
+        if (aValue > bValue) return ascending ? 1 : -1;
+        return 0;
+    });
+
+    items.forEach(item => list.appendChild(item));
+}
+
+
+</script>
+
+
+
+</body>
+
+</html>

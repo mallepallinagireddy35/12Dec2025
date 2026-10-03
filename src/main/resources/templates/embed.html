@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+<meta charset="utf-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>Custom HTML</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script>
+	$(function() {
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+</head>
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				Provide custom HTML code</h3>
+		</div>
+		<div class="mb-5 container mt-5">
+			<form  method="post">
+				<!--<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+				    <input type="hidden" name="jsonString" id="jsonString"> 
+					<input type="hidden" name="jsonString_hi" id="jsonString_hi"> 
+					<input type="hidden" name="type" id="type" value="10"> 
+					<input type="hidden" name="object_id" id="object_id" th:value="${object_id}">
+				<div class="row">
+					<div class="col-8">
+						<div class="floating-label mb-2">
+							<input type="text" class="form-control" id="text"
+								name="object_title" th:value="${object_title}" required="true"
+								placeholder="Enter Title"> <label for="text">Title</label>
+						</div>
+						<textarea name="content" required="true" class="form-control"
+							rows="20" id="editor" th:utext="${data}"></textarea>
+				<button class="btn btn-primary" type="button" onclick="preview_html('editor')">
+			    	<i class="fa fas fa-eye"></i> Preview
+				</button>
+						<div class="mx-auto col-2 mt-3 mb-3">
+							<a class="btn btn-primary mb-3" onClick="generateHindi()">Generate
+								Hindi Content</a>
+						</div>
+						<div id="generateHindi" style="display: none;">
+							<div class="floating-label mb-2">
+								<input type="text" class="form-control" id="text_hi"
+									name="object_title_hi" th:value="${object_title_hi}"
+									placeholder="Enter Hindi Title"> <label for="text_hi">Title</label>
+							</div>
+							<textarea name="content_hi" class="form-control" rows="20"
+								id="editor_hi" th:utext="${data_hi}"></textarea>
+				<button class="btn btn-primary" type="button" onclick="preview_html_hi('editor_hi')">
+				<i class="fa fas fa-eye"></i> Preview
+			</button>
+						</div>
+						<div class="mx-auto col-1 mt-3 mb-3">
+							<button class="btn btn-primary" onclick="printIt()">Save</button>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="card">
+							<div class="card-header">File Selector</div>
+							<div class="card-body">
+								<div class="row g-1">
+									<div class="col-6">
+										<select class="form-select" id="FileType" onchange="return searchFileName(this.value)"
+											aria-label="FileType">
+											
+											<option value="1">Image</option>
+											<option value="2">Document</option>
+											<option value="3" selected>Audio</option>
+											<option value="4">Video</option>
+										</select>
+									</div>
+									<div class="col-6">
+										<div class="input-group">
+											<input type="text" placeholder="Search" id="searchBarInput"
+												class="form-control" onkeyup="searchBar()"
+												aria-label="Search" aria-describedby="searchHere"> <span
+												class="input-group-text" id="searchHere"><i
+												class="fas fa-search"></i></span>
+										</div>
+									</div>
+								</div>
+								<div id="veera" style="height: 400px; overflow-y: scroll;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script>
+			async
+			function printIt() {
+				event.preventDefault();
+				if (document.getElementById("text").value == '') {
+					alert("Please enter Title");
+					return false;
+				}
+				var msg = document.getElementById("editor").value;
+				if (msg == '') {
+					alert("Please enter content");
+					return false;
+				}
+
+				document.getElementById("jsonString").value = '\"['
+						+ encodeURIComponent(msg) + ']\"';
+				var msg_hi = document.getElementById("editor_hi").value;
+				document.getElementById("jsonString_hi").value = '\"['
+						+ encodeURIComponent(msg_hi) + ']\"';
+				console.log(document.getElementById("jsonString_hi").value);
+				debugger;
+				
+				var csrfToken = $('meta[name="_csrf"]').attr('content');
+		        var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		    
+					var data = {
+						 "object_id":document.getElementById('object_id').value,						
+						 "imgType":"",				 
+						 "jsonString" : document.getElementById('jsonString').value,
+						 "type":document.getElementById('type').value,							 					
+						 "marquee":"",	
+						 "linksString":"",
+						 "newJson":"",						
+						 "list_type":"",			 
+						 "expString":"",
+						 "object_title":document.getElementById('text').value, 					
+						 "object_title_hi":document.getElementById('text_hi').value,
+						 "styles":"",
+						 "classes":"",
+						 "description":"",
+						 "help_text":"",
+						 "alternate_text":"",
+						 "keywords":"",
+						 "jsonString_hi":document.getElementById('jsonString_hi').value,
+						 "meta_hi":""
+					};
+								
+					$.ajax({
+					type: "POST",
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					url: "/save",								
+					contentType: "application/json",
+					data: JSON.stringify(data),			
+					success: function (response) {				
+						alert(response.success);
+						//return false;		
+					},
+					error: function (xhr, status, error) {
+			            console.error("Error:", error)	            
+			            //return false;	        
+					}
+				});
+			}
+		</script>
+		<script>
+			async
+			function generateHindi() {
+				document.getElementById('generateHindi').style.display = 'block';
+				var msg = document.getElementById("editor").value;
+				const url = 'https://api.mymemory.translated.net/get';
+				var englishContent = document.getElementById("text").value;
+				var params = new URLSearchParams({
+					q : englishContent,
+					langpair : 'en|hi'
+				});
+				var response = await
+				fetch(`${url}?${params}`);
+				var data = await
+				response.json();
+				document.getElementById("text_hi").value = data.responseData.translatedText;
+				var hindi_meta = {
+					"title" : document.getElementById("text_hi").value
+				};
+				document.getElementById("jsonString").value = '\"['
+						+ encodeURIComponent(msg) + ']\"';
+				var text;
+				var msg_array = msg.match(/.{1,450}/g);
+				for (var i = 0; i < msg_array.length; i++) {
+					var englishContent = msg_array[i];
+					var params = new URLSearchParams({
+						q : englishContent,
+						langpair : 'en|hi'
+					});
+					var response = await
+					fetch(`${url}?${params}`);
+					var data = await
+					response.json();
+					debugger;
+					text = text + data.responseData.translatedText;
+					console.log(document.getElementById("editor_hi").value);
+				}
+				document.getElementById("editor_hi").value = text;
+			}		
+			
+		</script>
+		<script>
+    function searchBar() {
+        const searchBar = document.getElementById("searchBarInput");
+        const searchQuery = searchBar.value.toLowerCase();
+        const fileType = document.getElementById("FileType").value;
+        const divs = document.querySelectorAll('.fileName');
+
+        divs.forEach(div => {
+            const content = div.textContent.toLowerCase();
+            const fileExtension = getFileExtension(content);
+            //const shouldShow =(fileType === "0" && (fileExtension === "png" || fileExtension === "pdf" || fileExtension === "doc" || fileExtension === "mp3" || fileExtension === "mp4")) ||
+            const shouldShow =(fileType === "1" && (fileExtension === "png" || fileExtension === "jpg" || fileExtension === "jpeg" || fileExtension === "gif")) ||
+                              (fileType === "2" && (fileExtension === "pdf" || fileExtension === "doc")) ||
+                              (fileType === "3" && fileExtension === "mp3") || 
+                              (fileType === "4" && fileExtension === "mp4");
+
+            if (content.includes(searchQuery) && shouldShow) {
+                div.parentElement.style.display = 'flex';
+            } else {
+                div.parentElement.style.display = 'none';
+            }
+        });
+    }
+
+    function getFileExtension(filename) {
+        return filename.split('.').pop().toLowerCase();
+    }
+
+    function setFileIcon() {
+        const fileIcons = document.querySelectorAll('.fileIcon');
+
+        fileIcons.forEach(icon => {
+            const fileName = icon.closest('.row').querySelector('.fileName').textContent;
+            const fileExtension = getFileExtension(fileName);
+
+            if (fileExtension === "png" || fileExtension === "jpg" || fileExtension === "jpeg" || fileExtension === "gif") {
+                icon.innerHTML = '<i class="fas fa-image"></i>';			
+            } else if (fileExtension === "pdf" || fileExtension === "doc") {
+                icon.innerHTML = '<i class="fas fa-file-pdf"></i>';
+            } else if (fileExtension === "mp3") {
+                icon.innerHTML = '<i class="fas fa-file-audio"></i>';
+            } else if (fileExtension === "mp4") {
+                icon.innerHTML = '<i class="fas fa-file-video"></i>';
+            }
+        });
+    }
+
+    document.getElementById("FileType").addEventListener("change", () => {
+        searchBar();
+       // setFileIcon();
+    });
+
+    // Initial setup
+    setFileIcon();
+</script>
+
+		<script>
+			function CopyFileName(element) {
+				var fileName = $(element).closest('.row').find('.fileName').text();
+				var tempInput = document.createElement('input');
+				tempInput.value = fileName;
+				document.body.appendChild(tempInput);
+				tempInput.select();
+				document.execCommand('copy');
+				document.body.removeChild(tempInput);
+
+				$(element).tooltip({
+					title : 'File name copied to clipboard',
+					placement : 'top',
+					trigger : 'click',
+				});
+
+				$(element).tooltip('show');
+
+				$(element).on('shown.bs.tooltip', function() {
+					setTimeout(function() {
+						$(element).tooltip('hide');
+					}, 1000);
+				});
+			}
+			
+		function searchFileName(filetype) {			
+		var type = {
+			'filetype': filetype
+		};
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		var uniqueTimestamp = new Date().getTime();
+		$.ajax({
+			type: "POST",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			url: "/getFileNames",					
+			data: JSON.stringify(type),
+			dataType: 'json',
+			contentType: "application/json",
+			success: function (data) {				
+				for (let i = 0; i < data.length; i++) {	
+				document.getElementById("veera").innerHTML = data[i].filename;				  			
+				}
+				//setFileIcon();
+			},
+					error:function(xhr,textStatus,errorThrown){
+						if(xhr.status==405){
+							alert("Not a valid request. Please try again");							
+							}
+					}
+		});
+		
+		}
+		</script>
+			<script>
+	function preview_html(id) {
+		let newWindow = window.open("", "_blank");
+		newWindow.document.write("<html><head><title>Preview</title><link href='static/assets/bootstrap_5.3/css/bootstrap.css' rel='stylesheet'><link href='static/assets/custom/css/style.css' rel='stylesheet'><link rel='icon' href='static/assets/img/academy_logo_lg.png'><link href='static/assets/fontawesome_6.4/css/all.min.css' rel='stylesheet'></head><body>");
+		newWindow.document.write(document.getElementById(id).value);
+		newWindow.document.write("</body></html>");
+		newWindow.document.close();
+	}
+	</script>
+	<script>
+	function preview_html_hi(id) {
+		let newWindow = window.open("", "_blank");
+		newWindow.document.write("<html><head><title>Preview</title><link href='static/assets/bootstrap_5.3/css/bootstrap.css' rel='stylesheet'><link href='static/assets/custom/css/style.css' rel='stylesheet'><link rel='icon' href='static/assets/img/academy_logo_lg.png'><link href='static/assets/fontawesome_6.4/css/all.min.css' rel='stylesheet'></head><body>");
+		newWindow.document.write(document.getElementById(id).value);
+		newWindow.document.write("</body></html>");
+		newWindow.document.close();
+	}
+	</script>
+	<script>
+	$('#viewItems').find('script').each(function() {
+        var newScript = document.createElement("script");
+        newScript.text = this.innerHTML;
+        document.head.appendChild(newScript);
+	});
+	</script>	
+	</div>
+</body>
+ 
+</html>

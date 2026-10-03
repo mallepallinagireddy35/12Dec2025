@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Video Uploader</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script	src="static/assets/Sortable.min.js"></script>
+
+<script>
+	$(function() {
+	//	$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<style>
+.Uploader {
+	background-color: #f9f9f9;
+	cursor: pointer;
+	text-transform: capitalize;
+}
+
+.Uploader span {
+	cursor: pointer;
+}
+
+.cardheader {
+	margin: 10px;
+	align-items: center;
+	margin: 10px;
+}
+
+.video-container {
+	display: none;
+	flex-wrap: wrap;
+}
+
+.video-item {
+	position: relative;
+	margin: 10px;
+	width: 200px;
+	flex: 0 0 calc(20% - 20px);
+	cursor: grab;
+}
+
+.video-item:active {
+	cursor: grabbing;
+}
+
+.video-card {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.video-preview {
+	width: 100%;
+	height: 150px;
+	object-fit: cover;
+	border-radius: 4px 4px 0 0;
+}
+
+.video-properties {
+	font-size: 12px;
+	margin-top: 10px;
+}
+
+.button-group {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.button-group button {
+	flex-grow: 0;
+	margin-top: 0;
+}
+
+.delete-button {
+	margin-top: 0;
+}
+
+.options-icon {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	color: black;
+	cursor: pointer;
+	padding: 2px;
+	font-size: 12px;
+}
+
+.button-group {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.delete-button {
+	align-self: center;
+}
+
+.video-container {
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+	padding: 10px;
+}
+
+.options-menu {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+	z-index: 1;
+	padding: 8px;
+}
+
+.options-menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.options-menu li {
+	cursor: pointer;
+	padding: 4px 8px;
+}
+
+.options-menu li:hover {
+	background-color: #f0f0f0;
+}
+
+.video-uploader {
+	border: 2px dashed #ccc;
+	padding: 1rem;
+}
+
+.video-uploader input[type="file"] {
+	display: none;
+}
+
+.drag-handle {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	color: black;
+	cursor: move;
+	padding: 2px;
+	font-size: 12px;
+}
+</style>
+</head>
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+		<div class="container">
+			<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px;margin-top:5px;">
+				Upload Video</h3>
+		</div>
+	
+	<div class="mb-5 container mt-5">
+		<form th:action="@{/uploadVideo}" method="post"
+			enctype="multipart/form-data" onsubmit="return uploadFiles()">
+					    <input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+			<div class="row">
+				<div class="col-4">
+					<input type="text" name="group_id" class="form-control" required="true"
+						placeholder="Enter Group Name" />
+				</div>
+			</div>
+			<div class="video-uploader">
+				<div class="text-center Uploader">
+					<input type="file" id="fileInput" name="file" required="true" class="form-control" 
+						multiple accept=".mp4" /> <i class="fa fa-plus fa-2x"></i>
+				</div>
+				<div class="video-container mb-4"></div>
+			</div>
+			<div class="mx-auto col-1 mt-3 mb-3">
+				<button type="submit" class="btn btn-success upload-button">Upload</button>
+			</div>
+		</form>
+	</div>
+	<div id="includeFooter"></div>
+	<!-- <span th:each="videoFile : ${videoFiles}" class="p-3 m-3"><video
+			width="320" height="240" controls>
+			<source th:src="@{/gallery/video/} + ${videoFile}" type="video/mp4"
+				class="rounded  border border-1">
+			Your browser does not support the Video element.
+		</video></span> -->
+
+	<script>
+	// Initialize SortableJS on the video-container
+	const videoContainer = document.querySelector('.video-container');
+	const sortable = new Sortable(videoContainer, {
+	  animation: 150,
+	});
+	function handleFileSelect(event) {
+		  const files = event.target.files;
+		  const videoContainer = document.querySelector('.video-container');
+
+		  if (files.length > 0) {
+		    videoContainer.style.display = 'flex'; // Show the container when videos are selected
+		  }
+
+		  for (let i = 0; i < files.length; i++) {
+		    const file = files[i];
+		    const reader = new FileReader();
+
+		    reader.onload = (function (file) {
+		      return function (e) {
+		        const videoUrl = e.target.result;
+		        const videoName = file.name;
+		        const videoSize = file.size;
+
+		        // Check if the video is duplicate
+		        const existingVideos = videoContainer.querySelectorAll('.video-item');
+		        const duplicateVideo = Array.from(existingVideos).find((videoItem) => {
+		          const preview = videoItem.querySelector('.video-preview');
+		          return preview.src === videoUrl;
+		        });
+
+		        if (!duplicateVideo) {
+		          const videoItem = createVideoItem(videoUrl, videoName, videoSize);
+		          videoContainer.appendChild(videoItem);
+		        } else {
+		          alert(`Duplicate video: ${videoName}`);
+		        }
+		      };
+		    })(file);
+
+		    reader.readAsDataURL(file);
+		  }
+		}
+
+	function createVideoItem(videoUrl, videoName, videoSize) {
+		  const videoItem = document.createElement('div');
+		  videoItem.classList.add('video-item');
+
+		  const card = document.createElement('div');
+		  card.classList.add('card', 'video-card');
+
+		  const video = document.createElement('video');
+		  video.classList.add('video-preview');
+		  /* video.setAttribute("autoplay", "autoplay"); */
+		  video.setAttribute("controls", "controls");
+		  video.setAttribute("muted", "muted");
+		  video.setAttribute("loop", "loop");
+		  video.src = videoUrl;
+		  video.alt = 'Preview';
+		  
+		  const cardHeader = document.createElement('div');
+		  cardHeader.classList.add('cardheader');
+		  
+		  const buttonGroup = document.createElement('div');
+		  buttonGroup.classList.add('button-group');
+
+		  const optionsIcon = document.createElement('i');
+		  optionsIcon.classList.add('fas', 'fa-ellipsis-v', 'options-icon');
+		  optionsIcon.setAttribute('onclick', 'showOptions(this)');
+		  optionsIcon.setAttribute('title', 'Options');
+
+		  const cardBody = document.createElement('div');
+		  cardBody.classList.add('card-body');
+
+		  const cardTitle = document.createElement('h6');
+		  cardTitle.classList.add('card-title');
+		  cardTitle.textContent = videoName;
+
+		  const cardText = document.createElement('p');
+		  cardText.classList.add('card-text');
+		  cardText.textContent = `Size: ${Math.round(videoSize / 1024)} KB`;
+		  
+		  const descriptionInput = document.createElement('input');
+		  descriptionInput.type = 'text';
+		  descriptionInput.classList.add('form-control');
+		  descriptionInput.placeholder = 'Video Description';
+		  descriptionInput.name='file_desc';
+		  descriptionInput.required = 'true';	
+		  
+		  const dragHandle = document.createElement('i');
+		  dragHandle.classList.add('fas', 'fa-grip-vertical', 'drag-handle');
+		  dragHandle.setAttribute('title', 'Re-order');
+		  
+		  cardHeader.appendChild(dragHandle);
+		  buttonGroup.appendChild(optionsIcon);
+		  cardBody.appendChild(cardTitle);
+		  cardBody.appendChild(cardText);
+		  cardBody.appendChild(descriptionInput);
+		  cardHeader.appendChild(buttonGroup);
+		  card.appendChild(cardHeader);
+		  card.appendChild(video);
+		  card.appendChild(cardBody);
+		  videoItem.appendChild(card);
+
+		  return videoItem;
+		}
+	function showOptions(icon) {
+		  const videoItem = icon.closest('.video-item');
+		  if (videoItem) {
+		    const optionsMenu = document.createElement('div');
+		    optionsMenu.classList.add('options-menu');
+		    optionsMenu.innerHTML = `
+		      <ul>
+		        <li onclick="uploadVideo(this)"><i class="fas fa-upload mr-3"></i>Upload</li>
+		        <li onclick="changeVideo(this)"><i class="fas fa-edit mr-3"></i>Change</li>
+		        <li onclick="deleteVideo(this)"><i class="fas fa-trash-alt mr-3"></i> Delete</li>
+		      </ul>
+		    `;
+		    videoItem.appendChild(optionsMenu);
+		    optionsMenu.addEventListener('mouseleave', function () {
+		      optionsMenu.remove();
+		    });
+		  }
+		}
+
+
+
+		function uploadVideo(button) {
+		  const videoItem = button.closest('.video-item');
+		  if (videoItem) {
+		    const videoName = videoItem.querySelector('.card-title').textContent;
+		    alert(`Upload video: ${videoName}`);
+		  }
+		}
+
+		function deleteVideo(button) {
+		  const videoItem = button.closest('.video-item');
+		  if (videoItem) {
+		    videoItem.remove();
+		  }
+		}
+
+		function changeVideo(button) {
+			  const videoItem = button.closest('.video-item');
+			  if (videoItem) {
+			    const input = document.createElement('input');
+			    input.type = 'file';
+			    input.accept = 'video/*';
+			    input.addEventListener('change', function (event) {
+			      const file = event.target.files[0];
+			      if (file) {
+			        const reader = new FileReader();
+			        reader.onload = function (e) {
+			          const video = videoItem.querySelector('.video-preview');
+			          video.src = e.target.result;
+
+			          const videoName = videoItem.querySelector('.card-title');
+			          videoName.textContent = file.name;
+
+			          const videoSize = videoItem.querySelector('.card-text');
+			          videoSize.textContent = `Size: ${Math.round(file.size / 1024)} KB`;
+			        };
+			        reader.readAsDataURL(file);
+			      }
+			    });
+			    input.click();
+			  }
+			}
+
+		function removeVideo(element) {
+			const videoItem = element.parentNode;
+			videoItem.parentNode.removeChild(videoItem);
+		}
+
+		const fileInput = document.getElementById('fileInput');
+		const UploaderContainer = document.querySelector('.Uploader');
+
+		UploaderContainer.addEventListener('click', function () {
+		  fileInput.click();
+		});
+
+		fileInput.addEventListener('change', handleFileSelect);
+
+	</script>
+	<script>
+	function uploadFiles() {
+	      var files = document.getElementById('fileInput').files;
+	      var formData = new FormData();
+	      var invalidFiles = [];
+
+	      for (var i = 0; i < files.length; i++) {
+	        var file = files[i];
+// 	        alert(file.type);
+	        if (file.type !== 'video/mp4') {
+	        	
+	          invalidFiles.push(file.name);
+	        } else {
+	          formData.append('files[]', file);
+	        }
+	      }
+
+	      if (invalidFiles.length > 0) {
+	        alert('Invalid file(s): ' + invalidFiles.join(', ') + '. Only Videos(MP4) files are allowed.');
+	        return false;
+	      }
+	}
+	</script></div>
+</body>
+</html>

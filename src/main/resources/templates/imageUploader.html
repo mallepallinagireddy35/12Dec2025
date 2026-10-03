@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Image Uploader</title>
+	<!-- Import CSS -->
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+	<script	src="static/assets/Sortable.min.js"></script>
+
+	<script>
+		$(function () {
+			//$("#includeHeader").load("header.html");
+			$("#includeMsgBox").load("msgBox.html");
+			$("#includeFooter").load("footer.html");
+		});
+	</script>
+	<style>
+		.Uploader {
+			background-color: #f9f9f9;
+			cursor: pointer;
+			text-transform: capitalize;
+		}
+
+		.Uploader span {
+			cursor: pointer;
+		}
+
+		.cardheader {
+			margin: 10px;
+			align-items: center;
+			margin: 10px;
+		}
+
+		.image-container {
+			display: none;
+			/* Initially hide the container */
+			flex-wrap: wrap;
+		}
+
+		.image-item {
+			position: relative;
+			margin: 10px;
+			width: 200px;
+			flex: 0 0 calc(20% - 20px);
+			cursor: grab;
+		}
+
+		.image-item:active {
+			cursor: grabbing;
+		}
+
+		.image-card {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.image-preview {
+			width: 100%;
+			height: 150px;
+			object-fit: cover;
+			border-radius: 4px 4px 0 0;
+		}
+
+		.image-properties {
+			font-size: 12px;
+			margin-top: 10px;
+		}
+
+		.button-group {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 10px;
+		}
+
+		.button-group button {
+			flex-grow: 0;
+			margin-top: 0;
+		}
+
+		.delete-button {
+			margin-top: 0;
+		}
+
+		.options-icon {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			color: black;
+			cursor: pointer;
+			padding: 2px;
+			font-size: 12px;
+		}
+
+		.button-group {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.delete-button {
+			align-self: center;
+		}
+
+		.image-container,
+		.thumbnail-container {
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+			padding: 10px;
+		}
+
+		.thumbnail-image {
+			width: 100px;
+			height: 100px;
+			object-fit: cover;
+			margin: auto;
+			border-radius: 4px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+			display: block;
+		}
+
+		.thumbnail-container {
+			display: none;
+			flex-wrap: wrap;
+			margin-top: 10px;
+			justify-content: flex-start;
+		}
+
+		.options-menu {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background-color: #fff;
+			border-radius: 4px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+			z-index: 1;
+			padding: 8px;
+		}
+
+		.options-menu ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.options-menu li {
+			cursor: pointer;
+			padding: 4px 8px;
+		}
+
+		.options-menu li:hover {
+			background-color: #f0f0f0;
+		}
+
+		.image-uploader {
+			border: 2px dashed #ccc;
+			padding: 1rem;
+		}
+
+		.image-uploader input[type="file"] {
+			display: none;
+		}
+
+		.drag-handle {
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			color: black;
+			cursor: move;
+			padding: 2px;
+			font-size: 12px;
+		}
+	</style>
+</head>
+
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+	<div id="includeMsgBox"></div>
+	<div class="container">
+		<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+			Upload Image</h3>
+	</div>
+	<div class="mb-5 container mt-5">
+		<form th:action="@{/uploadImage}" method="post" enctype="multipart/form-data">
+			<div class="row">
+				<div class="col-4">
+							    <input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+					<input type="text" name="group_id" class="form-control" placeholder="Enter Group Name" required="true"/>
+				</div>
+			</div>
+			<div class="image-uploader mt-2">
+				<div class="text-center Uploader">
+					<input type="file" name="file" id="file-input" class="form-control" multiple accept="image/*" required="true"/><i
+						class="fas fa-plus fa-2x"></i>
+				</div>
+				<div class="image-container mb-4"></div>
+			</div>
+			<div class="col-1 mx-auto mt-2">
+				<button type="submit" class="btn btn-success upload-button mb-4">Upload</button>
+			</div>
+		</form>
+		<div id="includeFooter"></div>
+		<!-- 		<button class="btn btn-primary upload-button mb-4" -->
+		<!-- 				onclick="generateThumbnails()">Generate Thumbnails</button> -->
+		<!-- <div id="thumbnail-container" class="thumbnail-container mb-4"></div> -->
+	</div>
+	<script>
+		// Initialize SortableJS on the image-container
+		const imageContainer = document.querySelector('.image-container');
+		const sortable = new Sortable(imageContainer, {
+			animation: 150,
+		});
+		function handleFileSelect(event) {
+			const files = event.target.files;
+			const imageContainer = document.querySelector('.image-container');
+			if (files.length > 0) {
+				imageContainer.style.display = 'flex'; // Show the container when images are selected
+			}
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+				const reader = new FileReader();
+				reader.onload = (function (file) {
+					return function (e) {
+						const imageSource = e.target.result;
+						const imageName = file.name;
+						const imageSize = file.size;
+						// Check if the image is already present in the container
+						const existingImages = imageContainer.querySelectorAll('.image-item');
+						const duplicateImage = Array.from(existingImages).find((imageItem) => {
+							const preview = imageItem.querySelector('.image-preview');
+							return preview.src === imageSource;
+						});
+						if (!duplicateImage) {
+							const imageItem = createImageItem(imageSource, imageName, imageSize);
+							imageContainer.appendChild(imageItem);
+						} else {
+							showAlertBox('warning');
+							$('#messageBoxText').text("Duplicate Image:" + imageName);
+						}
+					};
+				})(file);
+				reader.readAsDataURL(file);
+			}
+		}
+		function createImageItem(imageSource, imageName, imageSize) {
+			const imageItem = document.createElement('div');
+			imageItem.classList.add('image-item');
+			const card = document.createElement('div');
+			card.classList.add('card', 'image-card');
+			const image = document.createElement('img');
+			image.classList.add('image-preview');
+			image.src = imageSource;
+			image.alt = 'Preview';
+			const cardHeader = document.createElement('div');
+			cardHeader.classList.add('cardheader');
+			const buttonGroup = document.createElement('div');
+			buttonGroup.classList.add('button-group');
+			const optionsIcon = document.createElement('i');
+			optionsIcon.classList.add('fas', 'fa-ellipsis-v', 'options-icon');
+			optionsIcon.setAttribute('onclick', 'showOptions(this)');
+			optionsIcon.setAttribute('title', 'Options');
+			const cardBody = document.createElement('div');
+			cardBody.classList.add('card-body');
+			const cardTitle = document.createElement('h6');
+			cardTitle.classList.add('card-title');
+			cardTitle.textContent = imageName;
+			const cardText = document.createElement('p');
+			cardText.classList.add('card-text');
+			cardText.textContent = `Size: ${Math.round(imageSize / 1024)} KB`;
+			const descriptionInput = document.createElement('input');
+			descriptionInput.type = 'text';
+			descriptionInput.classList.add('form-control');
+			descriptionInput.placeholder = 'Image Description';
+			descriptionInput.name = 'file_desc';
+			descriptionInput.required = 'true';			
+			const dragHandle = document.createElement('i');
+			dragHandle.classList.add('fas', 'fa-grip-vertical', 'drag-handle');
+			dragHandle.setAttribute('title', 'Re-order');
+			cardHeader.appendChild(dragHandle);
+			buttonGroup.appendChild(optionsIcon);
+			cardBody.appendChild(cardTitle);
+			cardBody.appendChild(cardText);
+			cardBody.appendChild(descriptionInput);
+			cardHeader.appendChild(buttonGroup);
+			card.appendChild(cardHeader);
+			card.appendChild(image);
+			card.appendChild(cardBody);
+			imageItem.appendChild(card);
+			return imageItem;
+		}
+		/* function showOptions(icon) {
+		// Implement your logic to show options menu
+		const imageItem = icon.closest('.image-item');
+		if (imageItem) {
+		const optionsMenu = document.createElement('div');
+		optionsMenu.classList.add('options-menu');
+		optionsMenu.innerHTML = `
+		<ul>
+		<li onclick="uploadImage(this)"><i class="fas fa-upload mr-3"></i>Upload</li>
+		<li onclick="changeImage(this)"><i class="fas fa-edit mr-3"></i>Change</li>
+		<li onclick="deleteImage(this)"><i class="fas fa-trash-alt mr-3"></i> Delete</li>
+		</ul>
+		`;
+		imageItem.appendChild(optionsMenu);
+		}
+		} */
+		function showOptions(icon) {
+			const imageItem = icon.closest('.image-item');
+			if (imageItem) {
+				const optionsMenu = document.createElement('div');
+				optionsMenu.classList.add('options-menu');
+				optionsMenu.innerHTML = `
+<ul>
+<li onclick="uploadImage(this)"><i class="fas fa-upload mr-3"></i>Upload</li>
+<li onclick="changeImage(this)"><i class="fas fa-edit mr-3"></i>Change</li>
+<li onclick="deleteImage(this)"><i class="fas fa-trash-alt mr-3"></i> Delete</li>
+</ul>
+`;
+				imageItem.appendChild(optionsMenu);
+				// Add event listener to hide options menu on mouseout
+				optionsMenu.addEventListener('mouseleave', function () {
+					optionsMenu.remove();
+				});
+			}
+		}
+		function uploadImage(button) {
+			const imageItem = button.closest('.image-item');
+			if (imageItem) {
+				// Handle upload logic for the specific image
+				const imageName = imageItem.querySelector('.card-title').textContent;
+				alert(`Upload image: ${imageName}`);
+			}
+		}
+		function deleteImage(button) {
+			const imageItem = button.closest('.image-item');
+			if (imageItem) {
+				imageItem.remove();
+			}
+		}
+		function changeImage(button) {
+			const imageItem = button.closest('.image-item');
+			if (imageItem) {
+				const input = document.createElement('input');
+				input.type = 'file';
+				input.accept = 'image/*';
+				input.addEventListener('change', function (event) {
+					const file = event.target.files[0];
+					if (file) {
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							const image = imageItem.querySelector('.image-preview');
+							image.src = e.target.result;
+							const imageName = imageItem.querySelector('.card-title');
+							imageName.textContent = file.name;
+							const imageSize = imageItem.querySelector('.card-text');
+							imageSize.textContent = `Size: ${Math.round(file.size / 1024)} KB`;
+						};
+						reader.readAsDataURL(file);
+					}
+				});
+				input.click();
+			}
+		}
+		function removeImage(element) {
+			const imageItem = element.parentNode;
+			imageItem.parentNode.removeChild(imageItem);
+		}
+		function generateThumbnails() {
+			const imageItems = document.querySelectorAll('.image-item');
+			const thumbnailContainer = document.getElementById('thumbnail-container');
+			thumbnailContainer.style.display = 'flex';
+			thumbnailContainer.innerHTML = ''; // Clear the thumbnail container
+			imageItems.forEach((imageItem) => {
+				const image = imageItem.querySelector('.image-preview');
+				const imageName = imageItem.querySelector('.card-title').textContent;
+				const imageSize = imageItem.querySelector('.card-text').textContent;
+				const imageDescription = imageItem.querySelector('input[type="text"]').value;
+				const thumbnailItem = document.createElement('div');
+				thumbnailItem.classList.add('image-item');
+				const card = document.createElement('div');
+				card.classList.add('card', 'image-card');
+				const thumbnail = document.createElement('img');
+				thumbnail.classList.add('thumbnail-image');
+				thumbnail.src = image.src;
+				thumbnail.alt = 'Thumbnail';
+				const cardHeader = document.createElement('div');
+				cardHeader.classList.add('cardheader');
+				const buttonGroup = document.createElement('div');
+				buttonGroup.classList.add('button-group');
+				const optionsIcon = document.createElement('i');
+				optionsIcon.classList.add('fas', 'fa-ellipsis-v', 'options-icon');
+				optionsIcon.setAttribute('onclick', 'showOptions(this)');
+				const cardBody = document.createElement('div');
+				cardBody.classList.add('card-body');
+				const cardTitle = document.createElement('p');
+				cardTitle.classList.add('card-title');
+				cardTitle.textContent = imageName;
+				const cardText = document.createElement('p');
+				cardText.classList.add('card-text');
+				cardText.textContent = imageSize;
+				buttonGroup.appendChild(optionsIcon);
+				cardBody.appendChild(cardTitle);
+				cardBody.appendChild(cardText);
+				cardHeader.appendChild(buttonGroup);
+				card.appendChild(thumbnail);
+				card.appendChild(cardHeader);
+				card.appendChild(cardBody);
+				thumbnailItem.appendChild(card);
+				thumbnailContainer.appendChild(thumbnailItem);
+			});
+		}
+		const fileInput = document.getElementById('file-input');
+		const UploaderContainer = document.querySelector('.Uploader');
+		UploaderContainer.addEventListener('click', function () {
+			fileInput.click();
+		});
+		fileInput.addEventListener('change', handleFileSelect);
+	</script></div>
+</body>
+
+</html>

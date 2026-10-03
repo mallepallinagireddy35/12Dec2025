@@ -1,0 +1,225 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<title>Menu Permissions</title>
+	<meta content="" name="description">
+	<meta content="" name="keywords">
+
+	<!-- Import CSS -->
+	<link rel="icon" href="assets/img/academy_logo_lg.png">
+	<link href="assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="assets/custom/css/style.css" rel="stylesheet">
+	<link href="assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+	<!-- Import JS -->
+	<script src="assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="assets/fontawesome_6.4/js/all.min.js"></script>
+
+
+	<script>
+		$(function () {
+			//$("#includeHeader").load("admin/adminmenu.html");
+			$("#includeFooter").load("footer.html");
+
+		});
+	</script>
+
+
+</head>
+
+<body onload="startFun()">
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<form th:action="@{/updateMenuServices}" method="post" commandName="form">
+		<input type="hidden" name="checkedSerives" id="checkedSerives">
+		<input type="hidden" id="services" name="services" th:value="${services}" />
+
+		<table id="serviceTabId">
+			<div class="container">
+				<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+					Edit The Options For Menu Item's</h3>
+				<span th:each="menu : ${session.menuList}">
+					<div class="col-md-12 col-sm-12 i_d">
+						<span th:each="lastmenu3 : ${menu.menuList[0]}">
+							<span th:if="${lastmenu3.level1 > 0}">
+								<hr />
+								<label for="name" style="font-weight: bold; font-size: 16px; color: red;"><span
+										th:text="${menu.mainlevel_desc}" /></label>
+							</span>
+							<span th:unless="${lastmenu3.level1 > 0}">
+								<hr />
+								<input type="checkbox"
+									th:id="${menu.mainlevel}+'#'+${menu.level1}+'#'+${menu.level2}+'#'+${menu.level3}"
+									name="menu_check"
+									th:value="${menu.mainlevel}+'#'+${menu.level1}+'#'+${menu.level2}+'#'+${menu.level3}">
+								<label for="name" style="font-weight: bold; font-size: 16px; color: red;"> <span
+										th:text="${menu.mainlevel_desc}" /></label>
+							</span>
+						</span>
+
+					</div>
+					<div class="col-md-12 col-sm-12 i_proj">
+						<span th:each="submenu : ${menu.menuList}">
+							<span th:if="${submenu.level1 > 0}">
+								<div class="col-md-12 col-sm-12">
+									<div class="col-md-4 col-sm-3 col-xs-12">
+										<ul>
+											<li>
+												<span th:each="lastmenu2 : ${submenu.menuList[0]}">
+													<span th:if="${lastmenu2.level2 > 0}">
+														<span>
+															<label for="name"
+																style="font-weight: bold; font-size: 14px; color: #217342;"><span
+																	th:text="${submenu.level1_desc}" /></label>
+														</span>
+													</span>
+													<span th:unless="${lastmenu2.level2 > 0}">
+														<input type="checkbox" name="menu_check"
+															th:id="${submenu.mainlevel}+'#'+${submenu.level1}+'#'+${submenu.level2}+'#'+${submenu.level3}"
+															th:value="${submenu.mainlevel}+'#'+${submenu.level1}+'#'+${submenu.level2}+'#'+${submenu.level3}">
+														<label for="name"
+															style="font-weight: bold; font-size: 14px; color: #217342;"><span
+																th:text="${submenu.level1_desc}" /></label>
+													</span>
+												</span>
+											</li>
+										</ul>
+									</div>
+									<span th:each="subsubmenu : ${submenu.menuList}">
+										<span th:if="${subsubmenu.level2 > 0}">
+											<span th:if="${subsubmenuStat.index > 0}">
+												<div class="col-md-12 col-sm-12"> </div>
+												<div class="col-md-4 col-sm-3 col-xs-12"></div>
+											</span>
+											<div class="col-md-4 col-sm-5">
+												<ul>
+													<li>
+														<span th:each="lastmenu1 : ${subsubmenu.menuList[0]}">
+															<span th:if="${lastmenu1.level3 > 0}">
+																<label for="name"
+																	style="font-weight: bold; font-size: 12px; color: #00a5a2;"><span
+																		th:text="${subsubmenu.level2_desc}" /></label>
+															</span>
+
+															<span th:unless="${lastmenu1.level3 > 0}">
+																<input type="checkbox" name="menu_check"
+																	th:id="${subsubmenu.mainlevel}+'#'+${subsubmenu.level1}+'#'+${subsubmenu.level2}+'#'+${subsubmenu.level3}"
+																	th:value="${subsubmenu.mainlevel}+'#'+${subsubmenu.level1}+'#'+${subsubmenu.level2}+'#'+${subsubmenu.level3}">
+
+																<label for="name"
+																	style="font-weight: bold; font-size: 12px; color: #00a5a2;"><span
+																		th:text="${subsubmenu.level2_desc}" /></label>
+															</span>
+														</span>
+													</li>
+													</li>
+													</li>
+												</ul>
+											</div>
+											<span th:if="${subsubmenu.menuList=='0'}">
+												<div class="col-md-4 col-sm-4"></div>
+											</span>
+											<span th:unless="${subsubmenu.menuList=='0'}">
+												<span th:each="lastmenu : ${subsubmenu.menuList}">
+													<span th:if="${lastmenu.level3 > 0}">
+														<span th:if="${lastmenuStat.index > 0}">
+															<div class="col-md-4 col-sm-3 col-xs-12"></div>
+															<div class="col-md-4 col-sm-5"></div>
+														</span>
+														<div class="col-md-4 col-sm-4">
+															<ul>
+																<li>
+																	<input type="checkbox" name="menu_check"
+																		th:id="${subsubmenu.mainlevel}+'#'+${subsubmenu.level1}+'#'+${subsubmenu.level2}+'#'+${lastmenu.level3}"
+																		th:value="${subsubmenu.mainlevel}+'#'+${subsubmenu.level1}+'#'+${subsubmenu.level2}+'#'+${lastmenu.level3}">
+																	<label for="name" style="font-weight: normal;"><span
+																			th:text="${lastmenu.level3_desc}" /></label>
+																</li>
+															</ul>
+														</div>
+													</span>
+													<span th:unless="${lastmenu.level3 > 0}">
+														<div class="col-md-4 col-sm-4"></div>
+													</span>
+													<span th:unless="${subsubmenu.level2 > 0}">
+														<div class="col-md-4 col-sm-5"></div>
+														<div class="col-md-4 col-sm-4"></div>
+													</span>
+												</span>
+											</span>
+										</span>
+									</span>
+								</div>
+							</span>
+						</span>
+					</div>
+				</span>
+				<div class="clearfix"></div>
+				<br />
+
+				<div class="form-group floating-label">
+					<label class="control-label" for="role">Select Role:</label>
+					<select id="role" name="role" class="form-select w-25" required="required" autofocus="autofocus">
+						<!--<option value="" >select Role</option>-->
+						<option th:value="${role_id}" th:text="${role_name}"></option>
+						<!--<option th:each="role : ${roleList}"
+								th:value="${role.id}" th:text="${#strings.replace(role.name, 'ROLE_', '')}">
+							</option> -->
+					</select>
+				</div>
+
+				<p style="text-align: center;color: red;">
+					<span th:text="${msg1}" />
+				</p>
+				<div style="text-align: center; margin-top: 15px;">
+					<button type="submit" class="btn btn-secondary" style="width: auto !important;"
+						onclick="return doSubmit()">Submit</button>
+
+				</div>
+			</div>
+		</table>
+
+	</form>
+	<div id="includeFooter"></div>
+</body>
+
+</html>
+
+<script>
+	function doSubmit() {
+		var items = document.getElementsByName('menu_check');
+		var selectedItems = "";
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].type == 'checkbox' && items[i].checked == true)
+				if (selectedItems == "")
+					selectedItems = selectedItems + items[i].value;
+				else
+					selectedItems = selectedItems + "~" + items[i].value;
+		}
+		if (selectedItems == "") {
+			alert("Plese select atleast one Check Box");
+			return false;
+		}
+		document.getElementById("checkedSerives").value = selectedItems;
+
+		var role = document.getElementById("role").value;
+		if (role == "" || role == null) {
+			alert("Please select Role");
+			document.getElementById("role").focus();
+			return false;
+		}
+	}
+	function startFun() {
+		var services = document.getElementById("services").value;
+		var servicesArry = services.split("~")
+		for (var k = 0; k < servicesArry.length; k++) {
+			try {
+				if (document.getElementById(servicesArry[k]).value != "" || document.getElementById(servicesArry[k]).value != null) {
+					document.getElementById(servicesArry[k]).checked = true
+				} else { }
+			} catch (e) { }
+		}
+	}        
+</script>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<title>Data Entry Form</title>
+
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+
+<script>
+	$(function() {		
+		//$("#includeFooter").load("footer.html");		
+	});
+</script>
+<script src="static/resource/assets/js/ajax.js"></script>
+<script src="static/resource/assets/jQuery-3.6/jquery-3.6.0.min.js"></script>
+            
+<script>
+            function save() {
+                if (document.getElementById('otp').value == '') {
+                    alert('Please Enter the OTP');
+                    document.getElementById('otp').focus();
+                    return false;
+                } 
+                return true;               
+            }
+
+
+            
+            function isNumber(evt) {
+                evt = (evt) ? evt : window.event;
+                var charCode = (evt.which) ? evt.which : evt.keyCode;
+                if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    return false;
+                }
+                return true;
+            }
+           function getResendOTP() {
+                document.getElementById('resendOtp').style.display = 'none';
+                
+                var csrfToken = document.head.querySelector('meta[name="_csrf"]').content;
+			    var csrfHeader = document.head.querySelector('meta[name="_csrf_header"]').content;
+			    var uniqueTimestamp = new Date().getTime();
+                
+                if (window.XMLHttpRequest) {
+                    // code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp = new XMLHttpRequest();
+                } else { // code for IE6, IE5
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        var myJsonString = JSON.parse(this.responseText);
+
+                    }else{
+					//alert("Error:"+this.responseText);
+						
+					}
+                }
+                xmlhttp.open("GET", "/ResendOTP?_csrf=" + csrfToken
+					+ "&timestamp=" + uniqueTimestamp, true);
+                xmlhttp.setRequestHeader(csrfHeader, csrfToken); 
+                xmlhttp.send();
+            }
+        </script>
+
+
+<style>
+.captchaHolder {
+	padding: 10px;
+	background: linear-gradient(to bottom right, #ffcc66 -37%, #ffffcc 105%);
+	border-radius: 4px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.cptIcons {
+	margin-left: 5px;
+	color: black;
+}
+.cptTxt {
+	color: black;
+}
+	.error {
+    color: red;
+}
+</style>   
+  
+</head>
+
+<body>
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="container">
+
+		<h3 class="pageHeading">
+		<span th:text="${form_name.toUpperCase()}" style="text-align: center;"></span> FORM
+		</h3>
+		<form method="POST" name="myForm" id="myForm" th:action="@{/otpVerify}" ModelAttribute="otp" onsubmit="return save();">		
+		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />							  
+	      <h5 style="color: #f12522; margin-bottom: 0;"><b>Note:-</b> OTP sent to Entered Mobile no: <strong><span style="font-size: 14px;">xxxxxx</span><span style="font-size: 14px;" th:text="${phone}"></span></strong></h5> 
+                    <div>                
+                        <label>Enter OTP <span style="color: #f12522;">*</span></label>                    
+                        <input type="text" name="otp" id="otp" style="margin-bottom: 0;" autocomplete="off" title="Otp number with 0-9 digit only"  onkeypress="return isNumber(event)"/>                       
+                    </div>
+                    <h5 id="resendOtp"><a onclick="getResendOTP()">Resend OTP</a></h5>
+                    <div class="clearfix"></div> 
+                    <div style="text-align: center;">                
+                        <button type="submit" style="margin: 0;">VERIFY</button>
+                    </div>
+		</form>
+		<center>
+		<span style="color: red; text-align: center;" th:text="${msg}"></span>
+		</center>
+	</div>
+	<!--<div id="includeFooter"></div>-->
+</body>
+
+</html>

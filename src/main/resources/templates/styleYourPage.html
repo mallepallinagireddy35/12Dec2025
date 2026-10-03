@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Pages</title>
+<!-- Import CSS -->
+<link href="assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="assets/custom/css/style.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="assets/jQuery_3.6/jquery.min.js"></script>
+<script src="assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+
+</head>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<style id="custom-css"></style>
+<script src="script.js"></script>
+<style>
+</style>
+
+</head>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<body>
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+	<div class="container mt-4">
+		<div class="row">
+			<div class="col-md-4">
+				<label for="css-select">Select CSS:</label> <select id="css-select"
+					class="form-select">
+					<option value="">None</option>
+					<option value="style1">Style 1</option>
+					<option value="style2">Style 2</option>
+					<option value="style3">Style 3</option>
+				</select>
+			</div>
+		</div>
+		<hr>
+		<hr>
+		<div class="row">
+			<div class="col-md-6">
+				<h2>Table</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Column 1</th>
+							<th>Column 2</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Data 1</td>
+							<td>Data 2</td>
+						</tr>
+						<tr>
+							<td>Data 3</td>
+							<td>Data 4</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h2>Select Box</h2>
+				<select class="form-select">
+					<option selected>Select an option</option>
+					<option value="1">Option 1</option>
+					<option value="2">Option 2</option>
+					<option value="3">Option 3</option>
+				</select>
+
+				<h2>Checkbox</h2>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value=""
+						id="checkbox1"> <label class="form-check-label"
+						for="checkbox1"> Checkbox 1 </label>
+				</div>
+
+				<h2>Radio Button</h2>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radioGroup"
+						id="radio1" checked> <label class="form-check-label"
+						for="radio1"> Radio Button 1 </label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="radioGroup"
+						id="radio2"> <label class="form-check-label" for="radio2">
+						Radio Button 2 </label>
+				</div>
+
+				<h2>Card</h2>
+				<div class="card" style="width: 18rem;">
+					<img src="image.jpg" class="card-img-top" alt="Image">
+					<div class="card-body">
+						<h5 class="card-title">Card Title</h5>
+						<p class="card-text">Some quick example text to build on the
+							card title and make up the bulk of the card's content.</p>
+						<a href="#" class="btn btn-primary">Read More</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<h2>Paragraph</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+					Nulla auctor efficitur tellus, et vulputate enim fringilla non.</p>
+
+				<h2>Text Box</h2>
+				<input type="text" class="form-control" placeholder="Enter text">
+
+				<h2>Carousel</h2>
+				<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+					<ol class="carousel-indicators">
+						<li data-bs-target="#myCarousel" data-bs-slide-to="0"
+							class="active"></li>
+						<li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
+						<li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
+					</ol>
+					<div class="carousel-inner">
+						<div class="carousel-item active">
+							<img src="image1.jpg" alt="Image 1">
+						</div>
+						<div class="carousel-item">
+							<img src="image2.jpg" alt="Image 2">
+						</div>
+						<div class="carousel-item">
+							<img src="image3.jpg" alt="Image 3">
+						</div>
+					</div>
+					<a class="carousel-control-prev" href="#myCarousel" role="button"
+						data-bs-slide="prev"> <span class="carousel-control-prev-icon"
+						aria-hidden="true"></span> <span class="visually-hidden">Previous</span>
+					</a> <a class="carousel-control-next" href="#myCarousel" role="button"
+						data-bs-slide="next"> <span class="carousel-control-next-icon"
+						aria-hidden="true"></span> <span class="visually-hidden">Next</span>
+					</a>
+				</div>
+
+				<h2>List Group</h2>
+				<ul class="list-group">
+					<li class="list-group-item">Item 1</li>
+					<li class="list-group-item">Item 2</li>
+					<li class="list-group-item">Item 3</li>
+				</ul>
+
+				<h2>Modal</h2>
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+					data-bs-target="#myModal">Open Modal</button>
+				<div class="modal fade" id="myModal" tabindex="-1"
+					aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<p>Modal content goes here.</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Save
+									changes</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h2>Navs and Tabs</h2>
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+							data-bs-target="#home-tab-pane" type="button" role="tab"
+							aria-controls="home-tab-pane" aria-selected="true">Home</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+							data-bs-target="#profile-tab-pane" type="button" role="tab"
+							aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="contact-tab" data-bs-toggle="tab"
+							data-bs-target="#contact-tab-pane" type="button" role="tab"
+							aria-controls="contact-tab-pane" aria-selected="false">Contact</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+							data-bs-target="#disabled-tab-pane" type="button" role="tab"
+							aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
+					</li>
+				</ul>
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="home-tab-pane"
+						role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
+					<div class="tab-pane fade" id="profile-tab-pane" role="tabpanel"
+						aria-labelledby="profile-tab" tabindex="0">...</div>
+					<div class="tab-pane fade" id="contact-tab-pane" role="tabpanel"
+						aria-labelledby="contact-tab" tabindex="0">...</div>
+					<div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel"
+						aria-labelledby="disabled-tab" tabindex="0">...</div>
+				</div>
+
+				<h2>Textarea</h2>
+				<textarea class="form-control" rows="3"></textarea>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+	  var cssSelect = document.getElementById('css-select');
+	  var customCss = document.getElementById('custom-css');
+	  
+	  cssSelect.addEventListener('change', function() {
+	    var selectedValue = cssSelect.value;
+	    if (selectedValue === '') {
+	      customCss.innerHTML = '';
+	    } else {
+	      fetchCSS(selectedValue);
+	    }
+	  });
+	  
+	  function fetchCSS(styleName) {
+	    // You can replace the URLs with your actual CSS files or define the CSS styles directly here
+	    var cssURL = '';
+	    if (styleName === 'style1') {
+	      cssURL = 'assets/custom/styles/style1.css';
+	    } else if (styleName === 'style2') {
+	      cssURL = 'assets/custom/styles/style2.css';
+	    } else if (styleName === 'style3') {
+	      cssURL = 'assets/custom/styles/style3.css';
+	    }
+	    
+	    fetch(cssURL)
+	      .then(response => response.text())
+	      .then(css => {
+	        customCss.innerHTML = css;
+	      })
+	      .catch(error => {
+	        console.error('Failed to fetch CSS:', error);
+	      });
+	  }
+	});
+
+</script>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<title>Paragraph</title>
+
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+
+
+<script src="static/assets/ckeditor_4.22.1/ckeditor/ckeditor.js"></script>
+
+<script>
+	$(function() {		
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+</head>
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				Design your Paragraph</h3>
+		</div>
+		<div class="mb-5 container mt-5">
+			<form  method="post">
+				<!--<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />--> 
+					<input type="hidden" name="jsonString" id="jsonString"> 
+					<input type="hidden" name="jsonString_hi" id="jsonString_hi"> 
+					<input type="hidden" name="type" id="type" value="6"> 
+					<input type="hidden" name="object_id" id="object_id" th:value="${object_id}">
+				<div class="floating-label">
+					<input type="text" class="form-control" id="text"
+						name="object_title" th:value="${object_title}" required="true"
+						placeholder="Enter Title"> <label for="text">Title</label>
+				</div>
+				<textarea name="content" id="editor" required="true" th:utext="${data}"></textarea>
+				<div class="mx-auto col-2 mt-3 mb-3">
+					<a class="btn btn-primary mb-3" onClick="generateHindi()">Generate
+						Hindi Content</a>
+				</div>
+				<div id="generateHindi" th:style="${data_hi!=null ? 'display:block' : 'display:none'}">
+					<div class="floating-label">
+						<input type="text" class="form-control" id="text_hi"
+							name="object_title_hi" th:value="${object_title_hi}"
+							placeholder="Enter Hindi Title"> <label for="text_hi">Title</label>
+					</div>
+					<textarea name="content_hi" id="editor_hi" th:utext="${data_hi}"></textarea>
+				</div>
+				<div class="mx-auto col-1 mt-3 mb-3">
+					<button class="btn btn-primary" onclick="printIt()">Save</button>
+					<!--<input type="button" onClick="printIt()" value="Save" />-->
+				</div>
+			</form>
+		</div>
+		<script>
+			CKEDITOR
+					.replace(
+							'editor_hi',
+							{
+								
+								toolbarGroups : [
+										{
+											name : 'clipboard',
+											groups : [ 'clipboard', 'undo' ]
+										},
+										{
+											name : 'editing',
+											groups : [ 'find', 'selection',
+													'spellchecker', 'editing' ]
+										},
+										{
+											name : 'links',
+											groups : [ 'links' ]
+										},
+										{
+											name : 'insert',
+											groups : [ 'insert' ]
+										},
+										{
+											name : 'forms',
+											groups : [ 'forms' ]
+										},
+										{
+											name : 'tools',
+											groups : [ 'tools' ]
+										},
+										{
+											name : 'document',
+											groups : [ 'mode', 'document',
+													'doctools' ]
+										},
+										{
+											name : 'others',
+											groups : [ 'others' ]
+										},
+										{
+											name : 'basicstyles',
+											groups : [ 'basicstyles', 'cleanup' ]
+										},
+										{
+											name : 'paragraph',
+											groups : [ 'list', 'indent',
+													'blocks', 'align', 'bidi',
+													'paragraph' ]
+										}, {
+											name : 'styles',
+											groups : [ 'styles' ]
+										}, {
+											name : 'colors',
+											groups : [ 'colors' ]
+										} ],
+								extraPlugins : 'lineheight',
+								// Remove the redundant plugins from toolbar groups defined above.
+								removePlugins : 'save,newpage,flash,about,iframe,language,templates,source,div,forms,scayt,specialchar,showblocks,sourcearea,'
+							});
+		</script>
+		<script>
+			CKEDITOR
+					.replace(
+							'editor',
+							{
+								toolbarGroups : [
+										{
+											name : 'clipboard',
+											groups : [ 'clipboard', 'undo' ]
+										},
+										{
+											name : 'editing',
+											groups : [ 'find', 'selection',
+													'spellchecker', 'editing' ]
+										},
+										{
+											name : 'links',
+											groups : [ 'links' ]
+										},
+										{
+											name : 'insert',
+											groups : [ 'insert' ]
+										},
+										{
+											name : 'forms',
+											groups : [ 'forms' ]
+										},
+										{
+											name : 'tools',
+											groups : [ 'tools' ]
+										},
+										{
+											name : 'document',
+											groups : [ 'mode', 'document',
+													'doctools' ]
+										},
+										{
+											name : 'others',
+											groups : [ 'others' ]
+										},
+										{
+											name : 'basicstyles',
+											groups : [ 'basicstyles', 'cleanup' ]
+										},
+										{
+											name : 'paragraph',
+											groups : [ 'list', 'indent',
+													'blocks', 'align', 'bidi',
+													'paragraph' ]
+										}, {
+											name : 'styles',
+											groups : [ 'styles' ]
+										}, {
+											name : 'colors',
+											groups : [ 'colors' ]
+										} ],
+								extraPlugins : 'lineheight',
+								// Remove the redundant plugins from toolbar groups defined above.
+								removePlugins : 'save,newpage,flash,about,iframe,language,templates,source,div,forms,scayt,specialchar,showblocks,sourcearea,'
+							});
+		</script>
+		<script>
+			async
+			function printIt() {
+				event.preventDefault();
+				var msg = CKEDITOR.instances.editor.getData();
+				if (msg == '') {
+					alert("Please enter content");
+					return false;
+				}
+				if (document.getElementById("text") == '') {
+					alert("Please enter Title");
+					return false;
+				}
+				debugger;
+				document.getElementById("jsonString").value = '\"[' + encodeURIComponent(msg) + ']\"';
+				var msg_hi = CKEDITOR.instances['editor_hi'].getData();
+				document.getElementById("jsonString_hi").value = '\"[' + encodeURIComponent(msg_hi) + ']\"';
+				console.log(document.getElementById("jsonString_hi").value);
+				debugger;				
+				
+				var csrfToken = $('meta[name="_csrf"]').attr('content');
+		        var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		    
+					var data = {
+						 "object_id":document.getElementById('object_id').value,						
+						 "imgType":"",				 
+						 "jsonString" : document.getElementById('jsonString').value,
+						 "type":document.getElementById('type').value,							 					
+						 "marquee":"",	
+						 "linksString":"",
+						 "newJson":"",						
+						 "list_type":"",			 
+						 "expString":"",
+						 "object_title":document.getElementById('text').value, 					
+						 "object_title_hi":document.getElementById('text_hi').value,
+						 "styles":"",
+						 "classes":"",
+						 "description":"",
+						 "help_text":"",
+						 "alternate_text":"",
+						 "keywords":"",
+						 "jsonString_hi":document.getElementById('jsonString_hi').value,
+						 "meta_hi":""
+					};
+								
+					$.ajax({
+					type: "POST",
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					url: "/save",								
+					contentType: "application/json",
+					data: JSON.stringify(data),			
+					success: function (response) {				
+						alert(response.success);
+						//return false;		
+					},
+					error: function (xhr, status, error) {
+			            console.error("Error:", error)	            
+			            //return false;	        
+					}
+				});
+			}
+		</script>
+		<script>
+			async	function generateHindi() {
+				const warningMessage = "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY";
+				var englishContent = document.getElementById("text").value;
+				if(englishContent === "" || englishContent === null){
+					alert("Please Enter Title");
+					document.getElementById("text").focus();
+					return false;
+				}
+				document.getElementById('generateHindi').style.display = 'block';
+				var msg = CKEDITOR.instances.editor.getData();
+				const url = 'https://api.mymemory.translated.net/get';
+				
+				var params = new URLSearchParams({
+					q : englishContent,
+					langpair : 'en|hi'
+				});
+				var response = await fetch(`${url}?${params}`);
+				var data = await	response.json();
+//---------------------04-09-2025---------------------------------------------------------------
+				if (data.responseData.translatedText.startsWith(warningMessage)) {
+				   alert("You’ve reached the free translation limit for today. Try again in 24 hours or upgrade the service.");
+			       return false;
+				}
+//----------------------------------------------------------------------------------------------				
+				document.getElementById("text_hi").value = data.responseData.translatedText;
+				var hindi_meta = {
+					"title" : document.getElementById("text_hi").value
+				};
+				document.getElementById("jsonString").value = '\"['+ encodeURIComponent(msg) + ']\"';
+				var text = "";
+				/*var msg_array = msg.match(/.{1,450}/g);
+				for (var i = 0; i < msg_array.length; i++) {
+					var englishContent = msg_array[i].trim();
+					var params = new URLSearchParams({
+						q : englishContent,
+						langpair : 'en|hi'
+					});
+					var response = await	fetch(`${url}?${params}`);
+					var data = await	response.json();
+					debugger;
+					text +=  data.responseData.translatedText;
+					console.log(document.getElementById("editor_hi").value);
+				}
+			CKEDITOR.instances['editor_hi'].setData(text); */
+			
+			var msg_array = msg.match(/.{1,450}/g) || [];
+			for (var i = 0; i < msg_array.length; i++) {
+				var englishContent = msg_array[i].trim();
+				if (!englishContent) continue; // skip empty
+			
+				var params = new URLSearchParams({
+					q: englishContent,
+					langpair: 'en|hi'
+				});
+			
+				try {
+					var response = await fetch(`${url}?${params}`);
+					var data = await response.json();
+			
+					if (data.responseData && data.responseData.translatedText) {
+						// Append only if translation exists
+						text += data.responseData.translatedText;
+						
+//--------------------------------------04-09-2025-------------------------------------------					
+					// Split text into words
+					    let words = text.split(/\s+/);					
+					    // Check if the first word is literally "undefined"
+					    if (words[0] === "undefined") {
+					        words.shift(); // Remove the first word
+					    }					
+					    // Join back to a string
+					    text = words.join(" "); 
+					    
+					    
+					    // Check if it's a rate limit warning
+					    if (data.responseData.translatedText.startsWith(warningMessage)) {
+					        // Show alert using CKEditor notification (if you're using CKEditor 5)					       
+					       /* if (editor.plugins.has('Notification')) {
+								alert("2===")
+					            editor.execute('undo'); // Optional: undo the translation
+					            editor.plugins.get('Notification').showWarning(
+					                "You’ve reached the free translation limit for today. Try again in 24 hours or upgrade the service.",
+					                { title: 'Translation Limit Reached', namespace: 'translation' }
+					            );
+					        } else {
+					            // Fallback: browser alert
+					            alert("You’ve reached the free translation limit for today. Try again in 24 hours or upgrade the service.");
+					            return false;
+					        }*/
+					        alert("You’ve reached the free translation limit for today. Try again in 24 hours or upgrade the service.");
+					        return false;
+					    } 
+					    /*else {
+					        // Append translated text as usual
+					        CKEDITOR.instances['editor_hi'].setData(text);
+					    }*/
+//---------------------------------------------------------------------------						
+					}
+				} catch (err) {
+					console.error(`Translation failed at segment ${i}:`, err);
+				}
+			}
+			CKEDITOR.instances['editor_hi'].setData(text);
+			}
+		</script>
+	</div>
+</body>
+ 
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Home</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet"><link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeMsgBox").load("msgBox.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<style>
+.containerBox {
+	border-radius: 10px;
+	display: inline-block;
+	padding: 15px;
+}
+
+.inner-shadow {
+	/* box-shadow: inset 0 0 15px 0 #c7c7c7; */
+	box-shadow: 0px 0px 20px 1px #c7c7c7 inset;
+}
+
+.inner-shadows {
+	box-shadow: inset 0 0 15px 0 #c7c7c7;
+	/* box-shadow: inset 0 0 10px #c7c7c7; */
+}
+
+.templateBox {
+	background: #EBF8F9;
+	box-shadow: 0 0 15px 0 rgba(0, 0, 0, .15);
+	padding: 20px 20px 10px;
+	/* width: 100px; */
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left span {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	margin-right: 10px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background-color: #f0f0f0;
+	border: 1px solid #ccc;
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left i {
+	margin-right: 5px;
+}
+
+.icons-left:hover {
+	cursor: pointer;
+}
+
+/* .fa{
+font-size: 2em;
+} */
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card-footer i.fa-caret-down {
+	margin-left: auto;
+}
+</style>
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div id="includeMsgBox"></div>
+	<div class="mx-auto mt-3 mb-3">
+		<div class="container">
+			<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px;">
+				Templates</h3>
+		</div>
+		<div class="container border border-2">
+			<div class="row my-3">
+			<div class="col-4 my-2 d-flex" onClick="location.href='designTemplate'">
+					<span class="fa-layers fa-fw fa-5x m-auto"> <i
+						class="fas fa-circle" style="color: black"></i> <i
+						class="fas fa-circle" data-fa-transform="shrink-3"
+						style="color: Tomato"></i> <i class="fa-inverse fas fa-plus"
+						data-fa-transform="shrink-6"></i>
+					</span>
+				</div>
+				<div class="col-4 my-2" th:each="template : ${templates}">
+					<div class="card">
+						<div class="card-header bg-light">
+							<button class="btn btn-sm float-end" onclick="showAlertBox('template')">
+								<i class="fas fa-times"></i>
+							</button>
+							<div th:text="${template.template_name}"></div>
+						</div>
+						<div class="card-body"  onclick="location.href='getPage'">
+							<div th:utext="${template.template_data}"></div>
+						</div>
+						<div class="card-footer">
+							<div class="icons-left">
+								<i
+									class="fas fa-t p-1 border fa-fw fa-2xs rounded text-white bg-primary"
+									onclick="showTitle(this)" title="Template Title"></i> <i
+									class="fas fa-d p-1 border fa-fw fa-2xs rounded text-white bg-warning"
+									onclick="showDescription(this)" title="Description Title"></i>
+								<i
+									class="fas fa-s p-1 border fa-fw fa-2xs rounded text-white bg-success"
+									onclick="showStyle(this)" title="Style Title"></i>
+							</div>
+							<div class="">
+								<i
+									class="fas fa-bars p-1 border fa-fw fa-2xs rounded text-white bg-info"
+									onclick="showMore(this)" title="More"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="includeFooter"></div></div>
+</body>
+</html>

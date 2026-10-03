@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>Pages</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/jQuery-1.11.3/jquery-ui.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<!-- Import ViewerJS Plugin-->
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/main.css">
+<script src="static/assets/Viewerjs_1.11/js/viewer.js"></script>
+<script src="static/assets/Viewerjs_1.11/js/main.js"></script>
+<style>
+.templateBox {
+	text-align: center;
+	border: 1px;
+	border-style: dotted;
+	border-color: green;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	padding: 3px;
+}
+
+.objContainer {
+	overflow: hidden;
+}
+
+.objContainer:hover {
+	overflow-x: scroll;
+}
+</style>
+</head>
+<script>
+	$(function() {
+		//	$("#includeHeader").load("header.html");
+		$("#includeObjSelector").load("static/objectSelector.html");
+		$("#includeMsgBox").load("static/msgBox.html");
+		$("#includeFooter").load("static/footer.html");
+	});
+</script>
+
+
+
+<style>
+/* Custom styles for draggable popup */
+.modal-dialog {
+	width: 90vh !important;
+	/* Set the desired width */
+	height: 70vh !important;
+	/* Set the desired height */
+	margin: 0 auto;
+}
+
+.ui-widget-content {
+	box-sizing: content-box !important;
+}
+
+/* Custom styles for modal footer */
+.modal-footer {
+	justify-content: space-between;
+	align-items: right;
+}
+
+#selectedCount {
+	text-align: left;
+}
+
+.modal-header, .modal-footer {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+</style>
+
+<body>
+	<div class="flex-wrapper">
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div id="includeMsgBox"></div>
+		<div class="container">
+			<form th:action="@{/designPage}" method="get">
+				<div class="row mt-5">
+					<div class="col-4">
+						<label for="page_name">Name of the Page</label> 
+						<input type="text" id="page_name_given" name="page_name" th:value="${page_name}"
+							onBlur="nameChanged()" required="true" autocomplete="off"
+							class="form-control">
+					</div>
+					<div class="col-3">
+						<label for="pages">Select Template type:</label> 
+						<select class="form-select" id="template_id" name="template_id">
+							<option value="-1">Select option</option>
+							<option th:each="option : ${options}"
+								th:value="${option.template_id}"
+								th:selected="${template_id==option[0]}"
+								th:text="${option.template_name}"></option>
+						</select>
+					</div>
+					<div class="col-4 mt-4">
+						<button type="submit" class="btn btn-primary">Design Page</button>
+					</div>
+				</div>
+			</form>
+			<div class="card mt-5" id="designTable">
+				<div class="card-header bg-primary text-white text-center">Items
+					in the page</div>
+				<div class="card-body" style="overflow-x: scroll;">
+					<p class="text-body-secondary">Select items from the below.
+						Page will be created with items in the same order selected below</p>
+					<form th:action="@{/savePage}" method="post">
+						<input type="hidden" id="csrf_token"
+							th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> <label></label>
+						<div id="myTable">
+							<div th:each="row, rowStat : ${page_items}"></div>
+							<input type="hidden" class="form-control"  name="page_name" id="page_name_new" th:value="${page_name}"> 
+							<input type="hidden"  name="page_id" id="page_idOld" th:value="${page_id}">
+						</div>
+					</form>
+					<div th:utext="${templateBody}" id="mainContainer"></div>
+					<input type="hidden" id="plusign_id" />
+				</div>
+				<form th:action="@{/savePage}" method="post">
+					<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> 
+					<input type="text" id="description" name="description"
+						placeholder="Description of the Page" th:value="${description}"
+						required="true" autocomplete="off" class="form-control"> 
+						<input type="text" id="keywords" name="keywords" th:value="${keywords}" required="true" autocomplete="off" placeholder="Keywords" class="form-control"> 
+						<input type="hidden" name="jsonString" id="jsonString"> 
+						<input type="hidden" name="existingJson" id="existingJson" th:value="${existingJson}">
+					    <input type="hidden" name="page_name" id="page_name" th:value="${page_name}"> 
+						<input type="hidden" name="template_id" id="template_id" th:value="${template_id}">
+					    <input type="hidden" name="page_id" id="page_id" th:value="${page_id}"> 
+					    <input type="button" value="Submit" class="btn btn-primary" onClick="convertJSON()">
+				</form>
+			</div>
+		</div>
+
+		<div class="modal fade" id="selectionPopup" data-bs-backdrop="static"
+			data-bs-keyboard="false" tabindex="-1"
+			aria-labelledby="selectionPopupLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="selectionPopupLabel">Select
+							Items</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div id="includeObjSelector"></div>
+					</div>
+					<div class="modal-footer">
+						<div id="selectedCount">0 items selected</div>
+						<div>
+							<label class="switch"> <input type="checkbox"
+								id="toggleSelection"> <span class="slider round"></span>
+							</label> <span id="toggleLabel">Selection Mode</span>
+						</div>
+						<div>
+							<button type="button" class="btn btn-primary btn-sm">Select</button>
+							<button type="button" class="btn btn-warning btn-sm"
+								data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- <div id="includeFooter">-->
+	</div>
+</body>
+<script>
+	function nameChanged() {
+		document.getElementById("page_name_new").value = document.getElementById("page_name_given").value;
+		document.getElementById("page_name").value = document.getElementById("page_name_given").value;
+	}
+	var jsonStringLatest = [];
+	function list1(objectid) {
+		var type = {
+			'objectid' : objectid
+		};
+		let dv = document.createElement("div");
+		var pid = document.getElementById("plusign_id").value;
+		var page_id = document.getElementById("page_idOld").value;
+
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+				$.ajax({
+					type : "POST",
+					url : "/getindividualobject",
+					data : JSON.stringify(type),
+					dataType : 'json',
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					contentType : "application/json",
+					success : function(data) {
+						document.getElementById(pid).innerHTML = '';
+						dv.innerHTML = data[0][0];
+						document.getElementById(pid).appendChild(dv);
+						debugger;
+						if (jsonStringLatest.length == 0) {
+							jsonStringLatest = document
+									.getElementById("existingJson").value
+									.split(',');
+						}
+						jsonStringLatest[parseInt(pid.substring(1)) - 1] = objectid;
+
+						console.log(jsonStringLatest);
+					},
+					error : function(xhr, textStatus, errorThrown) {
+						if (xhr.status == 405) {
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+						}
+					}
+
+				});
+	}
+	function selectItem(typeGiven, el) {
+		document.getElementById("viewItems").innerHTML = '';
+		var csrf_token = document.getElementById("csrf_token").value;
+		var type = {
+			'type' : typeGiven,
+			'source' : 'home',
+			'_csrf' : csrf_token
+		};
+		select = document.getElementById("viewItems");
+		document.getElementById("card1").style.display = "block";
+		var container = document.createElement("div");
+		container.classList.add("container");
+		var row = document.createElement("div");
+		row.classList.add("row");
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+		$.ajax({
+			type : "POST",
+			url : "/getObjectsTypeWise",
+			data : JSON.stringify(type),
+			dataType : 'json',
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			contentType : "application/json",
+			success : function(data) {
+				for (let i = 0; i < data.length; i++) {
+					var col = document.createElement("div");
+					col.classList.add("col");
+
+					var cardBody = document.createElement("div");
+					cardBody.classList.add("card", "text-center");
+					cardBody.innerHTML = data[i].card_data;
+					cardBody.setAttribute("onClick", "list1('"
+							+ data[i].object_id + "')")
+					// 					var cardFooter = document.createElement("div");
+					// 					cardFooter.classList.add("card-footer");
+
+					// 					var iconsLeft = document.createElement("div");
+					// 					iconsLeft.classList.add("icons-left");
+
+					// 					var iconT = document.createElement("i");
+					// 					iconT.classList.add("fas", "fa-t", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "text-white",
+					// 							"bg-primary");
+					// 					iconT.setAttribute('onclick', 'showTitle(this)');
+					// 					iconT.setAttribute('title', 'Title');
+					// 					iconsLeft.appendChild(iconT);
+
+					// 					var iconD = document.createElement("i");
+					// 					/* iconD.classList.add("fas", "fa-d","p-1", "border", "border-2", "rounded-circle", "border-secondary"); */
+					// 					iconD.classList.add("fas", "fa-d", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "bg-warning");
+					// 					iconD.setAttribute('onclick', 'showDescription(this)');
+					// 					iconD.setAttribute('title', 'Description');
+					// 					iconsLeft.appendChild(iconD);
+
+					// 					var iconS = document.createElement("i");
+					// 					iconS.classList.add("fas", "fa-s", "p-1", "border",
+					// 							"fa-fw", "fa-2xs", "rounded", "text-white",
+					// 							"bg-success");
+					// 					iconS.setAttribute('onclick', 'showStyle(this)');
+					// 					iconS.setAttribute('title', 'Style');
+					// 					iconsLeft.appendChild(iconS);
+
+					// 					var iconCaretDown = document.createElement("i");
+					// 					iconCaretDown.classList.add("fas", "fa-bars", "p-1",
+					// 							"border", "fa-fw", "fa-2xs", "rounded",
+					// 							"text-white", "bg-info");
+					// 					iconCaretDown.setAttribute('onclick', 'showMore(this)');
+					// 					iconCaretDown.setAttribute('title', 'More');
+
+					// 					cardFooter.appendChild(iconsLeft);
+					// 					cardFooter.appendChild(iconCaretDown);
+
+					// 					cardHeader.appendChild(closeButton);
+					// 					card.appendChild(cardHeader);
+					// 					card.appendChild(cardBody);
+					// 					card.appendChild(cardFooter);
+
+					col.appendChild(cardBody);
+					row.appendChild(col);
+
+				}
+
+				container.appendChild(row);
+				select.appendChild(container);
+
+			},
+			error : function(xhr, textStatus, errorThrown) {
+				if (xhr.status == 405) {
+					alert("Not a valid request. Please try again");
+					window.location.reload();
+				}
+			}
+		});
+	}
+
+	function convertJSON() {
+		// 		alert(jsonStringLatest);
+		// 		var table = document.getElementById('mainContainer'); // Replace 'myTable' with the ID of your HTML table
+		// 		var rows = table.getElementsByTagName('span');
+		// 		var jsonData = [];
+		// 		var temp = '';
+		// 		debugger;
+		// 		var rowData = [];
+
+		// 		// Iterate through each row of the table
+		// 		for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+		// 			var cells = rows[i].getElementsByTagName('select');
+		// 			var columnValue = $(cells).val(); // Assumes the first row contains column headers
+		// 			rowData[i] = "'" + columnValue + "'";
+		// 		}
+		// 		temp = rowData.join(',');
+		// 		jsonData.push(temp); 
+		debugger;
+		if (jsonStringLatest.length == 0) {
+			jsonStringLatest = document.getElementById("existingJson").value.split(',');
+		}
+		var json = '[' + jsonStringLatest + ']';
+		console.log(json);
+		debugger;
+		console.log(JSON.stringify(json, null, 2));
+		document.getElementById("jsonString").value = JSON.stringify(json,null, 2);
+		//document.forms[3].submit();
+		
+		    var csrfToken = $('meta[name="_csrf"]').attr('content');
+		    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		    
+			var data = {				 				 
+				 "jsonString" :document.forms[3].elements['jsonString'].value,
+				 "template_id":document.forms[3].elements['template_id'].value,							 					
+				 "page_id_given":document.forms[3].elements['page_id'].value,						
+				 "page_name":document.forms[3].elements['page_name'].value,			 					
+				 "description":document.forms[3].elements['description'].value,
+				 "keywords":document.forms[3].elements['keywords'].value
+			};
+			
+			$.ajax({
+			type: "POST",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			url: "/savePage",								
+			contentType: "application/json",
+			data: JSON.stringify(data),			
+			success: function (response) {				
+				alert(response.success);
+			},
+			error: function (xhr, status, error) {
+	            console.error("Error:", error)
+	            alert("Error======="+JSON.stringify(error));            
+	    	}
+		}); 
+		
+	}
+</script>
+<script>
+	function getid(e) {
+		var id = $(e).parent().attr('id');
+		document.getElementById("plusign_id").value = id;
+	}
+	function getContent(el) {
+		var id = $(el).parent().attr('id');
+		console.log($(el).parent());
+		let select = document.createElement("select");
+		select.classList.add("form-select");
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		$.ajax({
+			type : "GET",
+			url : "/getObjects",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			success : function(data) {
+
+				$("#object_selector_div").load("object_selector.html");
+
+				$(el).remove();
+			}
+		});
+	}
+	function openPopup() {
+
+		$('#selectionPopup').modal({
+			backdrop : 'static',
+			keyboard : false
+		});
+	}
+</script>
+<script>
+	$('.modal-dialog').draggable({
+		handle : ".modal-header"
+	});
+	$(document).ready(function() {
+		// Initialize the selected count
+		var selectedCount = 0;
+		updateSelectedCount();
+
+		// Event listener for navigation button clicks
+		$('#navigationButtons button').click(function() {
+			var cardId = $(this).data('card');
+			$('.selectObj').hide();
+			$('#' + cardId).show();
+		});
+
+		// Event listener for checkbox changes
+		$('input[type="checkbox"]').change(function() {
+			updateSelectedCount();
+		});
+
+		// Update the selected count
+		function updateSelectedCount() {
+			selectedCount = $('input[type="checkbox"]:checked').length;
+			$('#selectedCount').text(selectedCount + ' items selected');
+		}
+	});
+
+	//var selectionMode = false; // true for selection mode, false for display mode
+
+	function selectItems() {
+		var selectedCount = $('input[type="checkbox"]:checked').length;
+		if (selectedCount === 0) {
+			showAlertBox('info');
+			$('#messageBoxText').text("Please select atleast one item");
+		} else {
+			showAlertBox('success');
+			$('#messageBoxText').text(
+					'Selected ' + selectedCount
+							+ ' Items and will be added to the page');
+			closePopup();
+			closePopup();
+			// Handle selection logic here
+			// ...
+
+			// Toggle between selection mode and display mode
+			//    selectionMode = !selectionMode;
+			//updatecardContent();
+		}
+	}
+	$(document).ready(function() {
+		$('.item').click(function() {
+			$(this).toggleClass('selected');
+			selectedCount++;
+			updateSelectedCount();
+		});
+	});
+</script>
+
+</html>

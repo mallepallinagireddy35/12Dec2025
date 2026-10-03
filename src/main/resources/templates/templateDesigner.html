@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>	
+	
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+	<title>Template Designer</title>
+	<script>
+		$(function () {
+			$("#includeMsgBox").load("msgBox.html");
+			$("#includeFooter").load("footer.html");
+		});
+	</script>
+	<style>
+		.templateBox {
+			background: #EBF8F9;
+			box-shadow: 0 0 15px 0 rgba(0, 0, 0, .15);
+			padding: 20px 20px 10px;
+		}
+	</style>
+	<script>
+		var index = 1;
+
+		function addItem() {
+			debugger;
+			var container = document.getElementById("page");
+			var width = document.getElementById("widthRange").value;
+			width = Math.floor(width * 12 / 100);
+			var rowDiv = document.getElementById("row");
+			var col = document.createElement("div");
+			col.classList.add("templateBox", "col-md-" + width);
+			var span = document.createElement("span");
+			span.setAttribute("id", "s" + index);
+			col.appendChild(span);
+			rowDiv.appendChild(col);
+			index = index + 1;
+		}
+	</script>
+	
+	<script>
+		
+		function submittedPage() {
+			var templateName = document.getElementById("template_name").value;
+			var csrf_token = document.getElementById("csrf_token").value;
+			var spans = document.getElementsByTagName("span");
+			for (var i = 0; i < spans.length; i++) {
+				spans[i].innerText = "@object";
+			}
+			var data = '';
+			if ($('#defineTemplate').is(':checked')) {
+				data = document.getElementById("templateCustom").value;
+			} else
+				data = document.getElementById("page").outerHTML;
+			var type = {
+				'template_data': data,
+				'template_name': templateName,
+				'_csrf': csrf_token
+			};
+var csrfToken = $('meta[name="_csrf"]').attr('content');
+var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "POST",
+				url: "/saveTemplate",
+				data: JSON.stringify(type),
+				dataType: 'text',
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				contentType: "application/json",
+				success: function (data) {
+					for (let i = 0; i < data.length; i++) {
+						window.location = "/templates";
+					}
+				},
+				error: function (xhr, textStatus, errorThrown) {
+					if (xhr.status == 405) {
+						alert("Not a valid request. Please try again");
+						window.location.reload();
+					}
+				}
+			});
+		}
+	</script>
+</head>
+
+<body class="mx-5">	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+	<div id="includeMsgBox"></div>
+	<div class="container">
+		<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+			Design your Templates</h3>
+	</div>
+	<div id="templateDesigner" class="container mt-3">
+		<p>Define a box of width:</p>
+		<input type="range" id="widthRange" max="100" min="0">
+		<input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
+		<button class="btn btn-primary" onClick="addItem()">Add Item</button><br>
+		Name of the template: <input type="text" class="form-control" name="template_name" id="template_name" required="true">
+		<div id="page" class="container my-2">
+			<div class="row" id="row"></div>
+		</div>
+		<div class="d-flex flex-row justify-content-center">
+			Create custom template?<input type="checkbox" id="defineTemplate" onchange="customTemplate()">
+		</div>
+		<div id="defineTemplateDiv" class="d-none">
+			<textarea name="content" class="form-control" rows="8" id="templateCustom">
+				</textarea>
+		</div>
+	<div class="d-flex flex-row justify-content-center">
+	<button class="btn btn-success" onClick="submittedPage()">Submit</button>
+	</div>
+	<div id="includeFooter"></div></div>
+</body>
+<script>
+		function customTemplate(){
+			document.getElementById("defineTemplateDiv").classList.toggle("d-none");
+		}
+	</script>
+</html>

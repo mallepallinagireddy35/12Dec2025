@@ -1,0 +1,106 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<title>Generate Form</title>
+	<!-- Import CSS -->
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+	<script>
+		$(function () {
+			//$("#includeHeader").load("header.html");
+			$("#includeMsgBox").load("msgBox.html");
+			$("#includeFooter").load("footer.html");
+		});
+	</script>
+
+	<script src="static/resource/assets/js/sha1.js"></script>
+	<script src="static/resource/assets/js/sha256.js"></script>
+	<script src="static/resource/assets/js/ajax.js"></script>
+	<script src="static/resource/assets/js/Json-validation.js"></script>
+	<script src="static/resource/assets/jQuery-3.6/jquery-3.6.0.min.js"></script>
+
+	<script>
+		function wordCapital(obj) {
+			obj.value = obj.value.toUpperCase();
+		}
+		$(document).ready(function () {                        // When the HTML DOM is ready loading, then execute the following function...
+			$("#form_name").change(function () {
+				var form_name = document.getElementById("form_name").value;
+				if (form_name == "") {
+					alert("Please Enter the New Form Name");
+					return false;
+				}
+				$.get('/form_Check?form_name=' + form_name, function (responseText) { 
+					var status = parseInt(responseText);
+					if (status > 0) {
+						alert("Form Name already Exsit. Please Enter new Form Name");
+						document.getElementById("form_name").value = "";
+						return false;
+					}
+
+				});
+			});
+		});
+	</script>
+<style>
+	.error {
+    color: red;
+}
+</style>
+</head>
+
+<body onload="javascript:disableBackButton();noBack();" onpageshow="if(event.persisted) noBack();">
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+	<div id="includeMsgBox"></div>
+	<div class="container">
+		<h3 class="pageHeading" style="text-align: center;">Design your Form</h3>
+		<span style="color: red; text-align: center;" th:text="${msg1}"></span>
+		<form method="POST" name="myForm" id="myForm" th:action="@{/formGenerate}" commandName="form"
+			onsubmit="return valid();">
+			<input type="hidden" id="jsonData" name="jsonData" />
+			<input type="hidden" id="jsonCheck" name="jsonCheck" />
+			<input type="hidden" id="con_value" name="con_value" />
+			<input type="hidden" id="currentDate" name="currentDate"
+			 th:value="${#dates.format(currentDate, 'yyyy-MM-dd')}" />
+			<input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+			<input type="hidden" name="_csrf_header" th:value="${_csrf.headerName}"/>			
+<!-- 					onkeypress="return ValidateAlpha(event)" 	onblur="return checkString(this, 'Form Name');"-->
+
+			<div class="row g-2 d-flex justify-content-center">
+				<div class="col-3 mb-3 floating-label">
+					<input type="text" id="form_name" name="form_name" class="form-control" autocomplete="off"						
+						onblur="return textarea(this, 'Form Name');"
+						placeholder="Form Name" minlength="1" maxlength="100" style="text-transform:uppercase;"
+						onkeyup="return wordCapital(this)" /> <label for="form_name">Form
+						Name</label>
+				</div>
+				<div class="col-3 mb-3 floating-label">
+					<input type="text" id="fields" name="fields" class="form-control" minlength="1" maxlength="2" autocomplete="OFF"
+						onkeypress="return isNumber(event)" onchange="show(this.value);"
+						placeholder="Number Of Fields" /> <label for="description">Number Of Fields</label>
+				</div>
+			</div>
+
+			<div class="card-body overflowCard">
+				<div id="ssr"></div>
+				<div class="mx-auto col-2 mt-3 mb-3">
+					<button class="btn btn-primary" type="submit" name="submit">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div id="includeFooter"></div>
+</body>
+
+</html>

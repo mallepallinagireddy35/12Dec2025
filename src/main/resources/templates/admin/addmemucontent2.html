@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SVPNPA</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+<!-- Import CSS -->
+<link href="assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="assets/custom/css/style.css" rel="stylesheet">
+<link href="assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="assets/jQuery_3.6/jquery.min.js"></script>
+<script src="assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="assets/fontawesome_6.4/js/all.min.js"></script>
+
+<script th:src="@{resource/angularjs/1.8.2/angular.min.js}"></script>
+<script th:src="@{resource/angularjs/app.js}"></script>
+<script
+	th:src="@{resource/scripts/controllers/EditMenuContentController.js}"></script>
+<script th:src="@{resource/js/jquery-3.6.0.min.js}"></script>
+
+<script>
+	if (typeof jQuery !== 'undefined') {
+		console.log('jQuery1 Loaded');
+	} else {
+		console.log('1 not loaded yet');
+	}
+</script>
+<script>
+	$(function() {
+		$("#includeHeader").load("admin/adminmenu.html");
+
+	});
+</script>
+</head>
+<body th:ng-app="ajssample" th:ng-controller="editMenuContentController">
+	<div id="includeHeader"></div>
+	<!-- <div>
+		<br /> <br /> <br /> <br /> <br /> <br /> <br />
+	</div> -->
+	<!-- <header id="header" class="align-items-center">
+		<jsp:include page="/WEB-INF/classes/templates/admin/adminmenu.jsp"></jsp:include>
+	</header> -->
+	<div class="container">
+		<br />
+		<h4>Two Step Navigation Menu Items</h4>
+		<div class="ind_field">
+			<form action="/add_content" method="POST"
+				th:ModelAttribute="WebMenuBean" enctype="multipart/form-data"
+				autocomplete="off">
+				<div class="row">
+					<div class="col-lg-3 col-md-3 col-sm-3">
+						<label>Main Navigation Items</label>
+						<!-- <select class="form-control"
+							name="mainlevel" id="main_dsc" required="true"
+							data-ng-model="NpaDetails.mainlevel_desc"
+							ng-change="getLevelOneData();">
+							<option value="">Select</option>
+
+							<c:forEach items="${mainList}" var="rg">
+
+								<option value="${rg.mainlevel}"><c:out
+										value="${rg.mainlevel_desc}" /></option>
+							</c:forEach>
+						</select> -->
+
+						<select class="form-control" name="mainlevel" id="main_dsc"
+							data-ng-model="NpaDetails.mainlevel_desc"
+							ng-change="getLevelOneData()">
+							<option th:value="0">select option</option>
+							<option th:each="i : ${mainList}" th:value="${i.mainlevel}"
+								th:text="${i.mainlevel_desc}"></option>
+						</select>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-3">
+						<label>Level One Navigation</label>
+
+						<!-- <select class="form-control"
+							name="level1" id="level1_dsc" required="true"
+							data-ng-model="NpaDetails.level1_desc"
+							ng-change="getLevelTwoData();">
+							<option value="">Select</option>
+							<c:forEach items="${levelOneList}" var="rg">
+								<option value="${rg.level1}"><c:out
+										value="${rg.level1_desc}" /></option>
+							</c:forEach>
+							<option ng-repeat="x in listofLevelOneMenu" value="{{x.level1}}">{{x.level1_desc}}</option>
+						</select> -->
+
+						<select class="form-control" name="level1" id="level1_dsc"
+							data-ng-model="NpaDetails.level1_desc"
+							ng-change="getLevelTwoData()">
+							<option th:value="0">select option</option>
+							<option th:each="i : ${levelOneList}" th:value="${i.level1}"
+								th:text="${i.level1_desc}"></option>
+							<option ng-repeat="x in listofLevelOneMenu" value="{{x.level1}}">{{x.level1_desc}}</option>
+						</select>
+					</div>
+					<div class="col-lg-2 col-md-2 col-sm-2"
+						th:if="${listofLevelTwoSize > 1}">
+						<label>Level Two Navigation</label>
+						<!-- <select class="form-control"
+							name="level2" id="level2_dsc" required="true"
+							data-ng-model="NpaDetails.level2_desc">
+							<option value="">Select</option>
+							<c:forEach items="${levelTwoList}" var="rg">
+								<option value="${rg.level2}"><c:out
+										value="${rg.level2_desc}" /></option>
+							</c:forEach>
+							<option ng-repeat="x in listofLevelTwoMenu" value="{{x.level2}}">{{x.level2_desc}}</option>
+						</select> -->
+						<select class="form-control" name="level2" id="level2_dsc"
+							th:required="true" data-ng-model="NpaDetails.level2_desc">
+							<option th:value="0">select option</option>
+							<option th:each="i : ${levelTwoList}" th:value="${i.level2}"
+								th:text="${i.level2_desc}"></option>
+							<option ng-repeat="x in listofLevelTwoMenu" value="{{x.level2}}">{{x.level2_desc}}</option>
+						</select>
+
+					</div>
+					<div class="clearfix"></div>
+					<br />
+					<hr />
+					<div class="form-box">
+						<div class="textbox-wrapper">
+							<div class="textbox-all">
+								<div class="textbox-region-1">
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<label for="field-3a" class="control-label">Heading</label>
+										<div class="input-group">
+											<input name="heading" type="text"
+												class="form-control no-left-border form-focus-success">
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<label for="field-3b" class="control-label">Sub
+											Heading</label>
+										<div class="input-group">
+											<input name="sub_heading" type="text"
+												class="form-control no-left-border form-focus-success">
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<label for="field-3b" class="control-label">Content
+											Image</label>
+										<div class="input-group">
+											<input type="file" name="content_image"
+												class="form-control no-left-border form-focus-success">
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<label for="field-3c" class="control-label check-margin10">Content</label>
+										<div class="input-group">
+											<textarea name="content1" type="text" rows="3"
+												class="form-control no-left-border form-focus-success"></textarea>
+											<span class="input-group-btn">
+												<button id="1" type="button"
+													class="btn btn-info add-textbox-sub">
+													<i class="glyphicon glyphicon-plus">+</i>
+												</button>
+											</span>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="textbox-section">
+							<div class="input-group">
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-success add-textbox">
+										<i class="glyphicon glyphicon-plus"></i>Add Content
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+							 <div>
+          <span th:text="${contentMsg}"></span>
+    </div>
+					<div class="text-center">
+						<br />
+						<button type="submit" class="btn btn-secondary">Save</button>
+					</div>
+					<div class="clearfix"></div>
+					<br />
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+	<script id="rendered-js">
+		$(document)
+				.ready(
+						function() {
+							var max = 4;
+							var cnt = 1;
+							var htg = 1;
+							$(".add-textbox")
+									.on(
+											"click",
+											function(e) {
+												e.preventDefault();
+												if (cnt < max) {
+													cnt++;
+													htg++;
+													// alert('#parent count: ' + cnt + ' - #parent created: ' + htg);
+													$(".textbox-wrapper")
+															.append(
+																	'<div class="textbox-all"><div class="textbox-region-' + htg + '">\n\
+          <div class="col-lg-6 col-md-6 col-sm-6"><label for="field-3a" class="control-label">Heading</label><div class="input-group">\n\
+         <input name="heading" type="text" class="form-control no-left-border form-focus-success"></div></div>\n\
+          <div  class="col-lg-6 col-md-6 col-sm-6"><label for="field-3b" class="control-label check-margin10">Sub Heading</label>\n\
+          <div class="input-group"><input name="sub_heading" type="text" class="form-control no-left-border form-focus-success"></div></div>\n\
+          <div class="col-lg-6 col-md-6 col-sm-6"><label for="field-3a" class="control-label">Content Image</label><div class="input-group">\n\
+          <input type="file" name="content_image" class="form-control no-left-border form-focus-success"></div></div>\n\
+          <div class="col-lg-6 col-md-6 col-sm-6"><label for="field-3c" class="control-label check-margin10">Content</label>\n\
+          <div class="input-group check-margin10"><textarea name="content' + htg + '" type="text" rows="3" class="form-control no-left-border form-focus-info"></textarea>\n\
+<span class="input-group-btn"><button id="' + htg + '" type="button" class="btn btn-info add-textbox-sub"><i class="glyphicon glyphicon-plus">+</i></button></span></div>\n\
+<span class="input-group-btn"><button type="button" class="btn btn-danger remove-textbox"><i class="glyphicon glyphicon-minus"></i>Remove</button></span></div></div></div>');
+												}
+											});
+							var maxx = 10;
+							$(".textbox-wrapper")
+									.on(
+											"click",
+											".add-textbox-sub",
+											function(e) {
+												e.preventDefault();
+												var id = $(this).attr('id');
+												// alert('#parent: ' + id);
+												if (isNaN(window['tes' + id])) {
+													window['tes' + id] = 1;
+												} else {
+													window['tes' + id] += 1;
+												}
+												var cntt = window['tes' + id];
+
+												if (cntt < maxx) {
+													cntt++;
+													//
+													// alert('#child count: ' + cntt);
+													$(".textbox-region-" + id)
+															.append(
+																	'<div id="textbox-section" class="col-lg-6 col-md-6 col-sm-6"><label for="field-3b" class="control-label check-margin10">Content</label><div class="input-group check-margin10">\n\
+            <textarea name="content' + id + '" type="text" rows="3" class="form-control no-left-border form-focus-warning"></textarea>\n\
+            <span class="input-group-btn"><button id="' + id + '" type="button" class="btn btn-warning remove-textbox-sub"><i class="glyphicon glyphicon-minus">-</i></button></span></div></div>');
+												}
+											});
+							$(".textbox-wrapper").on(
+									"click",
+									".remove-textbox",
+									function(e) {
+										e.preventDefault();
+										$(this).parents(".textbox-all")
+												.remove();
+										cnt--;
+									});
+							$(".textbox-wrapper").on(
+									"click",
+									".remove-textbox-sub",
+									function(e) {
+										e.preventDefault();
+										$(this).parents("#textbox-section")
+												.remove();
+
+										var id = $(this).attr('id');
+										//alert('#parent remove: '+id);
+										window['tes' + id] -= 1;
+									});
+						});
+	</script>
+</body>
+</html>

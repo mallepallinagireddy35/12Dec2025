@@ -1,0 +1,62 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit Menu Link's</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+
+
+<script>
+	$(function() {
+		//$("#includeHeader").load("admin/adminmenu.html");
+		$("#includeFooter").load("footer.html");
+
+	});
+</script>
+<script>
+	$(document).ready(function () {		
+		$("#role").change(function () {
+		var role_name = document.getElementById("role").options[document.getElementById("role").selectedIndex].text;
+     document.getElementById("role_name").value = role_name;
+     });
+     });
+</script>
+</head>
+<body>
+<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="container">
+		<h3 class="pageHeading" style="text-align: center;">Edit Menu Link's</h3>
+		
+		<form method="POST" name="myForm" id="myForm" commandName="form" th:action="@{/getDynamicMenuLinks}">
+			<input type="hidden" name="role_name" id="role_name" />
+			<div class="row g-2 d-flex justify-content-center">
+				<div class="col-3 mb-3">
+					<div class="form-group floating-label">
+						<select name="role" class="form-select" id="role" required="true" >
+							<option value="" >Select Role</option>
+							<option th:each="role : ${roleList}"
+								th:value="${role.id}"
+								th:text="${#strings.replace(role.name, 'ROLE_', '')}"></option>
+						</select> <label for="form_id">Role</label>
+					</div>
+				</div>				
+			</div>
+			<div class="card-body">			
+				<div class="mx-auto col-2 mt-3 mb-3">
+					<button class="btn btn-primary" type="submit" name="submit">Submit</button>
+				</div>
+			</div>
+			<center><span style="color: green; text-align: center;" th:text="${msg}"></span></center>
+			<center><span style="color: red; text-align: center;" th:text="${msg1}"></span></center>
+		</form>
+	</div>
+	<div id="includeFooter"></div>
+</body>
+</html>

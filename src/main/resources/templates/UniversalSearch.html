@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Home</title>
+	<!-- Import CSS -->
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link href="static/assets/custom/css/inlinestyles.css" rel="stylesheet">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+
+	<!-- Import Datatables -->
+	<link href="static/assets/DataTables/DataTables-1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+	<link href="static/assets/DataTables/DataTables-1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+	<script src="static/assets/DataTables/DataTables-1.13.1/js/dataTables.bootstrap5.min.js"
+		type="text/javascript"></script>
+	<script src="static/assets/DataTables/DataTables-1.13.1/js/jquery.dataTables.min.js"
+		type="text/javascript"></script>
+
+	<script>
+		$(function () {
+			$("#includeFooter").load("static/footer.html");
+			$("#includeMsgBox").load("static/msgBox.html");
+		});
+	</script>
+
+	<style>
+		.highlight {
+			background-color: yellow;
+		}
+	</style>
+</head>
+
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div th:each="each:${queryReturned}" class="container">
+		<a target="_blank" th:href="${each.link}">
+			<h2 th:text="${each.page_name}"></h2>
+		</a>
+		<div th:utext="${each.highlighted_content}"></div>
+	</div>
+	<div id="includeFooter"></div></div>
+</body>
+<script>
+$(function() {
+		new DataTable('.customTable');
+	});</script>
+
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}"
+	th:inline="text" encoding="UTF-8">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<style>
+.uniBox {
+	display: block;
+	border: 2px solid #ffb606;
+	padding: 16px 16px;
+	border-radius: 14px;
+	color: #ffb606;
+	font-weight: 600
+}
+
+.menu-item {
+	display: flex;
+	align-items: center;
+}
+
+.menu-item img {
+	margin-right: 5px;
+	/* Adjust as needed */
+}
+
+.preloader {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	background: url(static/assets/img/preloader.gif) center no-repeat #fff;
+	text-align: center;
+}
+
+#menuToggle {
+	display: none;
+}
+</style>
+<style>
+.switch {
+	position: relative;
+	/* display: inline-block; */
+	width: 40px;
+	height: 20px;
+	top: 10px;
+	align-content: center;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	align-content: center;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+	align-content: center;
+}
+
+.slider:before {
+	align-content: center;
+	position: absolute;
+	content: "";
+	height: 25px;
+	width: 25px;
+	left: 0px;
+	/* bottom: 4px; */
+	top: 0;
+	bottom: 0;
+	margin: auto 0;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+	box-shadow: 0 0px 15px #2020203d;
+	background: white url('sunny.png');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+input:checked+.slider {
+	background-color: #2196f3;
+}
+
+input:focus+.slider {
+	box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked+.slider:before {
+	-webkit-transform: translateX(24px);
+	-ms-transform: translateX(24px);
+	transform: translateX(20px);
+	background: white url('night.png');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.slider.round {
+	border-radius: 30px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+</style>
+<style>
+.bodyLayout {
+	background: black;
+	color: yellow;
+}
+</style>
+
+<body>
+	<header id="header" class="align-items-center">
+		<div class="container accebility-bg">
+			<div class="d-flex justify-content-between">
+				<div>
+					<ul class="top-menu" id="example1">
+						<li><a href="/Preview?page_id=167" title="Media Room"
+							class="text-dark">
+								<div class="menu-item">
+									<i class="fas fa-photo-film text-danger"></i><span
+										class="text-uppercase mx-2 text-dark" title="Media">Media</span>
+								</div>
+						</a></li>
+						<li>
+							<a href="https://surakshaplaza.svpnpa.gov.in/" title="Suraksha Plaza">
+								<div class="menu-item">
+									<i class="fas fa-cart-shopping text-danger"></i><span
+										class="text-uppercase mx-2 text-dark" title="Suraksha Plaza">Suraksha
+										Plaza</span>
+								</div>
+							   </a>
+						</li>
+						<!-- <li>
+							<div class="alignEnd">
+								<label id="switch" class="switch"> <input
+									type="checkbox" id="layoutSwitch"> <span
+									class="slider round"></span>
+								</label>
+							</div>
+						</li> -->
+					</ul>
+				</div>
+				<div>
+					<ul class="top-menu" id="example1">
+						<li><a
+							href="https://www.facebook.com/SvpNationalPoliceAcademy"
+							target="_blank" class="text-white" title="facebook"> <i
+								class="fa-brands fa-facebook-f"></i>
+						</a></li>
+						<li><a href="https://twitter.com/svpnpahyd" target="_blank"
+							class="text-white" title="twitter"> <i
+								class="fa-brands fa-twitter"></i>
+						</a></li>
+						<li><a
+							href="https://www.youtube.com/channel/UCm4BdP-dUi_zF4VFRrQ5M6g"
+							target="_blank" class="text-white" title="Youtube"> <i
+								class="fa-brands fa-youtube"></i>
+						</a></li>
+						<li><a
+							href="https://en.wikipedia.org/wiki/Sardar_Vallabhbhai_Patel_National_Police_Academy"
+							target="_blank" class="text-white" title="Wikipedia"> <i
+								class="fa-brands fa-wikipedia-w"></i>
+						</a></li>
+						<li><a href="#skipCont" title="skip to main content"><i
+								class="fas fa-arrow-turn-down" title="Accessibility Option"></i></a>
+						</li>
+						<!-- <li><a href="#"><img src="static/assets/img/sc.png"
+								width="24" height="24" alt="Screen-Reader-Access"
+								title="Screen Reader Access"></a></li> -->
+						<li>
+							<!-- 						<a href="#"><img
+								src="static/assets/img/ico-accessibility.png" width="24"
+								height="24" alt="Accessibility-option"
+								></a> --> <a href="#"><i class="fas fa-wheelchair"
+								title="Accessibility Option"></i></a>
+							<ul>
+								<li><a href="javascript:void(0);"
+									title="Increase font size" onclick="set_font_size('increase')">A<sup>+</sup><span
+										class="hidethis">Increase font size</span></a></li>
+								<li><a href="javascript:void(0);" title="Reset font size"
+									onclick="set_font_size('')">A <span class="hidethis">Reset
+											font size</span></a></li>
+								<li><a href="javascript:void(0);"
+									title="Decrease font size" onclick="set_font_size('decrease')">A<sup>-</sup>
+										<span class="hidethis">Decrease font size</span></a></li>
+								<!-- <li class="hight-contrast"><a href="javascript:void(0);"
+									title="High Contrast" class="hc"
+									onclick="chooseStyle('change', 60);">A <span
+										class="hidethis">High Contrast</span></a></li>
+								<li><a href="javascript:void(0);" title="Normal"
+									class="normal" onclick="chooseStyle('style', 60);">A <span
+										class="hidethis">Normal</span></a></li> -->
+							</ul>
+						</li>
+						<li>
+							<!-- <a href="#"><img
+								src="static/assets/img/ico-site-search.png" width="24"
+								height="24" title="Icons Site Search" alt="site-search"></a> -->
+							<a href="#"><i class="fas fa-search" title="Search"></i></a>
+							<ul>
+								<li class="slave"><label for="q">Search</label>
+									<form action="/universalSearch" id="cse-search-box"
+										name="searchform"
+										onsubmit=" if(this.q.value == '' || this.q.value.length < 1) { alert('Please enter a Search Keyword'); return false; }else {return true;}"
+										role="search" class="navbar-form">
+										<div class="input-group input-group-sm">
+											<input type="hidden" name="cx"
+												value="009166207481149357514:oulbmfsyia4"> <input
+												type="hidden" name="cof" value="FORID:10"> <input
+												type="hidden" name="ie" value="UTF-8"> <input
+												type="text" class="form-control search" id="q" name="value"
+												placeholder="Enter Your Keyword"
+												aria-label="Enter Your Keyword" aria-describedby="searchBtn">
+											<button class="btn btn-outline-secondary" type="submit"
+												id="searchBtn">Submit</button>
+										</div>
+									</form></li>
+							</ul>
+						</li>
+						<li title="Sitemap">
+							<!-- <a href="/Preview?page_id=171">
+								<img src="static/assets/img/ico-sitemap.png" width="24" height="24"
+								alt="sitemap" title="Sitemap"></a> --> <a
+							href="/Preview?page_id=171"><i class="fa-solid fa-sitemap"></i></a>
+						</li>
+						<li class="contact-show"><a href="javascript:void(0)"
+							th:attr="onclick=|langSelected('${session.lang}','${session.page_id}')|"
+							class="last-font" th:title="#{hindi.link.title}"> <span
+								th:if="${session.lang=='E'}" class="btn btn-danger"
+								th:text="#{hindi.button.text}"></span> <span
+								th:if="${session.lang=='H'}" class="btn btn-danger"
+								th:text="#{english.button.text}"></span>
+						</a></li>
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<h1 class="logo">
+						<img src="static/assets/img/svpnpaLogo.png" height="120px"
+							alt="SVPNPA" title="SVPNPA Logo"> <a href="/"
+							title="Sardar Vallabhbhai Patel National Police Academy"> <strong
+							style="font-family: Mangal" th:text="#{logo.title3}"></strong> <br>
+							<strong style="font-family: Mangal" th:text="#{logo.title4}"></strong>
+							<br> <strong style="color: #000080; font-family: Cambria;"
+							th:text="#{logo.title1}"></strong> <br> <strong
+							style="color: #000080; font-family: Cambria;"
+							th:text="#{logo.title2}"></strong>
+						</a>
+					</h1>
+
+				</div>
+				<div class="col-md-8 pull-right menu-part">
+					<!--					<button type="button" class="btn btn-info d-lg-none d-block" data-bs-toggle="modal"-->
+					<!--						data-bs-target="#menuModal">-->
+					<!--						<i class="fa fa-bars" onClick="mobile_menu()" aria-hidden="true"></i>-->
+					<!--					</button>-->
+
+
+					<nav role="navigation">
+						<div id="menuToggle">
+							<input type="checkbox" /> <span></span> <span></span> <span></span>
+							<ul class="clearfix d-lg-none d-block sf-menu" id="menu">
+								<!-- Home Link -->
+								<li th:if="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">Home</a></li>
+								<li th:unless="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">होम</a></li>															
+
+								<!-- Main Menu -->
+								<li th:each="menu : ${session.menulist}" class="dropdown">
+									<span th:if="${menu.menuList.size() > 0}"> <a href="#"><span
+											th:text="${menu.mainlevel_desc}"></span> <i
+											class="bi bi-chevron-down"></i></a>
+								    </span> 
+								    <span th:unless="${menu.menuList.size() > 0}"> <a
+										th:href="@{|/${menu.menu_url}|}"><span
+											th:text="${menu.mainlevel_desc}"></span> <i
+											class="bi bi-chevron-down"></i></a>
+								    </span> 
+								    <!-- Submenu Items -->
+									<ul th:if="${menu.menuList.size() > 0}">
+										<li th:each="submenu : ${menu.menuList}" class="dropdown">
+												<span th:if="${submenu.subMenu.size() > 0}"> 
+													<a href="#"> <span th:text="${submenu.level1_desc}"></span>
+														<i class="bi bi-chevron-right"></i>
+												    </a>
+											    </span> 
+											    <span th:unless="${submenu.subMenu.size() > 0}"> 
+													<a th:href="@{|/${submenu.menu_url}|}"> 
+														<span
+														th:text="${submenu.level1_desc}"></span> <i
+														class="bi bi-chevron-right"></i>
+												    </a>
+											    </span>
+											<ul th:if="${submenu.subMenu.size() > 0}">
+												<li th:if="${submenu.subMenu.size() > 0}"
+													th:each="subsubmenu : ${submenu.subMenu}"><a
+													th:href="${subsubmenu.menu_url}" target="_self"><span
+														class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
+													<ul>
+														<li th:each="lastmenu : ${subsubmenu.menuList}"><a
+															th:href="@{|/${lastmenu.menu_url}|}" target="_self">
+																<span class="data-hover"
+																th:text="${lastmenu.level3_desc}"></span>
+														</a></li>
+													</ul></li>
+												<li th:unless="${submenu.subMenu.size() gt 0}"><a
+													th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
+														class="data-hover" th:text="${submenu.level2_desc}"></span>
+												</a></li>
+											</ul>
+											<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
+										</li>
+									</ul>
+									<ul th:unless="${menu.menuList.size() gt 0}"></ul>
+								</li>
+								<li class="dropdown" th:if="${session.username==''}">
+									<span>
+										<a th:if="${session.lang=='E'}" href="#">Digital Learning<i class="bi bi-chevron-down"></i></a>
+										<a th:unless="${session.lang=='E'}" href="#">डिजिटल लर्निंग<i class="bi bi-chevron-down"></i></a>
+									</span>
+									<ul>
+										<li><a href="/Preview?page_id=231">
+													<!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->													
+											<span th:if="${session.lang=='E'}" class="data-hover">Digital Library</span>
+											<span th:unless="${session.lang=='E'}" class="data-hover">डिजिटल लाइब्रेरी</span>
+										</a></li>
+										<li><a target="_blank" href="https://lms.svpnpa.gov.in/login/index.php">
+											<span th:if="${session.lang=='E'}" class="data-hover">LMS</span>
+											<span th:unless:if="${session.lang=='E'}" class="data-hover">एलएमएस</span>
+										</a></li>
+										<li><a target="_blank" href="https://kms.svpnpa.gov.in/">
+											<span th:if="${session.lang=='E'}" class="data-hover">Knowledge Management System(KMS)</span>
+											<span th:unless:if="${session.lang=='E'}" class="data-hover">ज्ञान प्रबंधन प्रणाली (केएमएस)</span>
+										</a></li>
+									</ul>
+									</li>
+								<li th:if="${session.username==''}">
+								 <a th:if="${session.lang=='E'}" class="btn-warning" th:href="@{/getsignin}" id="statusButton">Login</a>
+								 <a th:unless="${session.lang=='E'}" class="btn-warning" th:href="@{/getsignin}" id="statusButton">लॉग इन करें</a>
+								</li>
+								<li th:unless="${session.username==''}">
+									<li th:if="${session.lang=='E'}" ><a class="btn-warning" th:href="@{/logout}" id="statusButton">Logout</a></li>
+									<li th:unless:if="${session.lang=='E'}" ><a th:unless="${session.lang=='E'}" class="btn-warning" th:href="@{/logout}" id="statusButton">लॉग आउट करें</a></li>																		
+								</li>
+								<!-- LogIn Link -->
+								<!-- <li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
+							</ul>
+						</div>
+					</nav>
+
+					<div id="main-nav" class="navigation-bg">
+						<nav>
+							<ul class="clearfix d-lg-block d-none sf-menu" id="example">
+								<!-- Home Link -->
+								<li th:if="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">Home</a></li>
+								<li th:unless="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">होम</a></li>
+																
+
+								<!-- Main Menu -->
+								<li th:each="menu : ${session.menulist}" class="dropdown">
+									<span th:if="${menu.menuList.size() > 0}"> <a href="#"><span th:text="${menu.mainlevel_desc}"></span> 
+									<i class="bi bi-chevron-down"></i></a>
+								</span> <span th:unless="${menu.menuList.size() > 0}"> <a
+										th:href="@{|/${menu.menu_url}|}"><span
+											th:text="${menu.mainlevel_desc}"></span> <i
+											class="bi bi-chevron-down"></i></a>
+								</span> <!-- Submenu Items -->
+									<ul th:if="${menu.menuList.size() > 0}">
+										<li th:each="submenu : ${menu.menuList}" class="dropdown">
+											<span th:if="${submenu.subMenu.size() > 0}"> <a
+												href="#"> <span th:text="${submenu.level1_desc}"></span>
+													<i class="bi bi-chevron-right"></i>
+											</a>
+										</span> <span th:unless="${submenu.subMenu.size() > 0}"> <a
+												th:href="@{|/${submenu.menu_url}|}"> <span
+													th:text="${submenu.level1_desc}"></span> <i
+													class="bi bi-chevron-right"></i>
+											</a>
+										</span>
+											<ul th:if="${submenu.subMenu.size() > 0}">
+												<li th:if="${submenu.subMenu.size() > 0}"
+													th:each="subsubmenu : ${submenu.subMenu}"><a
+													th:href="${subsubmenu.menu_url}" target="_self"><span
+														class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
+													<ul>
+														<li th:each="lastmenu : ${subsubmenu.menuList}"><a
+															th:href="@{|/${lastmenu.menu_url}|}" target="_self">
+																<span class="data-hover"
+																th:text="${lastmenu.level3_desc}"></span>
+														</a></li>
+													</ul></li>
+												<li th:unless="${submenu.subMenu.size() gt 0}"><a
+													th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
+														class="data-hover" th:text="${submenu.level2_desc}"></span>
+												</a></li>
+											</ul>
+											<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
+										</li>
+									</ul>
+									<ul th:unless="${menu.menuList.size() gt 0}"></ul>
+								</li>
+								<li class="dropdown" th:if="${session.username==''}">
+									<span>
+										<a th:if="${session.lang=='E'}" href="#">Digital Learning<i class="bi bi-chevron-down"></i></a>
+										<a th:unless="${session.lang=='E'}" href="#">डिजिटल लर्निंग<i class="bi bi-chevron-down"></i></a>
+									</span>
+									<ul>
+										<li>
+										<a href="/Preview?page_id=231">
+													<!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->													
+													<span th:if="${session.lang=='E'}" class="data-hover">Digital Library</span>
+													<span th:unless="${session.lang=='E'}" class="data-hover">डिजिटल लाइब्रेरी</span>
+										</a></li>
+										<li>
+											<a target="_blank" href="https://lms.svpnpa.gov.in/login/index.php">
+												<span th:if="${session.lang=='E'}" class="data-hover">LMS</span>
+												<span th:unless="${session.lang=='E'}" class="data-hover">एलएमएस</span>
+												
+												
+											</a></li>
+										<li><a target="_blank" href="https://kms.svpnpa.gov.in/">
+											<span th:if="${session.lang=='E'}" class="data-hover">Knowledge Management System(KMS)</span>
+											<span th:unless="${session.lang=='E'}" class="data-hover">ज्ञान प्रबंधन प्रणाली (केएमएस)</span>
+										 </a></li>
+									</ul></li>
+								<li th:if="${session.username==''}">
+									<a th:if="${session.lang=='E'}" th:href="@{/getsignin}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Login</a>
+									<a th:unless="${session.lang=='E'}"  th:href="@{/getsignin}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग इन करें</a>
+								</li>
+								<li th:unless="${session.username==''}">
+									<a th:if="${session.lang=='E'}" th:href="@{/logout}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Logout</a>
+									<a th:unless="${session.lang=='E'}" th:href="@{/logout}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग आउट करें</a>
+								</li>																		
+								<!-- LogIn Link -->
+								<!--						<li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="menuModal" tabindex="-1"
+			aria-labelledby="menuModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<button type="button" class="close" data-bs-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<div id="mobile-menu">
+							<div id="main-nav" class="navigation-bg">
+								<nav>
+									<ul class="clearfix sf-menu" id="example">
+										<!-- Home Link -->
+										<li th:if="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">Home</a></li>
+										<li th:unless="${session.lang=='E'}"><a class="nav-link scrollto active" th:href="@{/}">होम</a></li>
+
+										<!-- Main Menu -->
+										<li th:each="menu : ${session.menulist}" class="dropdown">
+											<span th:if="${menu.menuList.size() > 0}"> <a href="#"><span
+													th:text="${menu.mainlevel_desc}"></span> <i
+													class="bi bi-chevron-down"></i></a>
+										</span> 
+										<span th:unless="${menu.menuList.size() > 0}"> <a
+												th:href="@{|/${menu.menu_url}|}"><span
+													th:text="${menu.mainlevel_desc}"></span> <i
+													class="bi bi-chevron-down"></i></a>
+										</span> 
+										<!-- Submenu Items -->
+											<ul th:if="${menu.menuList.size() > 0}">
+												<li th:each="submenu : ${menu.menuList}" class="dropdown">
+													<span th:if="${submenu.subMenu.size() > 0}"> <a
+														href="#"> <span th:text="${submenu.level1_desc}"></span>
+															<i class="bi bi-chevron-right"></i>
+													</a>
+												</span> <span th:unless="${submenu.subMenu.size() > 0}"> <a
+														th:href="@{|/${submenu.menu_url}|}"> <span
+															th:text="${submenu.level1_desc}"></span> <i
+															class="bi bi-chevron-right"></i>
+													</a>
+												</span>
+													<ul th:if="${submenu.subMenu.size() > 0}">
+														<li th:if="${submenu.subMenu.size() > 0}"
+															th:each="subsubmenu : ${submenu.subMenu}"><a
+															th:href="${subsubmenu.menu_url}" target="_self"><span
+																class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
+															<ul>
+																<li th:each="lastmenu : ${subsubmenu.menuList}"><a
+																	th:href="@{|/${lastmenu.menu_url}|}" target="_self">
+																		<span class="data-hover"
+																		th:text="${lastmenu.level3_desc}"></span>
+																</a></li>
+															</ul></li>
+														<li th:unless="${submenu.subMenu.size() gt 0}"><a
+															th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
+																class="data-hover" th:text="${submenu.level2_desc}"></span>
+														</a></li>
+													</ul>
+													<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
+												</li>
+											</ul>
+											<ul th:unless="${menu.menuList.size() gt 0}"></ul>
+										</li>
+										<li class="dropdown" th:if="${session.username==''}">
+											<span>
+												<a th:if="${session.lang=='E'}" href="#">Digital Learning<i class="bi bi-chevron-down"></i></ath:if="${session.lang=='E'}">
+												<a th:unless="${session.lang=='E'}" href="#">डिजिटल लर्निंग<i class="bi bi-chevron-down"></i></a>
+											</span>
+											<ul>
+												<li>
+													<a href="/Preview?page_id=231">
+													<!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->													
+													<span th:if="${session.lang=='E'}" class="data-hover">Digital Library</span>
+													<span th:unless="${session.lang=='E'}" class="data-hover">डिजिटल लाइब्रेरी</span>
+													</a>
+												</li>
+												<li>
+													<a target="_blank" href="https://lms.svpnpa.gov.in/login/index.php">
+														<span th:if="${session.lang=='E'}" class="data-hover">LMS</span>
+														<span th:unless="${session.lang=='E'}" class="data-hover">एलएमएस</span>
+													</a></li>
+												<li>
+													<a target="_blank" href="https://kms.svpnpa.gov.in/">
+														<span th:if="${session.lang=='E'}" class="data-hover">Knowledge Management System(KMS)</span>
+														<span th:unless="${session.lang=='E'}" class="data-hover">ज्ञान प्रबंधन प्रणाली (केएमएस)</span>
+													</a></li>
+											</ul>
+										</li>
+										<li th:if="${session.username==''}">
+											<a th:if="${session.lang=='E'}" class="" th:href="@{/getsignin}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Login</a>
+											<a th:unless="${session.lang=='E'}" class="" th:href="@{/getsignin}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग इन करें</a>											
+										</li>
+										<li th:unless="${session.username==''}">
+											<a th:if="${session.lang=='E'}" class="" th:href="@{/logout}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Logout</a>
+											<a th:unless="${session.lang=='E'}" class="" th:href="@{/logout}" id="statusButton" style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग आउट करें</a>
+										</li>
+										<!-- LogIn Link -->
+										<!--<li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
+									</ul>
+								</nav>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			function langSelected(el,page_id) {
+				var language = el;
+				if (language == 'E'){
+					language = 'H';
+				}else{
+					language = 'E';
+					}
+				$.ajax({
+					type : "GET",
+					url : "/updateCookie?langSelected=" + language,
+					dataType : 'text',
+					contentType : "application/json",
+					success : function(data) {
+						var newUrl = 'http://localhost:8089/Preview?page_id='+page_id;						
+						//var newUrl = 'https://www.svpnpa.gov.in/Preview?page_id='+page_id;
+						window.location.href = newUrl;	
+						return false;
+						location.reload();
+						//window.location = "//";
+					}
+				});
+			}
+		</script>
+		<script>
+			function chooseStyle(styletitle, days) { //Interface function to switch style sheets plus save "title" attr of selected stylesheet to cookie
+				alert(styletitle);
+				if (document.getElementById) {
+					setStylesheet(styletitle)
+					setCookie("mysheet", styletitle, days)
+				}
+			}
+		</script>
+		<script>
+			$('#layoutSwitch').change(function() {
+				$('#fontSize').toggleClass("bodyLayout");
+			});
+			localStorage.layoutSwitch === 'true' ? $('#layoutSwitch').prop(
+					'checked', true).trigger("change") : '';
+		</script>
+	</header>
+
+</body>
+
+</html>

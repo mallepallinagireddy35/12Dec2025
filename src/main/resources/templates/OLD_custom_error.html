@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Page</title>
+</head>
+<body>
+    <h1>Error</h1>
+    <p>Status Code: <span th:text="${statusCode}"></span></p>
+    <p>Error Message: <span th:text="${errorMessage}"></span></p>
+    <p>Request Path: <span th:text="${requestPath}"></span></p>
+    
+    <div class="central-body">
+                <img class="image-404" src="static/Images/404.svg" width="400px">
+                <a href="/svpnpacms/getsignin" class="btn-go-home"> Login Page</a>
+            </div>
+</body>
+</html>

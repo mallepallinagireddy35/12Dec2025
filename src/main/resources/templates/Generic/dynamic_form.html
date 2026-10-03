@@ -1,0 +1,638 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<title>Data Entry Form</title>
+
+	<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/js/responsivevoice.js"></script>
+<script>
+	$(function() {		
+		$("#includeFooter").load("footer.html");
+		$("#objectBrowsering").load("object_selector.html");
+	});
+</script>
+
+<script src="static/resource/assets/js/sha1.js"></script>
+<script src="static/resource/assets/js/sha256.js"></script>
+<script src="static/resource/assets/js/ajax.js"></script>
+<script src="static/resource/assets/js/Json-validation.js"></script>
+<script src="static/resource/assets/jQuery-3.6/jquery-3.6.0.min.js"></script>
+
+<script>
+	function wordCapital(obj) {
+        obj.value = obj.value.toUpperCase();
+    }
+	function insertform_valid() {
+    var arr1 = document.getElementById("jsonArray").value;
+    var jsonString = json_valid(arr1);
+    if (jsonString == false) {
+        return false;
+    }
+    var jsonCheck = 'RLBS' + SHA256(jsonString);                
+                   
+    document.getElementById("jsonFields").value = arr1;
+    document.getElementById("jsonCheck").value = jsonCheck;
+    document.getElementById("jsonData").value = jsonString;
+    
+    return true;
+        }
+        
+    function getImageDisplay(value) {
+    document.getElementById("mnr").src = value;
+    }
+        </script>
+            
+   	<script>
+	function getAudioCaptcha() {		
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		var uniqueTimestamp = new Date().getTime();
+
+		$.ajax({
+			type : "GET",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			url : "/captcha/getCaptcha?_csrf=" + csrfToken
+					+ "&timestamp=" + uniqueTimestamp,
+			dataType : 'json',
+			success : function(data, status) {
+				var cpt = data.captchaSession;
+				$(document).ready(function() {
+
+					for (var i = 0; i < cpt.length; i++) {
+						responsiveVoice.speak(cpt[i]);
+					}
+					if (typeof (data.error) !== 'undefined') {
+					}
+
+				});
+			},
+			error : function(data, status) {
+				alert('error1');
+			}
+		}, new function() {
+		})
+	}
+
+	function DrawCaptcha() {
+	    var csrfToken = $('meta[name="_csrf"]').attr('content');
+	    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+	    refreshCaptchaImage(csrfHeader, csrfToken);
+
+	    // Note: We removed the getCaptchaValue function call from here
+
+	    return false;
+	}
+
+	// Function to refresh the CAPTCHA image
+	function refreshCaptchaImage(csrfHeader, csrfToken) {
+	    var uniqueTimestamp = new Date().getTime();
+
+	    $.ajax({
+	        type: "GET",
+	        beforeSend: function (xhr) {
+	            xhr.setRequestHeader(csrfHeader, csrfToken);
+	        },
+	        headers: {
+	            'X-CSRF-TOKEN': csrfToken,
+	            'X-XSRF-HEADER': csrfHeader
+	        },
+	        url: "/captcha?_csrf=" + csrfToken + "&timestamp=" + uniqueTimestamp,
+	        dataType: 'json',
+	        success: function (data, status) {
+	            var captchaImageSrc = "data:image/jpeg;base64," + data.image; // Assuming data.image contains the Base64-encoded image data
+	            document.getElementById('captchaImage').src = captchaImageSrc;
+
+	            // After refreshing the CAPTCHA image, get the CAPTCHA value from the session
+	            getCaptchaValue(csrfHeader, csrfToken);
+	        },
+	        error: function (data, status) {
+	            alert('Error while refreshing CAPTCHA image.');
+	        }
+	    });
+	}
+
+	// Function to get the CAPTCHA value from the session
+	function getCaptchaValue(csrfHeader, csrfToken) {
+	    var uniqueTimestamp = new Date().getTime();
+
+	    $.ajax({
+	        type: "GET",
+	        beforeSend: function (xhr) {
+	            xhr.setRequestHeader(csrfHeader, csrfToken);
+	        },
+	        headers: {
+	            'X-CSRF-TOKEN': csrfToken,
+	            'X-XSRF-HEADER': csrfHeader
+	        },
+	        url: "/captcha/getCaptcha?_csrf=" + csrfToken + "&timestamp=" + uniqueTimestamp,
+	        dataType: 'json',
+	        success: function (captchaData) {
+	            var cpt = captchaData.captchaSession;
+	            // Set the value of captcha_security after getting the value
+	            document.getElementById('captcha_security').value = cpt;
+	            // Wait for the DOM to be fully loaded before setting the value
+	            $(document).ready(function () {
+	                $('#captcha_security').val(cpt);
+	            });
+	        },
+	        error: function (xhr, status, error) {
+	            console.error("Error:", error);
+	            alert('Error while fetching CAPTCHA: ' + error);
+	        }
+	    });
+	}
+</script>
+
+
+<style>
+.captchaHolder {
+	padding: 10px;
+	background: linear-gradient(to bottom right, #ffcc66 -37%, #ffffcc 105%);
+	border-radius: 4px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.cptIcons {
+	margin-left: 5px;
+	color: black;
+}
+.cptTxt {
+	color: black;
+}
+	.error {
+    color: red;
+}
+</style>   
+  <script>
+	$(document).ready(function () {		
+		$("#stateCode").change(function () {       	
+            document.getElementById("distCode").length = 0;
+            var stateCode = document.getElementById("stateCode").value;     
+            if (stateCode === "") {
+                alert("Please Select State");
+                return false;
+            }
+
+			var stateName = document.getElementById("stateCode").options[document.getElementById("stateCode").selectedIndex].text;
+     		document.getElementById("stateName").value = stateName;
+            $.get('/getDistrictList?stateCode=' + stateCode, function (responseText) {
+                if (responseText === "") {
+                    alert("No District's found for this State");
+                }
+                var returnElements = responseText.split("##");
+                document.getElementById("distCode").length = 1;
+                document.getElementById("distCode").options[0].value = "";
+                document.getElementById("distCode").options[0].text = "Select";
+                
+                document.getElementById("mandalCode").options[0].value = "";
+                document.getElementById("mandalCode").options[0].text = "Select";
+                document.getElementById("villCode").options[0].value = "";
+                document.getElementById("villCode").options[0].text = "Select";
+
+                var k = 1;
+                for (var i = 0; i < returnElements.length - 1; i++) {
+                    var distArry = returnElements[i].split("/");
+                    document.getElementById("distCode").length = k + 1;
+                    document.getElementById("distCode").options[k].value = distArry[1];
+                    document.getElementById("distCode").options[k].text = distArry[0];
+
+                    k++;
+                }
+            });
+        });
+
+		$("#distCode").change(function () {
+            document.getElementById("mandalCode").length = 0;
+        	var stateCode = document.getElementById("stateCode").value;
+            var distCode = document.getElementById("distCode").value;     
+            if(stateCode === ""){
+              alert("Please Select State");
+              return false;
+            }else if (distCode === "") {
+                alert("Please Select District");
+                return false;
+            }
+			var distName = document.getElementById("distCode").options[document.getElementById("distCode").selectedIndex].text;
+     		document.getElementById("distName").value = distName;
+            $.get('/getMandalList?stateCode=' + stateCode+'&distCode=' + distCode, function (responseText) {
+                if (responseText === "") {
+                    alert("No Mandal's found for this District");
+                }
+                var returnElements = responseText.split("##");
+                document.getElementById("mandalCode").length = 1;
+                document.getElementById("mandalCode").options[0].value = "";
+                document.getElementById("mandalCode").options[0].text = "Select";
+
+                document.getElementById("villCode").options[0].value = "";
+                document.getElementById("villCode").options[0].text = "Select";
+                var k = 1;
+                for (var i = 0; i < returnElements.length - 1; i++) {
+                    var distArry = returnElements[i].split("/");
+                    document.getElementById("mandalCode").length = k + 1;
+                    document.getElementById("mandalCode").options[k].value = distArry[1];
+                    document.getElementById("mandalCode").options[k].text = distArry[0];
+                    k++;
+                }
+            });
+        });
+
+		$("#mandalCode").change(function () {
+            document.getElementById("villCode").length = 0;
+        	var stateCode = document.getElementById("stateCode").value;
+            var distCode = document.getElementById("distCode").value;
+            var mandalCode = document.getElementById("mandalCode").value; 
+		    if(stateCode === ""){
+              alert("Please Select State");
+              return false;
+            }else if (distCode === "") {
+                alert("Please Select District");
+                return false;
+            }else if (mandalCode === "") {
+                alert("Please Select Mandal");
+                return false;
+            }
+			var mandalName = document.getElementById("mandalCode").options[document.getElementById("mandalCode").selectedIndex].text;
+     		document.getElementById("mandalName").value = mandalName;
+            $.get('/getVillageList?stateCode=' + stateCode+'&distCode=' + distCode + '&mandalCode=' + mandalCode, function (responseText) {
+                if (responseText === "") {
+                    alert("No Village's found for this Mandal");
+                }
+                var returnElements = responseText.split("##");
+                document.getElementById("villCode").length = 1;
+                document.getElementById("villCode").options[0].value = "";
+                document.getElementById("villCode").options[0].text = "Select";
+
+                var k = 1;
+                for (var i = 0; i < returnElements.length - 1; i++) {
+                    var distArry = returnElements[i].split("/");
+                    document.getElementById("villCode").length = k + 1;
+                    document.getElementById("villCode").options[k].value = distArry[1];
+                    document.getElementById("villCode").options[k].text = distArry[0];
+                    k++;
+                }
+            });
+        });
+	
+	
+
+   	     $("#file0").change(function () {
+ 		/* loadMime(file0.files[0], function(mime) {
+        //print the output to the screen
+        output.innerHTML = mime;
+    	}); */
+        readURL0(this);
+    });  
+
+    function readURL0(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#profile-img-tag0').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+   $("#file1").change(function () {
+        readURL1(this);
+    });
+
+    function readURL1(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#profile-img-tag1').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+   $("#file2").change(function () {
+        readURL2(this);
+    });
+
+    function readURL2(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#profile-img-tag2').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+	$("#file3").change(function () {
+        readURL3(this);
+    });
+
+    function readURL3(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#profile-img-tag3').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+			
+	});
+</script>
+
+<script type="text/javascript">
+   function loadMime(file, callback) {    
+    //List of known mimes
+    var mimes = [
+        {
+            mime: 'image/jpeg',
+            pattern: [0xFF, 0xD8, 0xFF],
+            mask: [0xFF, 0xFF, 0xFF],
+            extension: 'jpeg'
+        },
+        {
+            mime: 'image/jpg',
+            pattern: [0xFF, 0xD8, 0xFF, 0xE0],
+            mask: [0xFF, 0xFF, 0xFF, 0xFF],
+            extension: 'jpg'
+        },
+        {
+            mime: 'image/png',
+            pattern: [0x89, 0x50, 0x4E, 0x47],
+            mask: [0xFF, 0xFF, 0xFF, 0xFF],
+            extension: 'png'
+        },
+        {
+        mime: 'application/pdf',
+        pattern: [0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e],
+        mask: [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+        extension: 'pdf'
+    	}
+        // you can expand this list @see https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
+    ];
+    var blob = file.slice(0, 4); //read the first 4 bytes of the file
+    var reader = new FileReader();
+    reader.onloadend = function(e) {
+        if (e.target.readyState === FileReader.DONE) {
+            var bytes = new Uint8Array(e.target.result);
+            for (var i=0, l = mimes.length; i<l; ++i) {
+				//alert("&&&=="+check(bytes, mimes[i])+"=ii="+bytes[i])
+                if (check(bytes, mimes[i])){
+                return callback("Mime: " + mimes[i].mime + " <br> Browser:" + file.type);
+                }
+            }
+
+            return callback("Mime: unknown <br> Browser:" + file.type);
+        }
+    };
+    reader.readAsArrayBuffer(blob);
+}
+    function check(bytes, mime) {
+        for (var i = 0, l = mime.mask.length; i < l; ++i) {
+			alert("1=="+mime.mask[i]+"==="+(bytes[i] & mime.mask[i])+"=="+ mime.pattern[i])
+            if ((bytes[i] & mime.mask[i]) - mime.pattern[i] !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+<script type="text/javascript">
+    $(function(){
+        $("#file0000").on('change', function(event) {
+            var file = event.target.files[0];
+          /*  if(file.size>=2*1024*1024) {
+                alert("JPG images of maximum 2MB");
+                $("#form-id").get(0).reset(); //the tricky part is to "empty" the input file here I reset the form.
+                return;
+            }
+            if(!file.type.match('image/jpg.*')) {
+                alert("only JPG images");
+                $("#form-id").get(0).reset(); //the tricky part is to "empty" the input file here I reset the form.
+                return;
+            } */
+            alert(file.type)
+            var fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                var int32View = new Uint8Array(e.target.result);
+                //verify the magic number
+                alert(int32View.toString)
+                if(int32View.length>8 && int32View[0]==0x25 && int32View[1]==0x50 && int32View[2]==0x44 && int32View[3]==0x46 && int32View[4]==0x2D && int32View[5]==0x31 && int32View[6]==0x2E) {
+				// for PDF is 0x25 0x50 0x44 0x46 0x2D 0x31 0x2E(see https://en.wikipedia.org/wiki/List_of_file_signatures)					
+                    alert("ok!");                    
+                }else if(int32View.length>4 && int32View[0]==0xFF && int32View[1]==0xD8 && int32View[2]==0xFF && int32View[3]==0xE0) {
+				// for JPG is 0xFF 0xD8 0xFF 0xE0 (see https://en.wikipedia.org/wiki/List_of_file_signatures)					
+                    alert("ok!");
+                }else if(int32View.length>4 && int32View[0]==0xFF && int32View[1]==0xD8 && int32View[2]==0xFF) {
+			     // for JPEG is 0xFF 0xD8 0xFF  (see https://en.wikipedia.org/wiki/List_of_file_signatures)
+                    alert("ok!");
+                 }else if(int32View.length>8 && int32View[0]==0x89 && int32View[1]==0x50 && int32View[2]==0x4E && int32View[3]==0x47 && int32View[4]==0x0D && int32View[5]==0x0A && int32View[6]==0x1A && int32View[7]==0x0A) {
+			     // for PNG is 0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A(see https://en.wikipedia.org/wiki/List_of_file_signatures)
+                    alert("ok!");
+                } else {
+                    alert("only valid JPG images");
+                    $("#file0").get(0).reset(); //the tricky part is to "empty" the input file here I reset the form.
+                    return;
+                }
+            };
+            fileReader.readAsArrayBuffer(file);
+        });
+    });
+</script>
+
+<!--		<script>
+	           function getResendOTP() {
+                //document.getElementById('resendOtp').style.display = 'none';
+                
+                var csrfToken = document.head.querySelector('meta[name="_csrf"]').content;
+			    var csrfHeader = document.head.querySelector('meta[name="_csrf_header"]').content;
+			    var uniqueTimestamp = new Date().getTime();
+                
+                if (window.XMLHttpRequest) {
+                    // code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp = new XMLHttpRequest();
+                } else { // code for IE6, IE5
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        var myJsonString = JSON.parse(this.responseText);
+
+                    }else{
+					//alert("Error:"+this.responseText);
+						
+					}
+                }
+                xmlhttp.open("GET", "/ResendOTP?_csrf=" + csrfToken
+					+ "&timestamp=" + uniqueTimestamp, true);
+                xmlhttp.setRequestHeader(csrfHeader, csrfToken); 
+                xmlhttp.send();
+            }
+</script>
+-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var timer;
+
+    function startTimer(duration) {
+        var timerDisplay = document.getElementById("timer");
+        var regenOtpCount = document.getElementById("count").value;
+        function updateTimer() {
+            var minutes = Math.floor(duration / 60);
+            var seconds = duration % 60;
+            timerDisplay.textContent = "OTP elapsed Time: " + minutes + "m " + seconds + "s";
+            document.getElementById("otphider").style.display = 'none';
+            document.getElementById("otphider1").style.display = 'none';
+            document.getElementById("reotphider").style.display = 'none';
+            
+            if (--duration < 0) {
+                clearInterval(timer);
+                if(regenOtpCount<=3){
+                document.getElementById("reotphider").style.display = 'block';
+                timerDisplay.textContent = "";
+                regenOtpCount++;
+            	document.getElementById("count").value = regenOtpCount;
+                }else{
+				clearInterval(timer);
+				document.getElementById("reotphider").style.display = 'none';
+                timerDisplay.textContent = "";	
+				}
+            }                        
+        }
+
+        updateTimer();
+        timer = setInterval(updateTimer, 1000);
+    }
+
+    function generateOTP() {
+				var csrfToken = document.head.querySelector('meta[name="_csrf"]').content;
+			    var csrfHeader = document.head.querySelector('meta[name="_csrf_header"]').content;
+			    var uniqueTimestamp = new Date().getTime();
+                var mobile =  document.getElementsByName('mobile')[0].value;
+            	if (mobile === '') {			       
+			        alert("Please enter Mobile No")
+			        return false;			        
+			      } 
+			    
+        $.ajax({			
+            type: 'POST',
+            url: '/generateOtp?_csrf=' + csrfToken
+					+ '&timestamp=' + uniqueTimestamp + '&mobile=' + mobile,
+            success: function (response) {
+                startTimer(180); // 3 minutes
+            },
+	        error: function (error) {
+	            //console.error("Error: ", error);
+	            alert('Error while generating OTP : ' + error);
+	        }
+        });
+    }
+
+    function validateOtp() {
+				var timerDisplay = document.getElementById("timer");
+        		var csrfToken = document.head.querySelector('meta[name="_csrf"]').content;
+			    var csrfHeader = document.head.querySelector('meta[name="_csrf_header"]').content;
+			    var uniqueTimestamp = new Date().getTime();			    
+		    	var enteredOtp =  document.getElementsByName('otp')[0].value;
+            	if (enteredOtp === '') {			       
+			        alert("Please enter OTP")
+			        return false;			        
+			      } 
+			      
+        $.ajax({
+            type: 'POST',
+            url: '/validateOtp?_csrf=' + csrfToken
+					+ '&timestamp=' + uniqueTimestamp+ '&enteredOtp=' + enteredOtp,
+            //data: { enteredOtp: enteredOtp },
+            success: function (response) {
+                if (response === 'valid') {                    
+                    clearInterval(timer);
+                    timerDisplay.textContent = "OTP is valid";
+                } else {
+                    document.getElementsByName('otp')[0].value = '';
+                    //alert("Invalid OTP");
+                    alert(response);
+                    return false;
+                }
+            },
+	        error: function (error) {
+	         //   console.error("Error: ", error);
+	            alert('Error while validating OTP : ' + error);
+	        }
+        });
+    }
+    /*]]>*/
+</script>
+
+</head>
+
+<body>
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="container">
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<!--<h4 class="modal-title" id="myModalLabel">Modal title</h4>-->
+					</div>
+					<div class="modal-body">
+						<img class="modal-content" id="mnr">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<h3 class="pageHeading">
+			<span th:text="${form_name.toUpperCase()}" style="text-align: center;"></span> FORM
+		</h3>
+		<span style="color: red; text-align: center;" th:text="${msg}"></span>
+		<form method="POST" name="myForm" id="myForm" enctype="multipart/form-data" th:action="@{/insertFormData}" 	ModelAttribute="form" onsubmit="return insertform_valid();">
+
+		<input type="hidden" id="jsonFields" name="jsonFields" />
+		<input type="hidden" id="jsonData" name="jsonData" />
+		<input type="hidden" id="jsonCheck" name="jsonCheck" />
+		<input type="hidden" id="form_id" name="form_id" th:value="${form_id}" />
+		<input type="hidden" id="form_name" name="form_name" th:value="${form_name}" />
+		<input type="hidden" id="fields" name="fields" th:value="${fields}" />
+		<input type="hidden" id="captcha_key" name="captcha_key" th:value="${captcha_key}" />	<input type="hidden" id="jsonArray" th:value="${jsonArray}" />
+		<input type="hidden" id="flag" name="flag" th:value="${flag}" />
+		<input type="hidden" id="stateName" name="stateName" />
+		<input type="hidden" id="distName" name="distName" />
+		<input type="hidden" id="mandalName" name="mandalName" />
+		<input type="hidden" id="villName" name="villName" />
+		<input type="hidden" id="count" name="count" value="0" readonly="true"/>			
+			<div id="view1" th:utext="${str}"></div>
+			
+		<input type="hidden" id="captcha_security" th:value="${captchaString}" />
+		<input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+		<input type="hidden" name="_csrf_header" th:value="${_csrf.headerName}"/>
+		</form>		
+	</div>
+	<div id="includeFooter"></div>
+</body>
+
+</html>

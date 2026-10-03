@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+<div th:fragment="footer">
+		<div class="container mt-2 bg-secondary">
+		<div class="d-flex justify-content-between footerList">
+			<div>
+				<ul class="footer">
+					<li><a href="/home" target="_blank">Home</a></li>
+					<li><a href="/Preview?page_id=171" target="_blank">Sitemap</a>
+					</li>
+					<li><a href="/Preview?page_id=27" target="_blank">Contact
+							Us</a></li>
+					<li><a href="/Preview?page_id=36" target="_blank">Website
+							policies</a></li>
+					<li><a href="/Preview?page_id=37" target="_blank">Disclaimer</a>
+					</li>
+					<li><a href="/Preview?page_id=38" target="_blank">Copyright
+							Policy</a></li>
+					<!--<li><a href="/Preview?page_id=39" target="_blank">FAQ's</a>
+					</li>
+					<li><a href="/Preview?page_id=40" target="_blank">Terms
+							& Conditions</a></li>-->
+
+					<li><a href="/static/gallery/docs/96ee147681e8463fb27b3dce5b602f54.pdf" target="_blank">Terms
+							& Conditions</a></li>
+				</ul>
+			</div>
+		
+
+    		<!-- <div th:fragment="footer"> -->
+    		
+    		<!-- Hit Counter -->
+            <div class="hit-counter">
+                <span th:if="${session.lang == 'E'}">
+                    Website Hits:
+                    <span th:text="${session.EnglishhitCount}"></span>
+                </span>
+
+                <span th:unless="${session.lang== 'E'}">
+                    वेबसाइट हिट्स:
+                    <span th:text="${session.EnglishhitCount}"></span>
+                </span>
+            </div>
+    		
+    		<!-- </div> -->
+			<div>
+				<ul class="mt-2">
+					<li><a href="https://www.nic.in/"><img src="static/assets/img/NIClogo.png" width="70%"	height="70%"></a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container footerT d-flex justify-content-between">
+		<div class="text-white">@2023 Sardar
+			Vallabhbhai Patel National Police Academy</div>
+	</div>
+	</div>
+</body>
+
+
+</html>

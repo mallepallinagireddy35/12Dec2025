@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>Gallery</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/custom/css/home.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<style>
+svg {
+	cursor: pointer;
+}
+
+.containerBox {
+	border-radius: 10px;
+	display: inline-block;
+	padding: 5px;
+}
+
+.inner-shadow {
+	/* box-shadow: inset 0 0 15px 0 #c7c7c7; */
+	box-shadow: 0px 0px 20px 1px #c7c7c7 inset;
+}
+
+.inner-shadows {
+	box-shadow: inset 0 0 15px 0 #c7c7c7;
+	/* box-shadow: inset 0 0 10px #c7c7c7; */
+}
+
+#box {
+	position: relative;
+	width: 200px;
+	height: 200px;
+	padding: 10px;
+	margin: 100px;
+	background-color: white;
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left span {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	margin-right: 10px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background-color: #f0f0f0;
+	border: 1px solid #ccc;
+}
+
+.icons-left {
+	display: flex;
+	align-items: center;
+}
+
+.icons-left i {
+	margin-right: 5px;
+}
+
+.icons-left:hover {
+	cursor: pointer;
+}
+
+/* .fa{
+font-size: 2em;
+} */
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card-footer i.fa-caret-down {
+	margin-left: auto;
+}
+</style>
+<style>
+.folder-header {
+	cursor: pointer;
+}
+
+.folder-header i {
+	margin-right: 5px;
+}
+
+.folder-items {
+	display: none;
+}
+
+.folder {
+	border: none; /* Remove default border */
+}
+
+.objContainer {
+	/* overflow: hidden; */
+	flex-direction: row;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.objContainer label {
+	text-align: center;
+}
+
+.objItems {
+	margin: 5px;
+	width: 90px;
+	height: 100px;
+	opacity: 0.8;
+	background-color: rgba(250, 250, 250, 0.4);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transition: box-shadow 0.3s ease-in-out;
+}
+
+.objItems:hover {
+	background-color: #f2f2f2;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+</style>
+<body>
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}"
+		th:value="${_csrf.token}" />
+
+	<div class="mx-auto mt-3 mb-3">
+		<div class="container">
+			<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px;">
+				Gallery</h3>
+		</div>
+		<span style="color: red; text-align: center;" th:text="${msg}"></span>
+		<div class="container objContainer p-3 text-center">
+			<div class="objItems">
+				<input type="radio" class="btn-check" name="options-outlined"
+					onclick="lists('2')" id="radio-card-1" autocomplete="off">
+				<label class="btn btn-outline-info" for="radio-card-1"> <i
+					class="fas fa-images fa-3x ml-0"></i><br> <span
+					class="fw-bold text-center">Picture</span><br> <span
+					class="text-center selectText">View items</span>
+				</label>
+			</div>
+			<div class="objItems">
+				<input type="radio" class="btn-check" name="options-outlined"
+					onclick="lists('7')" id="radio-card-2" autocomplete="off">
+				<label class="btn btn-outline-secondary" for="radio-card-2">
+					<i class="fas fa-video fa-3x ml-0"></i><br> <span
+					class="fw-bold text-center">Video</span><br> <span
+					class="text-center selectText">View items</span>
+				</label>
+			</div>
+			<div class="objItems">
+				<input type="radio" class="btn-check" name="options-outlined"
+					onclick="lists('8')" id="radio-card-3" autocomplete="off">
+				<label class="btn btn-outline-danger" for="radio-card-3"> <i
+					class="fas fa-microphone fa-3x ml-0"></i><br> <span
+					class="fw-bold text-center">Audio</span><br> <span
+					class="text-center selectText">View items</span>
+				</label>
+			</div>
+			<div class="objItems">
+				<input type="radio" class="btn-check" name="options-outlined"
+					onclick="lists('9')" id="radio-card-4" autocomplete="off">
+				<label class="btn btn-outline-warning" for="radio-card-4"> <i
+					class="fas fa-file-pdf fa-3x ml-0"></i><br> <span
+					class="fw-bold text-center">Document</span><br> <span
+					class="text-center selectText">View items</span>
+				</label>
+			</div>
+		</div>
+		<!-- <div class="container border border-2">
+			<div class="grid-wrapper grid-col-auto ">
+				<div id="news-carousel-controls" class="carousel slide">
+					<div class="carousel-inner">
+						<div class="carousel-item active">
+							<div class="cards-wrapper">
+								<label for="radio-card-1" class="radio-card"> <input
+									type="radio" name="radio-card" id="radio-card-1"
+									onclick="lists('2')" />
+									<div class="card-content-wrapper">
+										<span class="check-icon"></span>
+										<div class="card-content">
+											<img src="static/Images/picture.png" alt="" />
+											<h5>Pictures</h5>
+											<h6>View uploaded Pictures</h6>
+										</div>
+									</div>
+								</label> <label for="radio-card-2" class="radio-card"> <input
+									type="radio" name="radio-card" id="radio-card-2"
+									onclick="lists('7')" />
+									<div class="card-content-wrapper">
+										<span class="check-icon"></span>
+										<div class="card-content">
+											<img src="static/Images/video.png" alt="" />
+											<h5>Video</h5>
+											<h6>View uploaded Videos</h6>
+										</div>
+									</div>
+								</label>
+								/.radio-card
+								<label for="radio-card-3" class="radio-card"> <input
+									type="radio" name="radio-card" id="radio-card-3"
+									onclick="lists('8')" />
+									<div class="card-content-wrapper">
+										<span class="check-icon"></span>
+										<div class="card-content">
+											<img src="static/Images/audio.png" alt="" />
+											<h5>Audio</h5>
+											<h6>View uploaded Audios</h6>
+										</div>
+									</div>
+								</label> </label> <label for="radio-card-4" class="radio-card"> <input
+									type="radio" name="radio-card" id="radio-card-4"
+									onclick="lists('9')" />
+									<div class="card-content-wrapper">
+										<span class="check-icon"></span>
+										<div class="card-content">
+											<img src="static/Images/files.png" alt="" />
+											<h5>Documents</h5>
+											<h6>View uploaded Docs</h6>
+										</div>
+									</div>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> -->
+	</div>
+	<div class="container border border-2">
+		<div class="row" id="viewGroups"></div>
+	</div>
+	<div class="container border border-2 mt-2">
+		<div id="viewItems">
+			<!-- 		<div class="container">
+		<div class="folder">
+			<div class="folder-header">
+				<i class="fas fa-angle-down"></i> <span class="folder-name">Image
+					Group1</span>
+			</div>
+			<div class="folder-items">
+				<div>Image 1</div>
+				<div>Image 2</div>
+				<div>Image 3</div>
+			</div>
+		</div>
+		<div class="folder">
+			<div class="folder-header">
+				<i class="fas fa-angle-down"></i> <span class="folder-name">Image
+					Group2</span>
+			</div>
+			<div class="folder-items">
+				<div>Image 1</div>
+				<div>Image 2</div>
+				<div>Image 3</div>
+			</div>
+		</div>
+	</div> -->
+		</div>
+	</div>
+	<div id="includeFooter"></div>
+	<script>
+		function lists(typeGiven) {
+			document.getElementById("viewGroups").innerHTML = '';
+			document.getElementById("viewItems").innerHTML = '';
+			id = "viewGroups";
+			var type = {
+				'type' : typeGiven
+			};
+			select = document.getElementById("viewGroups");
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+			var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+			$
+					.ajax({
+						type : "POST",
+						url : "/getGalleryGroups",
+						data : JSON.stringify(type),
+						dataType : 'json',
+						beforeSend : function(xhr) {
+							xhr.setRequestHeader(csrfHeader, csrfToken);
+						},
+						headers : {
+							'X-CSRF-TOKEN' : csrfToken,
+							'X-XSRF-HEADER' : csrfHeader
+						},
+						contentType : "application/json",
+						success : function(data) {
+							var typeChar = "";
+							if (typeGiven == '2')
+								typeChar = 'image';
+							else if (typeGiven == '7')
+								typeChar = 'video';
+							else if (typeGiven == '8')
+								typeChar = 'audio';
+							else if (typeGiven == '9')
+								typeChar = 'doc';
+							var demo = "<span class=\"fa-layers fa-fw fa-5x m-3\" onClick=\"location.href='"+ typeChar + "'\"> <i class=\"fas fa-circle\"	style=\"color: black\"></i> <i class=\"fas fa-circle\"						data-fa-transform=\"shrink-3\" style=\"color: Tomato\"></i> <i						class=\"fa-inverse fas fa-plus\" data-fa-transform=\"shrink-6\"></i>					</span>";
+							var bold = document.createElement("b");
+							bold.innerText = "Add";
+							var option = document.createElement("i");
+							option.classList.add("col-2", "text-center", "fas",
+									"fa-circle-plus", "fa-4x", "my-auto");
+							// 					demo.setAttribute("onClick", "location.href='"
+							// 							+ typeGiven + "'");
+							select.innerHTML = demo;
+							// 					select.appendChild(bold);
+
+							for (let i = 0; i < data.length; i++) {
+								var option = document.createElement("div");
+								option.classList.add("col-2", "p-3",
+										"text-center");
+
+								option.setAttribute("onClick", "viewGallery('"
+										+ data[i].group_id + "','" + typeGiven
+										+ "')");
+								var bold = document.createElement("b");
+								bold.innerText = data[i].group_id;
+								var folder = document.createElement("i");
+								folder.classList.add("fas", "fa-folder",
+										"fa-4x", "d-block", "mx-auto");
+								option.appendChild(folder);
+								option.appendChild(bold);
+								select.appendChild(option);
+							}
+						},
+						error : function(xhr, textStatus, errorThrown) {
+							if (xhr.status == 405) {
+								alert("Not a valid request. Please try again");
+								window.location.reload();
+							}
+						}
+					});
+		}
+	</script>
+	<script>
+		function viewGallery(groupName, typeGiven) {
+			document.getElementById("viewItems").innerHTML = '';
+			id = "viewItems";
+			var type = {
+				'group' : groupName,
+				'type' : typeGiven
+			};
+			select = document.getElementById("viewItems");
+
+			var container = document.createElement("div");
+			container.classList.add("container");
+
+			var row = document.createElement("div");
+			row.classList.add("row");
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+			var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+			$.ajax({
+						type : "POST",
+						url : "/getGalleryItems",
+						beforeSend : function(xhr) {
+							xhr.setRequestHeader(csrfHeader, csrfToken);
+						},
+						headers : {
+							'X-CSRF-TOKEN' : csrfToken,
+							'X-XSRF-HEADER' : csrfHeader
+						},
+						data : JSON.stringify(type),
+						dataType : 'json',
+						contentType : "application/json",
+						success : function(data) {
+							for (let i = 0; i < data.length; i++) {
+								debugger;
+								var option;
+
+								if (typeGiven == '2') {
+									option = document.createElement("img");
+									option.setAttribute(
+													"src",
+													"static/gallery/"
+													+ "image"
+													+ "/"
+													+ data[i].thumbnail_filename);
+										//"/getImg/" + data[i].thumbnail_filename);
+
+								} else if (typeGiven == '7' || typeGiven == '8') {
+									var typeChar = '';
+									//var ssr = '';
+									if (typeGiven == 7){
+										typeChar = 'video';
+										//ssr = '/getVedio/';
+									}else if (typeGiven == 8){
+										typeChar = 'audio';
+										//ssr = '/getAudio/';
+									}
+									option = document.createElement(typeChar);
+									option.setAttribute("controls", "");
+									option.setAttribute("width", "100%");
+									option.setAttribute("height", "100%");
+									let source = document
+											.createElement("source");
+									source.setAttribute(
+													"src",
+													"static/gallery/"
+													+ typeChar
+													+ "/"
+													+ data[i].thumbnail_filename);
+									//"images/" + data[i].thumbnail_filename + "/" + typeGiven);
+									 //+ ssr + data[i].thumbnail_filename);
+									source.setAttribute("type", typeChar
+											+ "/mp4");
+									option.appendChild(source);
+									console.log(option);
+								} else if (typeGiven == '9') {
+									option = document.createElement("a");
+									option.setAttribute(
+													"href",
+													"static/gallery/docs/" + data[i].thumbnail_filename);
+											//"images/" + data[i].thumbnail_filename + "/" + typeGiven);
+											//"/getDoc/" + data[i].thumbnail_filename);
+									option.innerText = data[i].description;
+									option.classList.add("d-block", "border",
+											"border-1");
+
+								}
+								// 								if (i == 0) {
+								// 									var col = document.createElement("div");
+								// 									col.appendChild(option);
+								// 									row.appendChild(col);
+								// 								}
+								var col = document.createElement("div");
+								col.classList.add("col-2");
+
+								var card = document.createElement("div");
+								card.classList.add("card");
+
+								var cardHeader = document.createElement("div");
+								cardHeader.classList.add("card-header");
+
+								var closeButton = document
+										.createElement("button");
+								closeButton.classList.add("btn", "btn-sm",
+										"float-end");
+								closeButton.innerHTML = '<i class="fas fa-times"></i>';
+
+								closeButton.addEventListener("click",
+										(function(clickedCard) {
+											return function() {
+												clickedCard.remove();
+											};
+										})(card));
+
+								var cardBody = document.createElement("div");
+								cardBody.classList.add("card-body",
+										"text-center");
+								cardBody.setAttribute("style",
+										"overflow:hidden;");
+								let para = document.createElement("div");
+								para.innerText = data[i].original_filename;
+
+								var cardFooter = document.createElement("div");
+								cardFooter.classList.add("card-footer");
+								var iconsLeft = document.createElement("div");
+								iconsLeft.classList.add("icons-left");
+
+								var iconT = document.createElement("i");
+								iconT.classList.add("fas", "fa-t", "p-1",
+										"border", "fa-fw", "fa-2xs", "rounded",
+										"text-white", "bg-primary");
+								iconT
+										.setAttribute('onclick',
+												'showTitle(this)');
+								iconT.setAttribute('title', 'Title');
+								iconsLeft.appendChild(iconT);
+
+								var iconD = document.createElement("i");
+								/* iconD.classList.add("fas", "fa-d","p-1", "border", "border-2", "rounded-circle", "border-secondary"); */
+								iconD.classList.add("fas", "fa-d", "p-1",
+										"border", "fa-fw", "fa-2xs", "rounded",
+										"bg-warning");
+								iconD.setAttribute('onclick',
+										'showDescription(this)');
+								iconD.setAttribute('title', 'Description');
+								iconsLeft.appendChild(iconD);
+
+								var iconS = document.createElement("i");
+								iconS.classList.add("fas", "fa-s", "p-1",
+										"border", "fa-fw", "fa-2xs", "rounded",
+										"text-white", "bg-success");
+								iconS
+										.setAttribute('onclick',
+												'showStyle(this)');
+								iconS.setAttribute('title', 'Style');
+								iconsLeft.appendChild(iconS);
+
+								var iconCaretDown = document.createElement("i");
+								iconCaretDown.classList.add("fas", "fa-bars",
+										"p-1", "border", "fa-fw", "fa-2xs",
+										"rounded", "text-white", "bg-info");
+								iconCaretDown.setAttribute('onclick',
+										'showMore(this)');
+								iconCaretDown.setAttribute('title', 'More');
+
+								cardFooter.appendChild(iconsLeft);
+								cardFooter.appendChild(iconCaretDown);
+
+								cardHeader.appendChild(closeButton);
+
+								card.appendChild(cardHeader);
+								card.appendChild(cardBody);
+								cardBody.appendChild(option);
+								cardBody.appendChild(para);
+								card.appendChild(cardFooter);
+
+								col.appendChild(card);
+								row.appendChild(col);
+								// 						option.setAttribute("onClick", "viewGallery('"
+								// 								+ data[i][0] + "')");
+
+								// 						option.appendChild(para);
+								container.appendChild(row);
+								select.appendChild(container);
+								/* select.appendChild(para); */
+
+							}
+							// 					document.getElementById("viewItems").append(select);
+						}
+					});
+		}
+	</script>
+	<script>
+		$(document).ready(function() {
+			$('.folder-header').click(function() {
+				var $icon = $(this).find('i');
+				var $folderItems = $(this).siblings('.folder-items');
+				var $folder = $(this).parent();
+
+				$folderItems.slideToggle();
+				$icon.toggleClass('fa-angle-down fa-angle-up');
+				$folder.toggleClass('collapsed expanded');
+			});
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{"properties": [
+  {
+    "name": "hibernate.jdbc.lob.non_contextual_creation",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.jdbc.lob.non_contextual_creation'"
+  },
+  {
+    "name": "svpnpa.app.jwtsecret",
+    "type": "java.lang.String",
+    "description": "A description for 'svpnpa.app.jwtsecret'"
+  },
+  {
+    "name": "svpnpa.app.jwtExpirationMs",
+    "type": "java.lang.String",
+    "description": "A description for 'svpnpa.app.jwtExpirationMs'"
+  },
+  {
+    "name": "mail.server.host",
+    "type": "java.lang.String",
+    "description": "A description for 'mail.server.host'"
+  },
+  {
+    "name": "mail.server.password",
+    "type": "java.lang.String",
+    "description": "A description for 'mail.server.password'"
+  },
+  {
+    "name": "mail.server.username",
+    "type": "java.lang.String",
+    "description": "A description for 'mail.server.username'"
+  },
+  {
+    "name": "mail.server.port",
+    "type": "java.lang.String",
+    "description": "A description for 'mail.server.port'"
+  },
+  {
+    "name": "galleryAbsolutePath",
+    "type": "java.lang.String",
+    "description": "A description for 'galleryAbsolutePath'"
+  },
+  {
+    "name": "formPath",
+    "type": "java.lang.String",
+    "description": "A description for 'formPath'"
+  },
+  {
+    "name": "svpnpa.pepper",
+    "type": "java.lang.String",
+    "description": "A description for 'svpnpa.pepper'"
+  },
+  {
+    "name": "server.servlet.session.cookie.csrf.same-site",
+    "type": "java.lang.String",
+    "description": "A description for 'server.servlet.session.cookie.csrf.same-site'"
+  }
+]}

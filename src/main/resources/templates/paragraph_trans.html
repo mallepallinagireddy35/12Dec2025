@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<title>Paragraph</title>
+
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+
+</head>
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				Design your Paragraph</h3>
+		</div>
+		<div class="mb-5 container mt-5">
+			<form th:action="@{/save}" method="post">
+				<input type="hidden" id="csrf_token"
+					th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />  <input
+					type="hidden" name="type" id="type" value="6"> <input
+					type="hidden" name="object_id" id="object_id">
+				<div class="floating-label">
+					<input type="text" class="form-control" id="text"
+						name="object_title"  required="true"
+						placeholder="Enter Title"> <label for="text">Title</label>
+				</div>
+				<textarea name="content" id="editor" required="true">
+				</textarea>
+				<div class="mx-auto col-2 mt-3 mb-3">
+					<a class="btn btn-primary mb-3" onClick="generateHindi()" href="">Generate
+						Hindi</a>
+				</div>
+				
+				<div class="mx-auto col-2 mt-3 mb-3">
+					<a class="btn btn-primary mb-3" onClick="generateHindi1()" href="">Translate
+						Hindi</a>&nbsp;&nbsp;&nbsp;				
+					<a class="btn btn-primary mb-3" onClick="generateHindi2()" href="">Generate</a>&nbsp;&nbsp;&nbsp;
+					<a class="btn btn-primary mb-3" onClick="generateHindi3()" href="">Translate</a>
+				</div>
+				<div id="generateHindi" style="display:none;">
+					<div class="floating-label">
+						<input type="text" class="form-control" id="text_hi"
+							name="object_title_hi" 
+							placeholder="Enter Hindi Title"> <label for="text_hi">Title</label>
+					</div>
+					<textarea name="content_hi" id="editor_hi" ></textarea>
+				</div>
+				<div class="mx-auto col-1 mt-3 mb-3">
+					<button class="btn btn-primary" onclick="printIt()">Save</button>
+				</div>
+			</form>
+		</div>
+		<script>
+			function printIt() {
+				var msg = document.getElementById("editor");
+				if (msg == '') {
+					alert("Please enter content");
+					return false;
+				}
+				if (document.getElementById("text") == '') {
+					alert("Please enter Title");
+					return false;
+				}
+				debugger;
+				document.forms[1].submit();
+			 }
+		</script> 
+		<script>
+				function generateHindi() {
+				alert('Hi========');
+				document.getElementById('generateHindi').style.display = 'block';				
+				const url = 'https://panini.ai.nic.in/translation';
+				var englishContent = document.getElementById("text").value;
+				alert('title========'+englishContent);
+ 
+				    var params ={
+				        text: englishContent,
+				        src_lan: 'eng_Latn',
+				        tar_lan: 'hin_Deva'
+				    };				    
+				   //var response = await 
+				   fetch(url, {
+				    method: 'POST', 
+				   // mode: 'cors', // Important for CORS requests  
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },				    
+				    body: JSON.stringify(params)
+					})
+							    	
+					.then(response => {
+					  if (!response.ok) {
+					    console.error('HTTP error! Status:', response.status);
+					    alert('HTTP error! Status:', response.status);
+					    alert(response.text());
+					    return response.text(); // or response.json() if the response is JSON
+					  }
+					  return response.json();
+					})
+					.then(data => {
+					  console.log('Translation Response:', data);
+					  alert("Response: " + data);
+				      document.getElementById("text_hi").value = data;
+					})
+					.catch(error => {
+					  console.error('Error:', error);
+					});			    
+			
+				var englishContent = document.getElementById("editor").value;
+			alert('englishContent========'+englishContent);
+			
+				var params1 = {
+					text : englishContent,
+                    src_lan : 'eng_Latn',
+					langpair : 'hin_Deva'
+				};
+									  
+				    fetch(url, {
+				    method: 'POST',   
+				    //mode: 'cors', // Important for CORS requests 
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },
+				    body: JSON.stringify(params1)				    
+					})
+					.then(response => {
+					  if (!response.ok) {
+					    console.error('HTTP error! Status:', response.status);
+					    alert('HTTP error! Status:', response.status);
+					    alert(response.text());
+					    return response.text(); // or response.json() if the response is JSON
+					  }
+					  return response.json();
+					})
+					.then(data => {
+					  console.log('Translation Response:', data);
+					  alert("Response: " + data);
+				      document.getElementById("editor_hi").value = data;				     
+				     })
+					.catch(error => {
+					  console.error('Error:', error);
+					});			    		    
+			} 
+			//generateHindi();
+		</script>
+			
+		<script>				
+			function generateHindi1() {
+				alert('Hi========');
+				document.getElementById('generateHindi').style.display = 'block';				
+				const url = 'https://panini.ai.nic.in/translation';
+				var englishContent = document.getElementById("text").value;
+				alert('title========'+englishContent);
+ 
+				    var params ={
+				        text: englishContent,
+				        src_lan: 'eng_Latn',
+				        tar_lan: 'hin_Deva'
+				    };
+				    alert("params===="+params+"===="+params)
+				    alert("params===="+params+"===="+JSON.stringify(params))				    
+				   //var response = await 
+				   fetch(url, {
+				    method: 'POST', 
+				   // mode: 'cors', // Important for CORS requests  
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },				    
+				    body: JSON.stringify(params)
+					})
+							    	
+					.then(response => {
+					  if (!response.ok) {
+					    console.error('HTTP error! Status:', response.status);
+					    alert('HTTP error! Status:', response.status);
+					    alert(response.text());
+					    return response.text(); // or response.json() if the response is JSON
+					  }
+					  return response.json();
+					})
+					.then(data => {
+					  console.log('Translation Response:', data);
+					  alert("Response: " + data);
+				      document.getElementById("text_hi").value = data;
+					})
+					.catch(error => {
+					  console.error('Error:', error);
+					});			    
+			
+				var englishContent = document.getElementById("editor").value;
+			alert('englishContent========'+englishContent);
+			
+				var params1 = {
+					text : englishContent,
+                    src_lan : 'eng_Latn',
+					langpair : 'hin_Deva'
+				};
+					
+alert("params1===="+params1+"===="+JSON.stringify(params1))									  
+					fetch(url, {
+				    method: 'POST',   
+				    //mode: 'cors', // Important for CORS requests 
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },
+				    body: JSON.stringify(params1)				    
+					})
+					.then(response => {
+					  if (!response.ok) {
+					    console.error('HTTP error! Status:', response.status);
+					    alert('HTTP error! Status:', response.status);
+					    alert(response.text());
+					    return response.text(); // or response.json() if the response is JSON
+					  }
+					  return response.json();
+					})
+					.then(data => {
+					  console.log('Translation Response:', data);
+					  alert("Response: " + data);
+				      document.getElementById("editor_hi").value = data;				     
+				     })
+					.catch(error => {
+					  console.error('Error:', error);
+					});
+								    		    
+			} 		
+			
+		async	function generateHindi2() {
+				alert('Hi========');
+				document.getElementById('generateHindi').style.display = 'block';				
+				const url = 'https://panini.ai.nic.in/translation';
+				var englishContent = document.getElementById("text").value;
+				alert('title========'+englishContent);
+ 
+				    var params ={
+				        text: englishContent,
+				        src_lan: 'eng_Latn',
+				        tar_lan: 'hin_Deva'
+				    };
+				    alert("params===="+params+"===="+JSON.stringify(params))				    
+				   var response = await fetch(url, {
+				    method: 'POST', 
+				   // mode: 'cors', // Important for CORS requests  
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },				    
+				    body: JSON.stringify(params)
+					});
+					
+					var data = await response.json();
+					alert(data);
+					alert(response.text());				
+							    	
+								
+				var englishContent = document.getElementById("editor").value;
+			alert('englishContent========'+englishContent);
+			
+				var params1 = {
+					text : englishContent,
+                    src_lan : 'eng_Latn',
+					langpair : 'hin_Deva'
+				};
+					
+alert("params1===="+params1+"===="+JSON.stringify(params1))									  
+					var response1 = await fetch(url, {
+				    method: 'POST',   
+				    //mode: 'cors', // Important for CORS requests 
+				    headers: {
+				        'Content-Type': 'application/json',  
+				    },
+				    body: JSON.stringify(params1)				    
+					});
+					var data1 = await response1.json();
+					alert(data1);
+					alert(response1.text());	
+																    		   
+			} 	
+			</script>
+			<script>
+		function generateHindi3(){
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+			var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+			var uniqueTimestamp = new Date().getTime();
+		
+						alert('Hi========');
+				document.getElementById('generateHindi').style.display = 'block';				
+				const url = 'https://panini.ai.nic.in/translation';
+				var englishContent = document.getElementById("text").value;
+				alert('title========'+englishContent);
+ 
+				    var params ={
+				        text: englishContent,
+				        src_lan: 'eng_Latn',
+				        tar_lan: 'hin_Deva'
+				    };
+				    alert("params===="+params+"===="+JSON.stringify(params))
+				    
+					
+			$.ajax({
+				type: "POST",
+				url: "/translateContent?_csrf=" + csrfToken
+					+ "&timestamp=" + uniqueTimestamp+ "&englishContent=" + englishContent,
+				success: function (response) {
+				alert("data===="+response); 
+			},
+	        error: function (error) {	            
+	            alert('Error while Translating Content: ' + error);	            
+	            alert('Error while Translating Content: ' + JSON.stringify(error));
+	            console.log("Error: ", error);
+	            console.log("Error: ", JSON.stringify(error));
+	            console.error("Error: ", error);
+	            console.error("Error: ", JSON.stringify(error));
+	        }
+			});
+		}
+				
+					
+			
+		</script>
+	</div>
+</body>
+
+</html>

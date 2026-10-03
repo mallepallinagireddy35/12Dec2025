@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Security-Policy" content="frame-src 'self' https://other-domain.com;">
+
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<title>Home</title>
+	<!-- Import CSS -->
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<!-- Import ViewerJS Plugin-->
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
+<link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/main.css">
+<script src="static/assets/Viewerjs_1.11/js/viewer.js"></script>
+<script src="static/assets/Viewerjs_1.11/js/main.js"></script>
+	
+	<script>
+		$(function () {
+			$("#includeMsgBox").load("static/msgBox.html");
+			$("#includeObjSelector").load("static/objectSelector.html");
+			$("#includeFooter").load("static/footer.html");
+		});
+	</script>
+	<style>
+	</style>
+</head>
+
+<body>
+	<div class="flex-wrapper">
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	<div class="container mt-5">
+		<div id="includeObjSelector"></div>
+		<div id="includeMsgBox"></div>
+
+	</div>
+
+	<!-- 	<div class="container itemsContainer mt-5">
+		<div class="left-button" onclick="scrollItems('left')">
+			<i class="fas fa-less-than fa-2x" style="color: #2668d9;"></i>
+		</div>
+		
+	<div class="items-container">
+			<div class="card item" onclick="selectItem('1')">
+				<div class="card-body">
+					<i class="fa-solid fa-table  fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Table</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('6')">
+				<div class="card-body">
+					<i class="fa-solid fa-paragraph fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Paragraph</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('3')">
+				<div class="card-body">
+					<i class="fa-solid fa-list-ol  fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Lists</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+
+			<div class="card item" onclick="selectItem('2')">
+				<div class="card-body">
+					<i class="fa-solid fa-images fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Images</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('5')">
+				<div class="card-body">
+					<i class="fa-solid fa-panorama fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Image Carousel</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('7')">
+				<div class="card-body">
+					<i class="fa-solid fa-video fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Videos</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('8')">
+				<div class="card-body">
+					<i class="fa-solid fa-microphone-lines fa-5x"
+						style="color: #e2554b;"></i>
+					<h6 class="card-title">Audios</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+			<div class="card item" onclick="selectItem('9')">
+				<div class="card-body">
+					<i class="fa-solid fa-file-pdf fa-5x" style="color: #e2554b;"></i>
+					<h6 class="card-title">Documents</h6>
+					<p class="card-text text-center">
+						Design Now <i class="fas fa-greater-than"></i>
+					</p>
+
+				</div>
+			</div>
+		</div>
+		<div class="right-button" onclick="scrollItems('right')">
+			<i class="fas fa-greater-than fa-2x" style="color: #2668d9;"></i>
+		</div>
+	</div> -->
+
+	<!-- 	<div class="container mt-5"> -->
+	<!-- <!		<div id="viewItems" class="mt-2"></div> -->
+	<!-- 	</div> -->
+	<!-- Bootstrap JS -->
+	<script>
+		
+		let selectedItem = null;
+		function selectItem(typeGiven, el) {
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+			var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+			
+			const card = event.currentTarget;
+			var hyperLinks = '';
+			if (typeGiven == 1) {
+				hyperLinks = 'table';
+			} else if (typeGiven == 6) {
+				hyperLinks = 'paragraph';
+			} else if (typeGiven == 3) {
+				hyperLinks = 'list';
+			} else if (typeGiven == 10) {
+				hyperLinks = 'embed';
+			} else if (typeGiven == 2) {
+				hyperLinks = 'galleryObjects?type=' + typeGiven;
+			} else {
+				hyperLinks = 'galleryObjects?type=' + typeGiven;
+			}
+			var type = {
+				'type': typeGiven
+			};
+			var cards = document.getElementsByClassName("table-button");
+			for (var i = 0; i < cards.length; i++)
+				cards[i].classList.remove("opase");
+			for (var i = 0; i < cards.length; i++)
+				cards[i].classList.add("opase");
+			el.classList.remove("opase");
+			document.getElementById("addNewItem").setAttribute("onClick",
+				"location.href='" + hyperLinks + "'");
+			document.getElementById("addDiv").classList.remove("d-none");
+
+			if (selectedItem) {
+				selectedItem.classList.remove('selected');
+			}
+			card.classList.add('selected');
+			selectedItem = card;
+			document.getElementById("viewItems").innerText = '';
+			var csrf_token = document.getElementById("csrf_token").value;
+
+			var type = {
+				'type': typeGiven,
+				'source': 'home'
+				//'_csrf': csrf_token
+			};
+			var cards = document.getElementsByClassName("table-button");
+			for (var i = 0; i < cards.length; i++)
+				cards[i].classList.remove("opase");
+			for (var i = 0; i < cards.length; i++)
+				cards[i].classList.add("opase");
+			el.classList.remove("opase");
+			select = document.getElementById("viewItems");
+
+			var container = document.createElement("div");
+			container.classList.add("container");
+
+			var row = document.createElement("div");
+			row.classList.add("row");
+
+			$.ajax({
+					type: "POST",
+					url: "/getObjectsTypeWise",
+					data: JSON.stringify(type),
+					dataType: 'json',					
+					beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+					contentType: "application/json",
+					success: function (data) {
+						for (let i = 0; i < data.length; i++) {
+							//debugger;
+							var col = document.createElement("div");
+							col.classList.add("col");
+							col.innerHTML = data[i].card_data;
+							row.appendChild(col);
+
+						}
+
+						container.appendChild(row);
+						select.appendChild(container);
+					},
+					error: function (xhr, textStatus, errorThrown) {
+						if (xhr.status == 405) {
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+						}
+					}
+				});
+		}
+
+		function scrollItems(direction) {
+			const container = document.querySelector('.items-container');
+			const scrollAmount = container.clientWidth;
+
+			if (direction === 'left') {
+				container.scrollLeft -= scrollAmount;
+			} else if (direction === 'right') {
+				container.scrollLeft += scrollAmount;
+			}
+		}
+	</script>
+	<script>
+		function searchBar() {
+			//debugger;
+			const searchBar = document.getElementById("searchBarInput");
+			const searchQuery = searchBar.value.toLowerCase();
+			const divs = document.querySelectorAll('.col'); // Replace '.item' with the actual class/attribute of your divs
+
+			divs.forEach(div => {
+				const content = div.textContent.toLowerCase();
+				if (content.includes(searchQuery)) {
+					div.style.display = 'block';
+				} else {
+					div.style.display = 'none';
+				}
+			});
+		}
+	</script>
+	<script>
+		function deleteObject(object_id, el) {
+			showMessageBox('delete');
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+			var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+			$('#messageBoxConfirmBtn').click(function () {
+				var type = {
+					'object_id': object_id
+				};
+				$.ajax({
+					type: "POST",
+					url: "/deleteObject",
+					data: JSON.stringify(type),
+					dataType: 'text',
+					beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+					contentType: "application/json",
+					success: function (data) {
+						$(el).closest('.col').remove();
+						showMessageBox('success');
+					},
+					error: function (xhr, textStatus, errorThrown) {
+						if (xhr.status == 405) {
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+						}
+					}
+				});
+			});
+		}
+	</script>
+	<script>
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+		const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+		const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+	</script>
+	<div id="includeFooter"></div></div>
+</body>
+
+</html>

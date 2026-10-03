@@ -1,0 +1,236 @@
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SVPNPA</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+<!-- Favicons -->
+<link href="resource/assets/img/favicon.png" rel="icon">
+<link href="resource/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lato&family=Noto+Sans&family=Nunito&family=Roboto&display=swap"
+	rel="stylesheet">
+<!-- support CSS Files -->
+<link href="resource/assets/support/aos/aos.css" rel="stylesheet">
+<link href="resource/assets/support/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="resource/assets/support/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="resource/assets/support/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="resource/assets/support/glightbox/css/glightbox.min.css"
+	rel="stylesheet">
+<link href="resource/assets/support/remixicon/remixicon.css"
+	rel="stylesheet">
+<link href="resource/assets/support/swiper/swiper-bundle.min.css"
+	rel="stylesheet">
+<script src="resource/assets/js/jQuery-1.11.2.js"></script>
+<!-- Template Main CSS File -->
+<link href="resource/assets/css/cms-style.css" rel="stylesheet">
+</head>
+<body ng-app="ajssample" ng-controller="editMenuContentController">
+
+	<div class="cms_heading">
+		<h2 class='text-center'>SVPNPA-ADMIN HOME PAGE</h2>
+	</div>
+	<header id="header" class="align-items-center">
+		<div class="">
+			<div class="container align-items-center menu_nav">
+				<div class="row">
+					<nav id="navbar" class="navbar order-last order-lg-0">
+						<ul>
+							<li><a class="nav-link scrollto active" href="admin_home.htm">Home</a></li>
+                                <li><a class="nav-link scrollto" href="addmenu.htm">AddMenu</a></li>  
+                                <li><a class="nav-link scrollto" href="addmenucontent.htm">AddMenuContent</a></li> 
+							<li><a class="nav-link scrollto" href="change.html">Change Password</a></li>
+							<li><a class="nav-link scrollto" href="logOut.htm">LogOut</a></li>
+						</ul>
+						<i class="bi bi-list mobile-nav-toggle"></i>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div>
+		<br />
+		<h4>Two Step Navigation Menu Items</h4>
+		<div class="ind_field">
+		<spring:form action="add_content.htm" method="POST" commandName="WebMenuBean"  enctype="multipart/form-data" autocomplete="off">
+			<div class="row">			                             
+				<div class="col-lg-2 col-md-2 col-sm-2">
+					<label>Main Navigation Items</label> <select class="form-control"
+						name="mainlevel" id="main_dsc" required="true"
+						data-ng-model="NpaDetails.mainlevel_desc"
+						ng-change="getLevelOneData();">
+						<option value="">Select</option>
+						<c:forEach items="${mainList}" var="rg">
+							<option value="${rg.mainlevel}"><c:out
+									value="${rg.mainlevel_desc}" /></option>
+						</c:forEach>
+					</select>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2">
+					<label>Level One Navigation</label> <select class="form-control"
+						name="level1" id="level1_dsc" required="true"
+						data-ng-model="NpaDetails.level1_desc"
+						ng-change="getLevelTwoData();">
+						<option value="">Select</option>
+						<c:forEach items="${levelOneList}" var="rg">
+							<option value="${rg.level1}"><c:out value="${rg.level1_desc}" /></option>
+						</c:forEach>
+						<option ng-repeat="x in listofLevelOneMenu" value="{{x.level1}}">{{x.level1_desc}}</option>
+					</select>
+				</div>
+
+
+	<%-- 		
+		<div ng-if="true">
+					<h1>Content to render when condition is true....</h1>
+				</div>
+
+				<span ng-if="listofLevelTwoSize  > 1">
+				 equal zero {{listofLevelTwoMenu.length }} -- {{listofLevelTwoSize}} 
+				 </span> --%>
+				
+
+				<div class="col-lg-2 col-md-2 col-sm-2" ng-if="listofLevelTwoSize  > 1">
+					<label>Level Two Navigation</label> <select class="form-control"
+						name="level2" id="level2_dsc" required="true"
+						data-ng-model="NpaDetails.level2_desc">
+						<option value="">Select</option>
+						<c:forEach items="${levelTwoList}" var="rg">
+							<option value="${rg.level2}"><c:out
+									value="${rg.level2_desc}" /></option>
+						</c:forEach>
+						<option ng-repeat="x in listofLevelTwoMenu" value="{{x.level2}}">{{x.level2_desc}}</option>
+					</select>
+				</div>
+				<div class="clearfix"></div>
+				<br /><hr/>
+		
+            <table id="myTable1">
+              <tr class="row">          
+                <td class="col-lg-6 col-md-6 col-sm-6" colspan="2">
+                  <label>Heading</label>
+                  <input type="text" name="heading" class="form-control">
+                </td> 
+                </tr>  <tr class="row">  
+                <td class="col-lg-6 col-md-6 col-sm-6"  colspan="2">
+                  <label>Sub-Heading</label>
+                  <input type="text" name="sub_heading" class="form-control">
+                </td>
+                </tr> 
+                <tr class="row"> 
+                <td class="col-lg-6 col-md-6 col-sm-6"> 
+                  <label>Content Text</label>
+                  <textarea class="form-control" name="content" id ="contnt" rows="3"></textarea>                 
+                </td>
+                <td>
+                <button type="button" class="btn btn-secondary" onclick="myInsideTab()" >Add</button>                
+                <button type="button" class="btn btn-secondary" onclick="myInsideDel()" >Delete</button>
+                  <td id="adCont">
+                  </td>
+                </td>
+                </tr> 
+                <tr class="row">
+                <td> 
+                <table id="myInsideTab">
+                <tr>
+                <td class="col-lg-6 col-md-6 col-sm-6">
+                  </td>
+                </tr>
+                </table>
+                </td>
+                </tr>
+                 <tr class="row">
+                <td class="col-lg-6 col-md-6 col-sm-6" colspan="2">
+                  <label>Content Image</label>
+                  <input type="file" name="content_image" class="form-control">
+               </td>
+                </tr>             
+            </table>
+          <%--   <table  id="myTable">
+            <tr class="row">          
+                <td class="col-lg-6 col-md-6 col-sm-6">
+                  </td> 
+                </tr>  <tr class="row">  
+                <td class="col-lg-6 col-md-6 col-sm-6">
+                  </td>
+                </tr> 
+                <tr class="row"> 
+                <td class="col-lg-6 col-md-6 col-sm-6"> 
+                  </td>
+                </tr>  <tr class="row">
+                <td class="col-lg-6 col-md-6 col-sm-6">
+                  </td>
+                </tr>
+            </table> 
+               <div class="text-center">         
+                <button type="button" class="btn btn-secondary" onclick="myAddFun()" >Add</button>
+                <button type="button" class="btn btn-secondary" onclick="myDelFun()" >Delete</button>
+              </div> --%>
+				<div class="text-center">
+					<br />
+					<button type="submit" class="btn btn-secondary">Save</button>
+				</div>
+				<div class="clearfix"></div>
+				<br />
+			</div>
+			</spring:form>
+		</div>
+	</div>
+	<script>
+function myInsideTab(){
+	 var table = document.getElementById("myInsideTab");
+	  var row1 = table.insertRow(1);
+	  var r1cell1 = row1.insertCell(0);
+	  r1cell1.innerHTML = '<label>Content Text</label><textarea name="content" class="form-control" rows="3" style="width:50%;"></textarea>';
+}
+function myInsideDel(){
+	  document.getElementById("myInsideTab").deleteRow(-1);
+}
+	
+function myAddFun() {
+  var table = document.getElementById("myTable");
+  var row1 = table.insertRow(4);
+  var row2 = table.insertRow(5);
+  var row3 = table.insertRow(6);
+  var row4 = table.insertRow(7);
+  var r1cell1 = row1.insertCell(0);
+  var r2cell1 = row2.insertCell(0);
+  var r3cell1 = row3.insertCell(0);
+  var r4cell1 = row4.insertCell(0);
+  r1cell1.innerHTML = '<label>Heading</label><input type="text" name="heading" class="form-control" style="width:50%;">';
+  r2cell1.innerHTML = '<label>Sub-Heading</label><input type="text" name="sub_heading" class="form-control" style="width:50%;">';
+  r3cell1.innerHTML = '<label>Content Text</label><textarea name="content" class="form-control" rows="3" style="width:50%;"></textarea>';
+  r4cell1.innerHTML = '<label>Content Image</label><input type="file" name="content_image" class="form-control" style="width:50%;">';
+}
+</script>
+<script>
+function myDelFun() {
+  this.myDelFun1();
+  this.myDelFun2();
+  this.myDelFun3();
+  this.myDelFun4();
+}
+function myDelFun1() {
+	  document.getElementById("myTable").deleteRow(-1);
+	}
+function myDelFun2() {
+	  document.getElementById("myTable").deleteRow(-1);
+	}
+function myDelFun3() {
+	  document.getElementById("myTable").deleteRow(-1);
+	}
+function myDelFun4() {
+	  document.getElementById("myTable").deleteRow(-1);
+	}
+</script>
+	<script src="${pageContext.request.contextPath}/resource/angularjs/1.8.2/angular.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resource/angularjs/app.js"></script>
+	<script src="${pageContext.request.contextPath}/resource/scripts/controllers/EditMenuContentController.js"></script>
+</body>
+</html>

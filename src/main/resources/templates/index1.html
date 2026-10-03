@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SVPNPA</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+</head>
+<body>
+	<!-- ======= Header ======= -->
+	<header id="header" class="align-items-center">		    <input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+		<div class="user_handful">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-4 col-5">
+						<a href="#" class="about-btn1"><span><img
+								src="static/resource/assets/img/media.png" alt="Media Icon"></span>Media
+							Room</a>&nbsp;&nbsp; <a href="#" class="about-btn2"><span><img
+								src="static/resource/assets/img/cart.png" alt="Cart Icon"></span>Suraksha
+							Plaza</a>
+					</div>
+					<div
+						class="col-lg-8 col-md-8 col-sm-8 col-7 hidden-sm hidden-xs top-info">
+						<div class="toprow">
+							<div class="fontlistdiv pull-right">
+								<span>
+									<form>
+										<input type="text" placeholder="Search"> <a href="#"
+											target="_self"><img
+											src="static/resource/assets/img/magnifier.png" alt="Magnifier"></a>
+									</form>
+								</span>
+								<ul>
+									<li>
+										<button id="btn-increase" class="btn btn-xs btnstyle">A+</button>
+										<button id="btn-orig" class="btn btn-xs btnstyle">A</button>
+										<button id="btn-decrease" class="btn btn-xs btnstyle">A-</button>
+									</li>
+									<li>
+										<button class="nocolor">&nbsp;T&nbsp;</button>
+										<button class="redcolor">&nbsp;T&nbsp;</button>
+										<button class="greencolor">&nbsp;T&nbsp;</button>
+										<button class="bluecolor">&nbsp;T&nbsp;</button>
+									</li>
+									<li>
+										<div id="google_translate_element"></div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row logo_area">
+				<div class="col-lg-1 col-md-2 col-sm-2 col-2">
+					<img src="static/resource/assets/img/academy_logo.png" alt="NPA Logo"
+						style="float: left;">
+				</div>
+				<div class="col-lg-10 col-md-8 col-sm-10 col-10 text-center">
+					<h1>Sardar Vallabhbhai Patel National Police Academy</h1>
+				</div>
+				<div class="col-lg-1 col-md-2 col-sm-2 text-right"
+					style="text-align: right;">
+					<img src="static/resource/assets/img/svp_img.png"
+						alt="Sardar Vallabhbhai Patel">
+				</div>
+			</div>
+		</div>
+		<div class="">
+			<div class="container align-items-center menu_nav">
+				<div class="row">
+					<nav id="navbar" class="navbar order-last order-lg-0">
+    <ul>
+        <!-- Home Link -->
+        <li><a class="nav-link scrollto active" href="/getlogin">Home</a></li>
+
+        <!-- Main Menu -->
+        <li th:each="menu : ${mainList}" class="dropdown">
+            <a href="#"><span th:text="${menu.mainlevel_desc}"></span> <i class="bi bi-chevron-down"></i></a>
+
+            <!-- Submenu Items -->
+            <ul th:if="${menu.menuList}">
+                <li th:each="submenu : ${menu.menuList}" class="dropdown">
+                    <a th:href="@{|/${submenu.menu_url}?mainlevel=${submenu.mainlevel}&level1=${submenu.level1}&level2=${submenu.level2}|}"
+                       th:attr="onclick=@{|getLoadingData1('${submenu.menu_url}', '${submenu.mainlevel}||${submenu.level1}||${submenu.level2}||${submenu.level3}')|}">
+                        <span th:text="${submenu.level1_desc}"></span> <i class="bi bi-chevron-right"></i>
+                    </a>
+                    <ul>
+                        <li th:if="${submenu.subMenu.size() > 0}" th:each="subsubmenu : ${submenu.subMenu}">
+                            <a href="#" target="_self"><span class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
+                            <ul>
+                                <li th:each="lastmenu : ${subsubmenu.menuList}">
+                                    <a th:href="@{|/${lastmenu.menu_url}?mainlevel=${lastmenu.mainlevel}&level1=${lastmenu.level1}&level2=${lastmenu.level2}|}"
+                                       target="_self"
+                                       th:attr="onclick=|getLoadingData2('${lastmenu.menu_url}', '${subsubmenu.mainlevel}||${subsubmenu.level1}||${subsubmenu.level2}||${lastmenu.level3}')|">
+                                        <span class="data-hover" th:text="${lastmenu.level3_desc}"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li th:unless="${submenu.subMenu.size() > 0}">
+                            <a th:href="@{|/${submenu.menu_url}?mainlevel=${submenu.mainlevel}&level1=${submenu.level1}&level2=${submenu.level2}|}"
+                               target="_self"
+                               th:attr="onclick=@{|getLoadingData3('${submenu.menu_url}', '${submenu.mainlevel}||${submenu.level1}||${submenu.level2}||${submenu.level3}')|}">
+                                <span class="data-hover" th:text="${submenu.level2_desc}"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <!-- LogIn Link -->
+        <li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>
+    </ul>
+    <i class="bi bi-list mobile-nav-toggle"></i>
+</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+
+
+	<main id="main">
+		<section>
+			<div class="container" data-aos="fade-up">
+				<div id="carouselExampleCaptions" class="carousel slide"
+					data-bs-ride="carousel"
+					style="background: #fff; margin-bottom: 10px">
+
+					<div class="carousel-inner">
+						<div class="carousel-item active">
+							<img src="static/resource/assets/img/PM_HM.jpg" class="d-block w-100"
+								alt="...">
+						</div>
+						<div class="carousel-item">
+							<img src="static/resource/assets/img/SVPNPA.jpg" class="d-block w-100"
+								alt="...">
+						</div>
+					</div>
+					<button class="carousel-control-prev" type="button"
+						data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button"
+						data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+						<span class="carousel-control-next-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Next</span>
+					</button>
+				</div>
+			</div>
+
+			</div>
+		</section>
+
+		<!-- ======= About Section ======= -->
+		<section>
+			<div class="container" data-aos="fade-up">
+				<div class="row no-gutters">
+					<div class="content d-flex align-items-stretch">
+						<div class="content">
+							<p
+								style="text-align: justify; margin-bottom: 0; text-indent: 50px; padding: 0 0 15px 0;">The
+								Sardar Vallabhbhai Patel National Police Academy (SVPNPA),
+								trains officers of the Indian Police Service, who have been
+								selected through an All India based Civil Services Examination.
+								The trained officers will be posted as Assistant Superintendent
+								of Police (ASP) in their respective states under whom the other
+								sub-ranks of police force will be working. The recruitment of
+								sub-ranks such as Constables, Sub-Inspectors, Deputy
+								Superintendents of Police is each states prerogative, and will
+								be done by respective state Director Generals of Police. The IPS
+								cadre is controlled by the Home Ministry of the Government of
+								India and the officer of this service can only be appointed
+								removed by an order of the President of India.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End About Section -->
+		<!-- ======= Slider ======= -->
+		<section>
+			<div class="container" data-aos="fade-up">
+				<div class="row d-flex no-gutters">
+					<div class="col-xl-4">
+						<div class="links">
+							<h4>Quick Links</h4>
+							<ul>
+								<li><a href="#">Tenders</a></li>
+								<li><a href="#">Vacancies</a></li>
+								<li><a href="#">Recruitment Rules</a></li>
+								<li><a href="#">RTI</a></li>
+								<li><a href="#">IPS Directory</a></li>
+								<li><a href="#">NPA Mail</a></li>
+								<li><a href="#">Police aur Seva</a></li>
+								<li><a href="#">Citizen Charter</a></li>
+								<li><a href="#">Indian Police In Service of The Nation</a></li>
+								<li><a href="#">G.O.A.L.S(Goals for Active Life Style)</a></li>
+								<li><a href="#">Quotation Calling Notice</a></li>
+								<li><a href="#">Internal complaints committee for
+										prevention sexual harassment at work place</a></li>
+							</ul>
+						</div>
+						<div class="upcoming_events">
+							<div class="" data-aos="fade-up">
+								<div class="row">
+									<div class="">
+										<a href="#"><img src="static/resource/assets/img/calender.png"
+											alt="Calender Icon"> Training Calendar</a> <a href="#"><img
+											src="static/resource/assets/img/suggestions.png"
+											alt="Messanger Icon"> Suggestions</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="content col-xl-8 align-items-stretch">
+						<div class="align-items-center">
+							<div class="moduletable">
+								<h4>New Notifications</h4>
+								<div class="globalnews">
+									<marquee width="100%" direction="up" scrolldelay="150"
+										loop="infinite" onmouseover="this.stop();"
+										onmouseout="this.start();" class="a-1">
+										<ul>
+											<li><a href="#">35 years Re-Union Seminar of 1987
+													Batch (40 RR) of IPS officers (May 19-20, 2022)</a></li>
+											<li><a href="#">2-days Seminar on "POCSO" (May
+													26-27, 2022)</a></li>
+											<li><a href="#">Five days Seminar on 'National
+													Security' (June 28 - July 02, 2022)</a></li>
+											<li><a href="#">5-days Course on 'Economic Offence'
+													(June 20-24, 2022)</a></li>
+											<li><a href="#">Mid Career Training Programme
+													PhaseIV/14th (30-05-2022 to 24-06-2022)</a></li>
+											<li><a href="#">Prime Minister's Silver Cup Essay
+													Competition- 2022</a></li>
+											<li><a href="#">Two days Seminar on 'Speedy Trial
+													&amp; Effecent Prosecution' (May 05-06, 2022)</a></li>
+											<li><a href="#">Course on 'Urban Operations' (April
+													25-29, 2022)</a></li>
+											<li><a href="#"> Half Yearly Law Bulletin (July -
+													Dec, 2020 Issue)</a></li>
+											<li><a href="#">"Legal coverage on COVID-19"
+													prepared by the Law Society of IPS Probationers of 72RR</a></li>
+										</ul>
+									</marquee>
+								</div>
+								<div class="onecatlink">
+									<a href="#" title="View More"> <span>View More</span>
+									</a>
+								</div>
+							</div>
+							<div class="acad_events">
+								<h4>Academy Events</h4>
+								<div class="globalnews">
+									<!--<marquee scrollamount="4" onmouseover="this.stop();" onmouseout="this.start();" behavior="scroll" direction="up">-->
+									<marquee width="100%" direction="up" scrolldelay="150"
+										loop="infinite" onmouseover="this.stop();"
+										onmouseout="this.start();" class="a-1">
+										<ul class="newsitems">
+											<li class="newsitem">
+												<div class="news">
+													<div class="picture">
+														<a href="#"
+															title="Visit of Hon'ble Governor of Uttrakhand, Lt.Gen (Retd.) Gurmit Singh">
+															<img
+															alt="Visit of Hon'ble Governor of Uttrakhand, Lt.Gen (Retd.) Gurmit Singh  "
+															src="https://www.svpnpa.gov.in/tmp/thumb_106_1961.jpg">
+														</a>
+													</div>
+												</div>
+												<div class="newsinfo">
+													<div class="newsextra">
+														<span class="newsdate">18 February 2022</span>
+													</div>
+													<h6 class="newstitle">
+														<a href="/index"
+															title="Visit of Hon'ble Governor of Uttrakhand, Lt.Gen (Retd.) Gurmit Singh">
+															<span>Visit of Hon'ble Governor of Uttrakhand,
+																Lt.Gen (Retd.) Gurmit Singh </span>
+														</a>
+													</h6>
+													<div class="newsintro">The Hon'ble Governor of
+														Uttrakhand, Lt.Gen (Retd.) Gurmit Singh visited the SVP</div>
+												</div>
+											</li>
+											<li class="newsitem">
+												<div class="news">
+													<div class="picture">
+														<a href=""
+															title="Interaction of Hon'ble Union Home Minister with IPS Probationers of 73 RR ">
+															<img
+															alt="Interaction of Hon'ble Union Home Minister with IPS Probationers of 73 RR "
+															src="https://www.svpnpa.gov.in/tmp/thumb_106_1929.jpeg"
+															style="position: relative; top: 9.5px">
+														</a>
+													</div>
+												</div>
+												<div class="newsinfo">
+													<div class="newsextra">
+														<span class="newsdate">04 December 2021</span>
+													</div>
+													<h6 class="newstitle">
+														<a href="/index"
+															title="Interaction of Hon'ble Union Home Minister with IPS Probationers of 73 RR ">
+															<span>Interaction of Hon'ble Union Home Minister
+																with IPS Probationers of 73 RR </span>
+														</a>
+													</h6>
+													<div class="newsintro">122 IPS Probationers including
+														25 lady officer trainees of 73 RR batch after com...</div>
+												</div>
+											</li>
+										</ul>
+									</marquee>
+
+									<div class="pagination"></div>
+
+
+									<div class="onecatlink">
+										<a href="/index" title="View More"> <span>View All</span>
+										</a>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+
+						<div class="up_coming">
+							<h4>Upcoming Courses</h4>
+							<div class="globalnews">
+								<marquee scrollamount="2"
+									onmouseover="this.setAttribute('scrollamount', 0, 0);"
+									onmouseout="this.setAttribute('scrollamount', 2, 0);"
+									behavior="scroll" direction="up">
+									<ul>
+
+										<li><a href="/index">MCTP Phase IV (14th program)</a></li>
+
+										<li><a href="/index">Seminar on "POCSO"</a></li>
+
+										<li><a href="/index">Course on Cyber Security &amp;
+												Cyber Forensic For Judicial Officers </a></li>
+
+										<li><a href="/index">35 Years Re-Union Seminar [1987
+												Batch (40 RR)]</a></li>
+
+										<li><a href="/index">Coordination among Police,
+												Prison, Judiciary &amp; FSL</a></li>
+
+										<li><a href="/index">Course on Cyber Security &amp;
+												Cyber Forensic For LEAs</a></li>
+
+										<li><a href="/index">Seminar on Speedy Trial &amp;
+												Efficient Prosecution</a></li>
+
+										<li><a href="/index">Course on Urban operations</a></li>
+									</ul>
+								</marquee>
+							</div>
+
+							<div class="onecatlink">
+								<a href="/index" title="View More"><span>View All</span></a>
+							</div>
+						</div>
+
+					</div>
+				</div>
+		</section>
+		<!-- End About Slider -->
+	</main>
+	<!-- End #main -->
+
+	<section>
+		<div class="container" data-aos="fade-up">
+			<div class="row no-gutters">
+				<div class="col-xl-8 col-md-8 col-sm-8 align-items-stretch">
+					<div id="carouselExampleCaptions" class="carousel slide"
+						data-bs-ride="carousel">
+
+						<div class="carousel-inner">
+							<div class="carousel-item active">
+								<img src="static/resource/assets/img/slider/01.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/02.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/03.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/04.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/05.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/06.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/07.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/08.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/09.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/10.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/11.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/12.jpg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/13.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/14.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/15.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/16.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/17.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/18.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="static/resource/assets/img/slider/19.jpeg"
+									class="d-block w-100" alt="...">
+							</div>
+						</div>
+						<button class="carousel-control-prev" type="button"
+							data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button"
+							data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+					<br />
+				</div>
+				<div class="content col-xl-4 col-md-4 col-sm-4">
+					<div class="contact">
+						<h4>Contact Us</h4>
+						<p>
+							Shivaramapalli,<br />Hyderabad - 500 052<br />INDIA.
+						</p>
+						<br />
+						<h6>Phone :</h6>
+						91-40-24015151 to 58(8 Lines)<br />91-40-24235999 (30 lines)<br />
+						<br />
+						<br />
+						<h6>Fax Number :</h6>
+						91-40-24015179<br />
+						<br />
+						<br />
+						<h6>Email :</h6>
+						info@example.com
+					</div>
+				</div>
+				<br />
+			</div>
+		</div>
+	</section>
+
+
+	<script>
+		function myFunction() {
+			alert("url== " + url + " -- x -- " + x);
+		}
+	</script>
+	<script>
+		function getLoadingData(url, x) {
+			alert("url== " + url + " -- x -- " + x);
+
+			if (x !== "") {
+				const myArray = x.split("||");
+				alert(myArray[0]);
+
+				$.ajax({
+					type : "POST",
+					headers: {
+                        'X-XSRF-TOKEN': document.getElementById("csrf_token").value						
+                   },
+					// url: "missionstat.htm?mainlevel=" + myArray[0] + "&level1=" + myArray[1]+ "&level2=" + myArray[2],
+					url : +url + "?mainlevel=" + myArray[0] + "&level1="
+							+ myArray[1] + "&level2=" + myArray[2],
+					success : function(data) {
+						alert("success");
+						//document.getElementById('event_description').value = data;
+						jQuery.noConflict();
+					}
+				});
+			}
+		}
+	</script>
+</body>
+
+</html>

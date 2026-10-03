@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>User Report</title>
+	<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+	<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+	<link href="static/assets/custom/css/style.css" rel="stylesheet">
+	<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+	<style>
+		.disabled {
+			pointer-events: none;
+			/* Prevents click events */
+			opacity: 0.5;
+			/* Optionally reduce the opacity to indicate it's disabled */
+		}
+	</style>
+	<!-- Import JS -->
+	<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+	<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+	<script src="static/assets/js/responsivevoice.js" type="text/javascript"></script>
+	<link href="static/assets/DataTables/DataTables-1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+	<link href="static/assets/DataTables/DataTables-1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+
+	<script src="static/assets/DataTables/DataTables-1.13.1/js/dataTables.bootstrap5.min.js"
+		type="text/javascript"></script>
+	<script src="static/assets/DataTables/DataTables-1.13.1/js/jquery.dataTables.min.js"
+		type="text/javascript"></script>
+</head>
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<!-- 	<div id="includeHeader"></div> -->
+
+	<form>
+		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		<div class="container">
+			<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="responseModalLabel">Response</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p id="responseMessage"></p>
+						</div>
+					</div>
+				</div>
+			</div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+			<h3 class="pageHeading">Users List</h3>
+			<div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+				<table id="example" class="table table-striped" style="width: 100%">
+					<thead>
+						<tr>
+							<th>Sr. no</th>
+							<th>User ID</th>
+							<th>Username</th>
+							<th>Edit</th>
+							<th>Delete</th>
+							</tr>
+					</thead>
+					<tbody>
+						<tr th:each="user, userStat : ${usersList}">
+							<td th:text="${userStat.index + 1}"></td>
+							<td th:text="${user.id}"></td>
+							<td th:text="${user.username}"></td>
+<!-- 							<td><button type="button" class="btn btn-primary" th:attr="data-username=${user.username},data-id=${user.id}" onclick="editUser(this.dataset.username, this.dataset.id)">Edit</button></td> -->
+							<td><a class="btn btn-primary" th:href="@{/editUserDetails(username=${user.username},id=${user.id})}">Edit</a></td>							
+							<td><button type="button" class="btn btn-primary" th:attr="data-username=${user.username},data-id=${user.id}" onclick="deleteUser(this.dataset.username, this.dataset.id)">Delete</button></td>
+						</tr>
+						</tbody>
+				</table>
+			</div>
+			<div class="toast-container position-fixed bottom-0 end-0 p-3">
+				<div id="liveToast" class="toast align-items-center text-bg-primary border-0" role="alert"
+					aria-live="assertive" aria-atomic="true">
+					<div class="d-flex">
+						<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+							data-bs-title="Click to Unlock" aria-label="Close"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+	<script>
+		new DataTable('#example');
+	</script></div>
+</body>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const lockIcons = document.querySelectorAll('.custom-lock');
+
+		lockIcons.forEach(icon => {
+			const username = icon.parentElement.querySelector('.username').textContent;
+			icon.setAttribute('data-username', username);
+		});
+	});
+</script>
+<script>
+function editUser(username,id){
+	var csrfToken = $('meta[name="_csrf"]').attr('content');
+	var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+	var data = {
+			 "username":username,
+			 "id":id
+		};
+	$.ajax({
+		type: "POST",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		headers : {
+			'X-CSRF-TOKEN' : csrfToken,
+			'X-XSRF-HEADER' : csrfHeader
+		},
+		url: "/editUser",								
+		contentType: "application/json",
+		data: JSON.stringify(data),			
+		success: function (response) {				
+			alert(response.success);
+			//return false;		
+		},
+		error: function (xhr, status, error) {
+            console.error("Error:", error)	            
+            //return false;	        
+		}
+	});
+}
+function editUser(username, id) {
+    window.location.href =
+        "/editUserDetails?username=" +
+        encodeURIComponent(username) +
+        "&id=" +
+        encodeURIComponent(id);
+}
+
+function deleteUser(username,id){
+	var csrfToken = $('meta[name="_csrf"]').attr('content');
+	var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+	var data = {
+			 "username":username,
+			 "id":id
+		};
+	$.ajax({
+		type: "POST",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		headers : {
+			'X-CSRF-TOKEN' : csrfToken,
+			'X-XSRF-HEADER' : csrfHeader
+		},
+		url: "/deleteUser",								
+		contentType: "application/json",
+		data: JSON.stringify(data),			
+		success: function (response) {				
+			alert(response.success);
+            window.location.reload();
+			return false;		
+		},
+		error: function (xhr, status, error) {
+            console.error("Error:", error)	            
+            //return false;	        
+		}
+	});
+}
+</script>
+
+
+</html>

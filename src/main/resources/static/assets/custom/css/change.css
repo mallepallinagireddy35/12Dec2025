@@ -1,0 +1,274 @@
+body {background-color:#171717; color:#FFF; background-image:none;}
+a {color:#ffff00;}
+a:hover, a:focus {
+    color: #ffff00;
+}
+.ul-listing ul li {background: rgba(0, 0, 0, 0) url("../images/aroow.png") no-repeat scroll 3px 12px;}
+.ul-listing ul li ul li {background: rgba(0, 0, 0, 0) url("../images/aroow.png") no-repeat scroll 3px 12px;}
+.accebility-bg{ background-color:#f2f2f2; border-bottom: 1px solid #e4e4e4;}
+.search-box ul li{color:#FFF;}
+.search{background:#f1f1f1; border:1px solid #d1cece; color:#333;}
+.search-buttion{ background: url(../images/search.png)no-repeat center; color:#333;}
+.search input { color:#333;}
+.content-area ul li {background: rgba(0, 0, 0, 0) url("../images/aroow.png") no-repeat scroll 3px 12px;}
+.content-area ul li ul li {background: rgba(0, 0, 0, 0) url("../images/link-arrow.png") no-repeat scroll 3px 8px;}
+.content-area h3{ font-size:100%; font-weight: 100; color:#fff; margin-bottom:15px; margin-top:15px; font-weight:600;}
+.content-area table th{border:#eceeef 1px solid;background-color:#000; color:#FFF;}
+.content-area table td{padding:10px; border: 1px solid #eceeef;}
+.content-area table td a{ color:#333;}
+.content-area table td a:hover{ color:#ff0000;}
+	/* provide some minimal visual accomodation for IE8 and below */
+.content-area table tr{background-color: #fff;}
+	/*  Define the background color for all the ODD background rows  */
+.content-area table tr:nth-child(odd){background-color: #000;}
+	/*  Define the background color for all the EVEN background rows  */
+.content-area table tr:nth-child(even){background-color: #333;}
+.content-area caption {color: #fff;}
+.accebility-bg{ background-color:#333; border-bottom: 1px solid #e4e4e4;} 
+.search-box ul li{color:#FFF;}
+.search{background:#f1f1f1; border:1px solid #d1cece;}
+.search-buttion{ background: url(../images/search.png)no-repeat center; color:#333;}
+.search input { color:#333;}
+/*** Menu Style CSS Start***/
+.navigation-bg{
+background: #4c4c4c; /* Old browsers */
+background: -moz-linear-gradient(top, #4c4c4c 0%, #131313 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #4c4c4c 0%,#131313 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #4c4c4c 0%,#131313 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+.sf-menu a {color: #ffff00;}
+.sf-menu li { background-image:url(../images/menu-border.jpg); background-position:right; background-repeat:no-repeat; white-space: nowrap; /* no need for Supersubs plugin */}
+.sf-menu ul li { background: #000; border-bottom:1px solid #fff; }
+.sf-menu ul ul li { background: #333; }
+.sf-menu li:hover,
+.sf-menu li.sfHover {
+	background: #333;
+}
+/*** arrows (for all except IE7) **/
+.sf-arrows .sf-with-ul {
+	padding-right: 2.5em;
+}
+/* styling for both css and generated arrows */
+.sf-arrows .sf-with-ul:after {
+	/* order of following 3 rules important for fallbacks to work */
+	border: 5px solid transparent;
+	border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-top-color: rgba(255,255,255,.5);
+}
+.sf-arrows > li > .sf-with-ul:focus:after,
+.sf-arrows > li:hover > .sf-with-ul:after,
+.sf-arrows > .sfHover > .sf-with-ul:after {
+	border-top-color: white; /* IE8 fallback colour */
+}
+/* styling for right-facing arrows */
+.sf-arrows ul .sf-with-ul:after {
+	border-color: transparent;
+	border-left-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-left-color: rgba(255,255,255,.5);
+}
+.sf-arrows ul li > .sf-with-ul:focus:after,
+.sf-arrows ul li:hover > .sf-with-ul:after,
+.sf-arrows ul .sfHover > .sf-with-ul:after {
+	border-left-color: white;
+}
+
+/*** Menu Style CSS End***/
+.logo-top-back{/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dbdbdb+0,ffffff+100 */
+background: rgb(219,219,219); /* Old browsers */
+background: -moz-linear-gradient(top, rgba(219,219,219,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, rgba(219,219,219,1) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, rgba(219,219,219,1) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+/*What's New */
+.whats-new{border:1px solid #333;}
+.heading-whats-new{color:#fff; background-color:#333;}
+.n-play-pause a{color:#fff; }
+.n-play-pause a:hover{ }
+#vertical-ticker li{border-bottom:1px solid #ddd;}
+#vertical-ticker li span{color:#b1b1b1;}
+/* Wahts New End */
+#vertical-ticker li:nth-child(even) {background: #333}
+#vertical-ticker li:nth-child(odd) {background: #000}
+/* slide */
+/* slide End */
+/* body Content */
+.content-area{}
+.content-area h1{color:#f77c24;}
+
+.content-area span a{color:#ffff00;}
+.content-area h2{color:#fff;}
+.content-area h3{color:#fff;}
+/* body Content end */
+
+.footer-logo-bg { background:#464545;}
+.footer-logo li{background-image:url(../images/footer-line.jpg); background-position:right; background-repeat:no-repeat;}
+
+.footer li {}
+.footer li a { color:#ffff00;}
+.footer li a:hover { color:#ffff00;}
+.footer-left{color:#fff;}
+.footer-right{color:#fff;}
+
+
+.left-menu ul li:hover{ background-color:#f5f5f5;}
+.hedings-m{ background:#f1f1f1; }
+
+.top-menu a {color: #ffff00 !important;}
+.top-menu li { border-right: 1px solid #CCC; padding: 4px 15px;
+    white-space: nowrap; }
+.top-menu ul li { background: #666; border-bottom:1px solid #fff; }
+.top-menu ul ul li { background: #666; }
+.top-menu li:hover,
+.top-menu li.sfHover {
+	background: #333;
+}
+
+.top-menu ul .hight-contrast {
+    background-color: #333 !important;
+    color: #fff;
+}
+
+
+
+
+/* styling for both css and generated arrows */
+.sf-arrows1 .sf-with-ul:after {
+	/* order of following 3 rules important for fallbacks to work */
+	border: 5px solid transparent;
+	border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-top-color: rgba(255,255,255,.5);
+}
+.sf-arrows1 > li > .sf-with-ul:focus:after,
+.sf-arrows1 > li:hover > .sf-with-ul:after,
+.sf-arrows1 > .sfHover > .sf-with-ul:after {
+	border-top-color: white; /* IE8 fallback colour */
+}
+/* styling for right-facing arrows */
+.sf-arrows1 ul .sf-with-ul:after {
+	border-left-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-left-color: rgba(255,255,255,.5);
+}
+.sf-arrows1 ul li > .sf-with-ul:focus:after,
+.sf-arrows1 ul li:hover > .sf-with-ul:after,
+.sf-arrows1 ul .sfHover > .sf-with-ul:after {
+	border-left-color: white;
+}
+
+/*** arrows (for all except IE7) **/
+.sf-arrows1 .sf-with-ul {
+	padding-right: 0.5em;
+}
+/* styling for both css and generated arrows */
+.sf-arrows1 .sf-with-ul:after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: -1em;
+	margin-top: -3px;
+	height: 0;
+	width: 0;
+	/* order of following 3 rules important for fallbacks to work */
+	border: 5px solid transparent;
+	border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-top-color: rgba(255,255,255,.5); margin-right:4px;
+}
+
+.last-font{ color:#ffff00;}
+.last-font:hover{ color:#fff;}
+.top-menu input { font-size:80%;}
+
+
+caption {color: #777;}
+.nos {background-color: #feef58; border-bottom: 5px solid #cc6666;  color: #000000;}
+.left-sidebar h3 {background-color: #000; color: #fff;}
+.left-sidebar ul li a { background: rgba(0, 0, 0, 0) url("../images/left-menu-icons.png") no-repeat scroll 3px 12px; border-bottom:1px solid #CCC;}
+.left-sidebar ul li a:hover {
+    background: rgba(0, 0, 0, 5) url("../images/left-menu-icons.png") no-repeat scroll 3px 12px; border-bottom:1px solid #CCC; text-decoration:none;}
+.left-sidebar ul li a:active {
+    background: rgba(0, 177, 172, 5) url("../images/left-menu-icons.png") no-repeat scroll 3px 12px; border-bottom:1px solid #CCC;  color:#fff;}
+.left-heading{}
+.left-heading h3 a { background-color: #000; color: #ffff00;}
+
+/*------------------------------------------------------------------------Start Gallery page ------------------------------------------------------*/
+.photo_gallery {margin: 12px 5px 0 5px;}
+.photo_item { background: #e5e5e5; }
+.photo_item a.photo_item_link {border: 8px solid #e5e5e5;}
+.photo_item a.photo_item_link:hover {border: 8px solid #000;}
+.view-all{background-color:#CCC;}
+.gallery-img-title{background-color: #f9f9f9;}
+.background-white{ background-color:#333;}
+.background-dark-black{background-color:#242425;}
+.background-dark-gray{background-color:#2a2a2c;}	
+.chart-point1{ background-color:#eeeeee;}
+.point{ width:70%; float:right;}
+.home-dashboard ul li {background: rgba(0, 0, 0, 0) url("../images/aroow.png") no-repeat scroll 3px 12px;}
+.buttons-b h3{ background-color:#333;}	
+.buttons-b h3 a{color: #ffff00;}
+.mt-news ul {background-position: -1000px center; background-repeat: no-repeat;}
+.mt-news li {  background: rgba(0, 0, 0, 0) url("../images/bullet3.png") no-repeat scroll left 11px;}
+.mt-news li a {color: #039;}
+.modern-ticker ul li { background: rgba(0, 0, 0, 0) none repeat scroll 0 0; list-style: outside none none;}
+.mt-prev { background: rgba(0, 0, 0, 0) url("../images/prev-icon.png") no-repeat scroll left top;}
+.mt-next { background: rgba(0, 0, 0, 0) url("../images/next-icon.png") no-repeat scroll left top;}
+.breadcrumb {
+    background-color: #000;
+}
+.breadcrumb > .active {
+    color: #ccc;
+}
+
+.well {
+    background-color: #000;
+    border: 1px solid #333;
+}
+
+.indian-flag p{ color:#333;}
+
+.projects li a {
+    background-color: #000;
+    border: 2px solid #333;
+}
+
+.metting li:nth-child(even) {background: #000}
+.metting li:nth-child(odd) {background: #333}
+
+.heading-metting {
+    background-color: #333;
+    border-bottom: 5px solid #cbc6ca;
+
+}
+
+.logo a {
+    color: #ffff00;
+}
+
+.background-img-inner-header {
+    background-color: #333333;
+    border: 1px solid #171717;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    margin-bottom: 20px;
+    min-height: 20px;
+}
+
+.treeview li a{color:#fff; text-decoration:none; background-color:#333 !important;
+background:url("../images/left-menu-icons.png") no-repeat scroll 6px 12px;
+    display: block;
+    padding-bottom: 5px;
+    padding-left: 22px;
+    padding-top: 5px; font-size:95%;
+	line-height:30px; border-bottom:1px solid #fff; color:#fff;
+}
+
+.director-text { background-color:#333;}
+
+.director-text p a {color: #ffff00;}
+.director-text p a:hover {color: #fff;}
+
+.arrow_boxright {
+	background: #333;
+}
+.running-courses-text p a{ color:#ffff00;}
+.running-courses-text p a:hover{ color:#fff;}
+.background-icons{background-color:#3d3c3c;}

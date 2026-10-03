@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+
+<head>
+<meta charset="UTF-8">
+<title>Table Designer</title>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<style>
+tr:hover .deleteStyle {
+	opacity: 1;
+}
+
+.deleteStyle {
+	opacity: 0;
+}
+</style>
+
+<script>
+	$(function () {		
+		//$("#includeHeader").load("header.html");
+		$("#includeMsgBox").load("static/msgBox.html");
+		$("#includeFooter").load("static/footer.html");
+	});
+</script>
+
+</head>
+
+
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<!--<header th:replace="header.html::header"></header>-->
+
+		<div id="includeMsgBox"></div>
+		<!-- Button trigger modal -->
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				Design your Tables</h3>
+		</div>
+		<div class="container">
+			<form method="post" id="myForm" name="myForm">
+				<div class="card">
+					<!--<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+					<div class="card-header bg-danger-subtle">Properties</div>
+					<div class="card-body">
+						<div class="row g-2 d-flex justify-content-center mt-3">
+							<div class="col-3 mb-3 floating-label">
+								<input type="number" id="rowCount" name="rowCount"
+									th:value="${rowCount}" required="true" autocomplete="off"
+									onkeypress="return isNumber(event)" class="form-control"
+									placeholder="Rows" /> <label for="rowCount">Number of
+									Rows</label>
+							</div>
+							<div class="col-3 mb-3 floating-label">
+								<input type="number" id="colCount" name="colCount"
+									th:value="${colCount}" required="true" autocomplete="off"
+									onkeypress="return isNumber(event)" class="form-control"
+									placeholder="Columns" /> <label for="colCount">Number
+									of Columns</label>
+							</div>
+							<div class="col-3 mb-3">
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault1" checked>
+									<label class="form-check-label" for="flexRadioDefault1">
+										First row as Table Header </label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault2"> <label
+										class="form-check-label" for="flexRadioDefault2">
+										First Column as table header </label>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+								<input type="text" id="object_title" name="object_title"
+									th:value="${object_title}" required="true" class="form-control"
+									placeholder="Table title" /> <label for="object_title">Title</label>
+							</div>
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+								<input type="text" id="description" name="description"
+									th:value="${description}" required="true" class="form-control"
+									placeholder="Description" /> <label for="description">Description</label>
+							</div>
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+								<input type="text" id="help_text" name="help_text"
+									th:value="${help_text}" class="form-control"
+									placeholder="Help text" /> <label for="help_text">Help
+									Text</label>
+							</div>
+
+						</div>
+						<div class="row g-2 d-flex justify-content-center">
+							<div class="col-6 mb-3 floating-label">
+								<input type="text" id="keywords" name="keywords"
+									th:value="${keywords}" class="form-control"
+									placeholder="Keywords" /> <label for="keywords">Keywords</label>
+							</div>
+						</div>
+						<div id="hideInhindiCard">
+							<div class="d-flex flex-row justify-content-center">
+								<input type="checkbox" id="defineStyles">Define Styles
+							</div>
+							<div id="customStylesDiv" style="display: none;">
+								<hr>
+								<h6 class="text-center">Styles</h6>
+								<div class="row g-2 d-flex justify-content-center">
+									<div class="col-3 mb-3">
+										<div class=" input-group">
+											<span class="input-group-text"><input
+												class="form-check-input mt-0" type="checkbox" value=""
+												id="customSCheckBox" aria-label="checkbox"></span>
+											<div class=" floating-label">
+												<input type="text" id="styles" name="styles"
+													th:value="${styles}" class="form-control customS" readonly
+													placeholder="Custom Styles" /> <label for="custom Styles">Custom
+													Styles</label>
+											</div>
+										</div>
+										<div class="text-muted">
+											Syntax: semi-colon(;) seperated<br>Example: color: red;
+											text:white;
+										</div>
+									</div>
+									<div class="col-3 mb-3">
+										<div class="input-group">
+											<span class="input-group-text"><input
+												class="form-check-input mt-0" type="checkbox"
+												id="customCCheckBox" aria-label="checkbox"></span>
+											<div class=" floating-label">
+												<input type="text" id="classes" name="classes"
+													th:value="${classes}" class="form-control customC" readonly
+													placeholder="Custom Classes" /> <label
+													for="custom Classes">Custom Classes</label>
+											</div>
+										</div>
+										<div class="text-muted">
+											Syntax: semi-colon(;) seperated<br>Example: color: red;
+											text:white;
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="d-flex flex-row justify-content-center">
+								<a class="btn btn-primary" onclick="createTable()"><i
+									class="fas fa-object-group"></i> &nbsp;Design Table</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 			<div class="col" id="hindiCard" style="display: none;"> -->
+				<!-- 				<div class="card"> -->
+				<!-- 					<div class="card-header bg-danger-subtle">Hindi</div> -->
+				<!-- 					<div class="card-body"> -->
+				<!-- 						<div class="row g-2 d-flex justify-content-center"> -->
+				<!-- 							<div class="col-6 mb-3 floating-label"> -->
+				<!-- 								<input type="text" id="object_title" name="object_title" -->
+				<!-- 									th:value="${object_title}" required class="form-control" -->
+				<!-- 									placeholder="Table title" /> <label for="object_title">Title</label> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 						<div class="row g-2 d-flex justify-content-center"> -->
+				<!-- 							<div class="col-6 mb-3 floating-label"> -->
+				<!-- 								<input type="text" id="description" name="description" -->
+				<!-- 									th:value="${description}" class="form-control" -->
+				<!-- 									placeholder="Description" /> <label for="description">Description</label> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 						<div class="row g-2 d-flex justify-content-center"> -->
+				<!-- 							<div class="col-3 mb-3 floating-label"> -->
+				<!-- 								<input type="text" id="help_text" name="help_text" -->
+				<!-- 									th:value="${help_text}" class="form-control" -->
+				<!-- 									placeholder="Help text" /> <label for="help_text">Help -->
+				<!-- 									Text</label> -->
+				<!-- 							</div> -->
+
+				<!-- 						</div> -->
+				<!-- 						<div class="row g-2 d-flex justify-content-center"> -->
+				<!-- 							<div class="col-6 mb-3 floating-label"> -->
+				<!-- 								<input type="text" id="keywords" name="keywords" -->
+				<!-- 									th:value="${keywords}" class="form-control" -->
+				<!-- 									placeholder="Keywords" /> <label for="keywords">Keywords</label> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+				<!-- 				</div> -->
+				<!-- 			</div> -->
+				<div id="designTable"
+					th:attr="style=${tableData!=null ? 'display:block;' : 'display:none'}">
+					<div class="card mt-2">
+						<div class="card-header bg-danger-subtle">Table</div>
+						<div class="card-body">
+							<a class="btn btn-primary" onClick="addRow()"><i
+								class="fas fa-diagram-next"></i>&nbsp;Add Row</a><a
+								class="btn btn-success" onClick="addColumn()"><i
+								class="fas fa-diagram-next fa-rotate-270"></i>&nbsp;Add Column</a> <input
+								type="hidden" th:value="${newJson}" name="newJson" id="newJson">
+							<!--<input type="hidden" th:value="${object_title}"
+								name="object_title" id="object_title_new"> -->
+							<table id="myTable">
+								<tbody>
+									<tr th:each="row, rowStat : ${tableData}" draggable="true"
+										th:classappend="${rowStat.index == 0} ? 'bg-secondary': 'bg-light draggable'">
+										<td class="deleteStyle my-auto"><i
+											class="fas fa-trash text-danger" onclick="deleteRow(this);"
+											title="Delete Row"></i></td>
+										<td class="deleteStyle my-auto"><i
+												th:if="${rowStat.index != 0}" class="fas fa-grip-vertical"></i>
+											</td>
+										<td th:each="cell, colStat : ${row}">
+											<div class="input-group">
+												<input type="text" class="form-control" th:value="${cell}"
+													name="value"
+													th:id="'id-'+${rowStat.index}+'-'+${colStat.index}"
+													required>
+												<button onclick="insertLinkMethod(this);"
+													data-bs-toggle="modal" data-bs-target="#linkInfoPopup"
+													class="btn btn-primary">
+													<i class="fas fa-link"></i>
+												</button>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="d-flex flex-row justify-content-center">
+								<input type="checkbox" id="togglehindiCard">Hindi
+								Content
+							</div>
+							<div class="d-flex flex-row justify-content-center">
+								<button class="btn btn-primary"
+									onClick="convertTableToJSON(event)">
+									<i class="fas fa-save"></i>&nbsp;Save
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<input type="hidden" id="jsonString" name="jsonString"> <input
+					type="hidden" id="jsonString_hi" name="jsonString_hi"> <input
+					type="hidden" id="meta_hi" name="meta_hi"> <input
+					type="hidden" id="page_id" th:value="${object_id}" name="object_id">
+				<input type="hidden" id="type" th:value="1" name="type">
+				<div>
+					<div id="hindiCard_2" style="display: none;">
+						<div class="card mt-2">
+							<div class="card-header bg-danger-subtle">Hindi</div>
+							<div class="card-body">
+								<div class="row mt-3 g-2 d-flex justify-content-center">
+									<div class="col-6 floating-label">
+										<input type="text" id="object_title_hi" name="object_title_hi"
+											th:value="${object_title_hi}" required="true"
+											class="form-control" placeholder="तालिका शीर्षक" /> <label
+											for="object_title_hi">शीर्षक</label>
+									</div>
+								</div>
+								<div class="row mt-3 g-2 d-flex justify-content-center">
+									<div class="col-6 floating-label">
+										<input type="text" id="description_hi" name="description_hi"
+											required="true" th:value="${description_hi}"
+											class="form-control" placeholder="विवरण" /> <label
+											for="description_hi">विवरण</label>
+									</div>
+								</div>
+								<div class="row mt-3 g-2 d-flex justify-content-center">
+									<div class="col-6 floating-label">
+										<input type="text" id="help_text_hi" name="help_text_hi"
+											th:value="${help_text_hi}" class="form-control"
+											placeholder="मदद पाठ" /> <label for="help_text_hi">मदद
+											पाठ</label>
+									</div>
+								</div>
+								<div class="row mt-3 g-2 d-flex justify-content-center">
+									<div class="col-6 floating-label">
+										<input type="text" id="keywords_hi" name="keywords_hi"
+											th:value="${keywords_hi}" class="form-control"
+											placeholder="कीवर्ड" /> <label for="keywords_hi">कीवर्ड</label>
+									</div>
+								</div>
+								<table id="myTable_hi">
+									<tbody>
+										<tr th:each="row, rowStat : ${tableData_hi}" draggable="true"
+											th:classappend="${rowStat.index == 0} ? 'bg-secondary': 'bg-light draggable'">
+											<td class="deleteStyle my-auto"><i
+												class="fas fa-trash text-danger" onclick="deleteRow(this);"
+												title="Delete Row"></i></td>
+											<td class="deleteStyle my-auto"><i
+												th:if="${rowStat.index != 0}" class="fas fa-grip-vertical"></i>
+											</td>
+											<td th:each="cell, colStat : ${row}"><input type="text"
+												th:value="${cell}" name="value" class="form-control"
+												style="width: 200px;"
+												th:id="'id-'+${rowStat.index}+'-'+${colStat.index}" required>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<input type="hidden" id="tempStorage" value="">
+								<div class="d-flex flex-row justify-content-center">
+									<a class="btn btn-primary" onClick="translateIt()">Translate
+										English content to Hindi</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal fade" id="linkInfoPopup" tabindex="-1"
+			aria-labelledby="linkInfoPopupLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="linkInfoPopupLabel">Insert
+							HyperLink</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3">
+							<label for="input1" class="form-label">Link</label>
+							<div class="input-group">
+								<input type="text" class="form-control" id="input1"
+									placeholder="Link">
+								<button class="btn btn-primary" type="button" onclick="hyperlinksPopupMethod(this)" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup">Insert
+									Hyper Link</button>
+							</div>
+						</div>
+						<div class="mb-3">
+							<label for="input2" class="form-label">Text to Display</label> <input
+								type="text" class="form-control" id="input2"
+								placeholder="Display Text">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							data-bs-dismiss="modal" onClick="linkCreated()">Create</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="hyperLinksPopup" tabindex="-1"
+			aria-labelledby="hyperLinksPopupLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="hyperLinksPopupLabel">Select
+							A Page</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<!--					<div id="pages-data" class="container">-->
+
+						<!--					</div>-->
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+							<li class="nav-item" role="presentation">
+								<button class="nav-link active" id="pages-data-tab"
+									data-bs-toggle="tab" data-bs-target="#pages-data" type="button"
+									role="tab" aria-controls="pages-data" aria-selected="true">Pages</button>
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="forms-data-tab"
+									data-bs-toggle="tab" data-bs-target="#forms-data" type="button"
+									role="tab" aria-controls="forms-data" aria-selected="false">Forms</button>
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="doc-data-tab" data-bs-toggle="tab"
+									data-bs-target="#doc-data" type="button" role="tab"
+									aria-controls="doc-data" aria-selected="false">Documents</button>
+							</li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active contaier" id="pages-data"
+								role="tabpanel" aria-labelledby="pages-data-tab"></div>
+							<div class="tab-pane fade container" id="forms-data"
+								role="tabpanel" aria-labelledby="forms-data-tab"></div>
+							<div class="tab-pane fade container" id="doc-data"
+								role="tabpanel" aria-labelledby="doc-data-tab"></div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+		$('#defineStyles').change(function () {
+			$('#customStylesDiv').fadeToggle();
+		});
+		$('#customSCheckBox').click(function () {
+			$('.customS').prop('readonly', function (i, v) {
+				return !v;
+			});
+		});
+		$('#customCCheckBox').click(function () {
+			$(".customC").prop('readonly', function (i, v) {
+				return !v;
+			});
+		});
+	</script>
+		<script>
+		$(document).ready(function () {
+			$('#togglehindiCard').click(function () {
+				if ($(this).is(':checked')) {
+					$('#hindiCard').show();
+					$('#hindiCard_2').show();
+				} else {
+					$('#hindiCard').hide();
+					$('#hindiCard_2').hide();
+				}
+			});
+		});
+	</script>
+		<script type="text/javascript">
+		async function translateIt() {
+			const url = 'https://api.mymemory.translated.net/get';
+			//Hindi Meta
+			var englishContent = document.getElementById("object_title").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await fetch(`${url}?${params}`);
+			var data = await response.json();
+			document.getElementById("object_title_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("description").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await fetch(`${url}?${params}`);
+			var data = await response.json();
+			document.getElementById("description_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("keywords").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await fetch(`${url}?${params}`);
+			var data = await response.json();
+			document.getElementById("keywords_hi").value = data.responseData.translatedText;
+			var englishContent = document.getElementById("help_text").value;
+			var params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+			var response = await fetch(`${url}?${params}`);
+			var data = await response.json();
+			document.getElementById("help_text_hi").value = data.responseData.translatedText;
+			//Hindi Meta ends
+			var myTableInputs = document.getElementById("myTable")
+				.getElementsByTagName("input");
+			var myTableInputs_hi = document.getElementById("myTable_hi")
+				.getElementsByTagName("input");
+			for (var i = 0; i < myTableInputs.length; i++) {
+				var englishContent = myTableInputs[i].value;
+				const params = new URLSearchParams({
+					q: englishContent,
+					langpair: 'en|hi'
+				});
+				const response = await fetch(`${url}?${params}`);
+				const data = await response.json();
+				myTableInputs_hi[i].value = data.responseData.translatedText;
+			}
+		}
+		async function translateEnglishToHindi(englishContent) {
+			if (englishContent === '') {
+				return;
+			}
+			const url = 'https://api.mymemory.translated.net/get';
+			var translation;
+			const params = new URLSearchParams({
+				q: englishContent,
+				langpair: 'en|hi'
+			});
+
+			const response = await
+				fetch(`${url}?${params}`);
+			const data = await
+				response.json();
+			console.log(data);
+			document.getElementById("tempStorage").value = data.responseData.translatedText;
+			return data.responseData.translatedText;
+
+		}
+	</script>
+		<!-- <div class="mx-auto">
+			<div class="card mt-5" id="designTable">
+				<div class="card-header bg-primary text-white text-center">Table
+					Preview</div>
+				<div class="card-body" style="overflow-x: scroll;">
+					<p class="text-body-secondary">*First row signifies table
+						heading</p>
+
+					Button trigger modal
+
+					Modal
+					<div class="modal fade" id="updateTable" tabindex="-1"
+						aria-labelledby="updateTableLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<form action="/fetch" method="get">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5" id="updateTableLabel">Update
+											Table</h1>
+										<button type="button" class="btn-close"
+											data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+
+										<div class="row">
+											<div class="col-6">
+												<label for="newRow">Update Number of Rows:</label> <input
+													type="number" id="newRow" name="newRow"
+													th:value="${newRow}" class="form-control" required>
+											</div>
+											<div class="col-6">
+												<label for="newCol">Update Number of Columns:</label> <input
+													type="number" id="newCol" name="newCol"
+													class="form-control" th:value="newCol" required> <br>
+												<input type="hidden" id="page_id2" th:value="${object_id}"
+													name="object_id">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-primary">Modify
+											Table</button>
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Close</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> -->
+
+
+
+	</div>
+	<!-- <h2>Using the <i>setInterval()</i> function to change a background color via color picker.</h2>
+   <input id = "color" type = "color" value = "fff">
+   <script>
+      // Change color after every 100 seconds
+      setInterval(() => {
+         let color = document.getElementById('color');
+         let colorValue = color.value;
+         document.body.style.backgroundColor = colorValue;
+      }, 100);
+   </script> -->
+
+	<!-- <div id="includeFooter" class="mt-5 fixed-bottom"></div> -->
+	<!-- <script>
+		function designTable() {
+		document.getElementById('designTable').style.display = "block";
+		}
+	</script> -->
+
+
+
+	<script>
+		function convertTableToJSON(event) {
+			event.preventDefault();
+			var table = document.getElementById('myTable'); // Replace 'myTable' with the ID of your HTML table
+			var table_hi = document.getElementById('myTable_hi'); // Replace 'myTable' with the ID of your HTML table
+			var rows = table.getElementsByTagName('tr');
+			var rows_hi = table_hi.getElementsByTagName('tr');
+			var jsonData = [];
+			var jsonData_hi = [];
+			var temp_hi = '';
+			var temp = ''; 
+			if (document.getElementById("object_title").value == '') {
+				alert("Please fill title");
+				return false;
+			}
+			debugger;	
+			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+				var rowData = [];
+				var cells = rows[i].getElementsByTagName('input');
+				for (var j = 0; j < cells.length; j++) {
+					console.log(rowData);
+					var columnValue = cells[j].value; // Assumes the first row contains column headers
+
+					if (columnValue == '') {
+						alert("Please fill all fields");
+						return false;
+					}
+					columnValue = 	columnValue.trim();		
+					if (columnValue === "") {
+                     // If empty, set the value to a single space
+                		columnValue = " ";
+            		}		
+					rowData[j] = encodeURIComponent(columnValue);
+				}
+				temp = '[' + rowData.join(',') + ']';				
+				jsonData.push(temp);		
+			}		
+			var json = '[' + jsonData + ']';
+			console.log(jsonData);
+			debugger;	
+			console.log(JSON.stringify(json, null, 2));
+		
+			document.getElementById("jsonString").value = JSON.stringify(json,null, 2);
+				
+			//Hindi Starts
+			for (var i = 0; i < rows_hi.length; i++) { // Start from 1 to skip the table header
+				var rowData_hi = [];
+				var cells_hi = rows_hi[i].getElementsByTagName('input');
+				for (var j = 0; j < cells_hi.length; j++) {
+					var columnValue = cells_hi[j].value; // Assumes the first row contains column headers
+					//if (columnValue == '') {
+						//alert("Please fill all fields");
+						//return false;
+					//}
+					columnValue = 	columnValue.trim();		
+					if (columnValue === "") {
+                     // If empty, set the value to a single space
+                		columnValue = " ";
+            		}
+					rowData_hi[j] = encodeURIComponent(columnValue);
+				}
+				temp_hi = '[' + rowData_hi.join(',') + ']';
+				jsonData_hi.push(temp_hi);
+			}
+			var json_hi = '[' + jsonData_hi + ']';
+			debugger;
+			console.log(JSON.stringify(json_hi, null, 2));
+			document.getElementById("jsonString_hi").value = JSON.stringify(json_hi,null, 2);
+			var hindi_meta = {
+				"keywords": document.getElementById("keywords_hi").value,
+				"description": document.getElementById("description_hi").value,
+				"title": document.getElementById("object_title_hi").value,
+				"help_text": document.getElementById("help_text_hi").value
+			};
+			document.getElementById("meta_hi").value = JSON.stringify(hindi_meta, null, 2);
+			
+			var csrfToken = $('meta[name="_csrf"]').attr('content');
+		    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		    
+			var data = {
+				 "object_id":document.getElementById('page_id').value,						
+				 "imgType":"",				 
+				 "jsonString" : document.getElementById('jsonString').value,
+				 "type":document.getElementById('type').value,							 					
+				 "marquee":"",	
+				 "linksString":"",
+				 "newJson":document.getElementById('newJson').value,						
+				 "list_type":"",			 
+				 "expString":"",
+				 "object_title":document.getElementById('object_title').value, 					
+				 "object_title_hi":document.getElementById('object_title_hi').value,
+				 "styles":document.getElementById('styles').value,
+				 "classes":document.getElementById('classes').value,
+				 "description":document.getElementById('description').value,
+				 "help_text":document.getElementById('help_text').value,
+				 "alternate_text":"",
+				 "keywords":document.getElementById('keywords').value,
+				 "jsonString_hi":document.getElementById('jsonString_hi').value,
+				 "meta_hi":document.getElementById('meta_hi').value
+			};			
+			$.ajax({
+			type: "POST",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			headers : {
+				'X-CSRF-TOKEN' : csrfToken,
+				'X-XSRF-HEADER' : csrfHeader
+			},
+			url: "/save",								
+			contentType: "application/json",
+			data: JSON.stringify(data),			
+			success: function (response) {				
+				alert(response.success);
+				//return false;		
+			},
+			error: function (xhr, status, error) {
+	            console.error("Error:", error)	            
+	            //return false;	        
+			}
+		});
+		
+	}
+		function addRow() {
+			var table = document.getElementById("myTable");
+			var table_hi = document.getElementById("myTable_hi");
+			var tr = document.createElement("tr");
+			tr.classList.add("draggable");
+			tr.setAttribute("draggable", "true");
+			var tr_array = table.getElementsByTagName("tr");
+			var cols = tr_array[0].getElementsByTagName('td');
+			debugger;
+			for (var j = 0; j < cols.length-2; j++) { 
+				var th = document.createElement("td");
+				
+				var inputGroup = document.createElement("div");
+				inputGroup.classList.add("input-group");
+				
+				var popupButton = document.createElement("a");
+				popupButton.setAttribute("onClick", "insertLinkMethod(this);");
+				popupButton.setAttribute("data-bs-toggle", "modal");
+				popupButton.setAttribute("data-bs-target", "#linkInfoPopup");
+				popupButton.classList.add("btn", "btn-primary");
+				var linkIcon = document.createElement("i");
+				linkIcon.classList.add("fas", "fa-link");
+				popupButton.appendChild(linkIcon);
+				
+				var input = document.createElement("input");
+				input.setAttribute("type", "text");
+				input.setAttribute("required", "");
+				input.classList.add("form-control");
+				
+				th.appendChild(inputGroup);
+				inputGroup.appendChild(input);
+				inputGroup.appendChild(popupButton);
+				tr.appendChild(th);
+			}						
+
+
+			var p = document.createElement("td");
+			p.innerHTML = "<i class=\"fas fa-trash text-danger\" onClick='deleteRow(this);' tilte='Delete Row'></i>";
+			p.classList.add("deleteStyle", "my-auto");
+			tr.insertBefore(p, tr.childNodes[0]);
+						
+			var p1 = document.createElement("td");					
+			    p1.innerHTML = "<i class=\"fas fa- fa-grip-vertical\"></i>";				
+				p1.classList.add("deleteStyle", "my-auto");											
+				tr.insertBefore(p1, tr.childNodes[0]);
+				
+			table.appendChild(tr);		
+			table_hi.appendChild(tr.cloneNode(true));
+		}
+		function addColumn() {
+			var table = document.getElementById("myTable");
+			var table_hi = document.getElementById("myTable_hi");
+
+			var rows = table.getElementsByTagName('tr');
+			var rows_hi = table_hi.getElementsByTagName('tr');
+
+			for (var i = 0; i < rows.length; i++) {
+				if (i == 0)
+					var th = document.createElement("td");
+				else
+					var th = document.createElement("td");
+				var input = document.createElement("input");
+				input.setAttribute("type", "text");
+				input.classList.add("form-control");
+				input.setAttribute("required", "");
+				
+				var inputGroup = document.createElement("div");
+				inputGroup.classList.add("input-group");
+				
+				var popupButton = document.createElement("a");
+				popupButton.setAttribute("onClick", "insertLinkMethod(this);");
+				popupButton.setAttribute("data-bs-toggle", "modal");
+				popupButton.setAttribute("data-bs-target", "#linkInfoPopup");
+				popupButton.classList.add("btn", "btn-primary");
+				var linkIcon = document.createElement("i");
+				linkIcon.classList.add("fas", "fa-link");
+				popupButton.appendChild(linkIcon);
+				
+				th.appendChild(inputGroup);
+				inputGroup.appendChild(input);
+				inputGroup.appendChild(popupButton);
+				rows[i].appendChild(th);
+				rows_hi[i].appendChild(th.cloneNode(true));
+
+			}
+		}
+		function createTable() {
+			document.getElementById("designTable").style.display = 'block';
+			document.getElementById("myTable").innerText = "";
+			document.getElementById("myTable_hi").innerText = "";
+			var rowCount = document.getElementById("rowCount").value;
+			var colCount = document.getElementById("colCount").value;
+			var rowChecked = document.getElementById("flexRadioDefault1");
+			var colChecked = document.getElementById("flexRadioDefault2");
+
+			for (var i = 0; i < rowCount; i++) {
+				var tr = document.createElement("tr");								
+				for (var j = 0; j < colCount; j++) {
+					if (i == 0 && rowChecked.checked) {
+						tr.classList.add("bg-secondary");						
+					}
+			
+					var td = document.createElement("td");
+					td.classList.add("p-1");
+					if (j == 0 && colChecked.checked) {
+						td.classList.add("bg-secondary", "p-1");
+					}
+					var inputGroup = document.createElement("div");
+					inputGroup.classList.add("input-group");
+										
+					var input = document.createElement("input");
+					input.setAttribute("type", "text");
+					input.classList.add("form-control");
+					var popupButton = document.createElement("a");
+					popupButton.setAttribute("onClick", "insertLinkMethod(this);");
+					popupButton.setAttribute("data-bs-toggle", "modal");
+					popupButton.setAttribute("data-bs-target", "#linkInfoPopup");
+					popupButton.classList.add("btn", "btn-primary");
+
+					var linkIcon = document.createElement("i");
+					linkIcon.classList.add("fas", "fa-link");
+					popupButton.appendChild(linkIcon);
+					
+					td.appendChild(inputGroup);
+					inputGroup.appendChild(input);
+					inputGroup.appendChild(popupButton);
+					tr.appendChild(td);
+				
+				}
+			
+				var p = document.createElement("td");
+				p.innerHTML = "<i class=\"fas fa-trash text-danger\" onClick='deleteRow(this);' title='Delete Row'></i>";
+				p.classList.add("deleteStyle", "my-auto");
+				tr.insertBefore(p, tr.childNodes[0]);				
+				
+				
+				//var p1 = document.createElement("td");					
+				//p1.innerHTML = "<i class=\"fas fa-arrows-alt\" onClick='moveRow(this);' tilte='Move Row'></i>";				
+				//p1.classList.add("deleteStyle", "my-auto");											
+				//tr.insertBefore(p1, tr.childNodes[0]);								
+				
+				
+//-------------Newly-Added------------------------------------------------------
+//alert(tr.childNodes.length)
+	//			if (tr.childNodes.length > 1) {
+		//	    tr.removeChild(tr.childNodes[0]);
+			//    tr.removeChild(tr.childNodes[0]);
+				//}
+				////p1.remove();
+				////var childToRemove = tr.childNodes[0];
+				////tr.removeChild(childToRemove);
+				////var childToRemove = tr.childNodes[0];
+				////tr.removeChild(childToRemove);	
+				
+											
+				//var p2 = document.createElement("td");					
+				//p2.innerHTML = "<i class=\"fas fa-arrows-alt\" onClick='moveRow_hi(this);' tilte='Move Row'></i>";				
+				//p2.classList.add("deleteStyle", "my-auto");											
+				//tr.insertBefore(p2, tr.childNodes[0]);
+				
+				//var oldChild = tr.childNodes[0];
+				//tr.replaceChild(p2, oldChild);				
+				//tr.replaceChild(p2, p1);
+//-----------------------------------------------------------------------------	
+				document.getElementById("myTable").appendChild(tr);			
+				document.getElementById("myTable_hi").appendChild(tr.cloneNode(true));				
+				document.getElementById("myTable").setAttribute("class", "text-center m-2 " + document.getElementById("classes").value);
+				document.getElementById("myTable").setAttribute("styles", document.getElementById("styles").value);
+				document.getElementById("myTable_hi").setAttribute("styles", document.getElementById("styles").value);
+				document.getElementById("myTable_hi").setAttribute("class", "text-center m-2 " + document.getElementById("classes").value);
+
+			}
+		}
+		function deleteRow(el) {			
+			//showMessageBox('delete');
+			$(el).closest('tr').remove();
+			//showAlertBox('success');
+
+		}
+
+			
+		var itemToInsertLink = '';
+		function insertLinkMethod(el) {
+			itemToInsertLink = el;
+		}
+		function linkCreated() {
+			var input1 = document.getElementById("input1").value;
+			document.getElementById("input1").value = '';
+			var input2 = document.getElementById("input2").value;
+			document.getElementById("input2").value = '';
+			var linkOutput = '<a href="' + input1 + '">' + input2 + '</a>';
+			itemToInsertLink.parentElement.querySelector('input.form-control').value = linkOutput;
+		}
+	    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {          
+            return false;
+        }
+        return true;
+    }
+	</script>
+	<script>
+		var inputElement;
+		var selectedButton;
+		function hyperlinksPopupMethod(el) {
+			event.preventDefault();
+			selectedButton = el;
+			getPages();
+			getForms();
+			getDocs();
+
+		};
+		function itemSelected(link) {
+		    document.getElementById("input1").value = link;
+		    $('#hyperLinksPopup').modal('hide');
+		    setTimeout(function () {
+		        $('#linkInfoPopup').modal('show');
+		    }, 500);
+		}
+
+		function getPages() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListPages",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("pages-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = data[i].page_id;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].page_name;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].status;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].link);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Page";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].link + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		};
+
+
+		function getForms() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListForms",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("forms-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = data[i].form_id;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].form_name;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].status;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].link);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Form";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].link + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		}
+		function getDocs() {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');			
+			$.ajax({
+				type: "GET",
+				url: "/getListDocs",
+				beforeSend: function(xhr) {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers: {
+				    'X-CSRF-TOKEN': csrfToken,
+				    'X-XSRF-HEADER' : csrfHeader
+				},
+				dataType: 'json',
+				contentType: "application/json",
+				success: function (data) {
+					var pages_data = document.getElementById("doc-data");
+					pages_data.innerText = "";
+					for (var i = 0; i < data.length; i++) {
+						var div = document.createElement("div");
+						div.classList.add("row", "border", "border-1");
+						var span = document.createElement("div");
+						span.classList.add("col-1");
+						span.innerText = i + 1;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-4");
+						span.innerText = data[i].original_filename;
+						div.appendChild(span);
+
+						var span = document.createElement("div");
+						span.classList.add("col-2");
+						span.innerText = data[i].description;
+						div.appendChild(span);
+
+						if (data[i].link != '') {
+							var span = document.createElement("a");
+							span.classList.add("col-2");
+							span.setAttribute("href", data[i].file);
+							span.setAttribute("target", "_blank");
+							span.innerText = "Preview Document";
+							div.appendChild(span);
+
+							var span = document.createElement("div");
+							span.classList.add("btn", "btn-success", "col-2", "my-2");
+							span.setAttribute("onClick", "itemSelected('" + data[i].file + "')");
+							span.innerText = "Select Link";
+							div.appendChild(span);
+						}
+						else {
+							var span = document.createElement("div");
+							span.classList.add("btn", "col-4", "my-2");
+							span.innerText = "Pending for Approval";
+							div.appendChild(span);
+						}
+						pages_data.appendChild(div);
+					}
+				}
+			});
+		}
+	</script>
+	<script>
+  function handleDragStart(event) {
+    event.dataTransfer.setData('text/plain', null);
+    event.target.classList.add('dragging');
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
+
+  function handleDrop(event) {
+	    event.preventDefault();
+	    const dragged = document.querySelector('.dragging');
+	    const target = event.target.closest('.draggable');
+
+	    if (dragged && target && dragged !== target) {
+	        const parent = target.parentNode;
+	        const draggedIndex = Array.from(parent.children).indexOf(dragged);
+	        const targetIndex = Array.from(parent.children).indexOf(target);
+
+	        if (draggedIndex < targetIndex) {
+	            parent.insertBefore(dragged, target.nextSibling);
+	        } else {
+	            parent.insertBefore(dragged, target);
+	        }
+	        updateOrder();
+	    }
+
+	    if (dragged) {
+	        dragged.classList.remove('dragging');
+	    }
+	}
+
+
+  function updateOrder() {
+    const rows = document.querySelectorAll('#myTable .draggable');
+    const ids = Array.from(rows).map((row, index) => {
+      row.setAttribute('data-index', index);
+      return index;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+	    const draggableRows = document.querySelectorAll('#myTable .draggable, #myTable_hi .draggable');
+	    draggableRows.forEach(row => {
+	        row.addEventListener('dragstart', handleDragStart);
+	        row.addEventListener('dragover', handleDragOver);
+	        row.addEventListener('drop', handleDrop);
+	    });
+	});
+</script>
+</body>
+
+
+</html>

@@ -1,0 +1,72 @@
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<title>Data Preview</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/js/responsivevoice.js"></script>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+		$("#objectBrowsering").load("object_selector.html");
+	});
+</script>
+
+<script src="static/resource/assets/js/sha1.js"></script>
+<script src="static/resource/assets/js/sha256.js"></script>
+<script src="static/resource/assets/js/ajax.js"></script>
+<script src="static/resource/assets/js/Json-validation.js"></script>
+<script src="static/resource/assets/jQuery-3.6/jquery-3.6.0.min.js"></script>
+
+  
+<style>
+	.error {
+    color: red;
+}
+</style>       
+       
+</head>
+<body>
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="container">
+		<h3 class="pageHeading">
+			<span th:text="${form_name.toUpperCase()}" style="text-align: center;"></span> FORM DATA PREVIEW
+		</h3>
+		<span style="color: red; text-align: center;" th:text="${msg}"></span>
+		<form method="POST" name="myForm" id="myForm"  
+			ModelAttribute="form" enctype="multipart/form-data"
+			onsubmit="return updateform_valid();">
+			<input type="hidden" id="jsonFields" name="jsonFields" />
+			<input type="hidden" id="jsonData" name="jsonData" />
+			<input type="hidden" id="jsonCheck" name="jsonCheck" />
+			<input type="hidden" id="form_name" name="form_name" th:value="${form_name}" />
+			<input type="hidden" id="fields" name="fields" th:value="${fields}" />
+			<input type="hidden" id="form_id" name="form_id" th:value="${form_id}" />
+			<input type="hidden" id="record_id" name="record_id" th:value="${record_id}" />
+			<input type="hidden" id="captcha_key" name="captcha_key" th:value="${captcha_key}" />
+			<input type="hidden" id="jsonArray" th:value="${jsonArray}" />
+			<input type="hidden" id="flag" name="flag" th:value="${flag}" />
+			<input type="hidden" id="stateName" name="stateName" />
+			<input type="hidden" id="distName" name="distName" />
+			<input type="hidden" id="mandalName" name="mandalName" />
+			<input type="hidden" id="villName" name="villName" />			
+			<div id="view1" th:utext="${str}"></div>
+			<input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+				<input type="hidden" name="_csrf_header" th:value="${_csrf.headerName}"/>
+		</form>
+		<div id="includeFooter"></div>
+	</div>
+</body>
+</html>

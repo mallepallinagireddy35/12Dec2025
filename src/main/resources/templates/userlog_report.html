@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<title>User Log</title>
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/js/responsivevoice.js" type="text/javascript"></script>
+<link
+	href="static/assets/DataTables/DataTables-1.13.1/css/dataTables.bootstrap5.min.css"
+	rel="stylesheet">
+<link
+	href="static/assets/DataTables/DataTables-1.13.1/css/jquery.dataTables.min.css"
+	rel="stylesheet">
+
+<script
+	src="static/assets/DataTables/DataTables-1.13.1/js/dataTables.bootstrap5.min.js"
+	type="text/javascript"></script>
+<script
+	src="static/assets/DataTables/DataTables-1.13.1/js/jquery.dataTables.min.js"
+	type="text/javascript"></script>
+</head>
+<script>
+	$(function() {
+		//$("#includeHeader").load("static/header.html");
+		$("#includeFooter").load("static/footer.html");
+	});
+</script>
+<body>	<div class="flex-wrapper">
+
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+	<div class="container">
+		<h3 class="pageHeading">Audit Log</h3>
+		<div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+			<div class="col-md-5 mx-auto">
+				<form action="#" th:action="@{/logreport}" th:object="${reportForm}"
+					method="post">
+					<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}" />
+					<label for="startDate">Start Date:</label> <input
+						type="datetime-local" id="startDate" name="startDate" required
+						class="form-control"> <label for="endDate" class="mt-3">End
+						Date:</label> <input type="datetime-local" id="endDate" name="endDate"
+						required class="form-control">
+					<div class="d-flex justify-content-center mt-3">
+						<button type="submit" class="btn btn-primary">Generate
+							Report</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+			<table id="example" class="table table-striped" style="width: 100%"
+				th:if="${userLogs != null}">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>User</th>
+						<th>Action</th>
+						<th>Timestamp</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!--            <tr th:each="log : ${userLogs}">
+                <td th:text="${log.id}"></td>
+                <td th:text="${log.user.username}"></td>
+                <td th:text="${log.action}"></td>
+                <td th:text="${log.timestamp}"></td>
+            </tr> -->
+					<tr th:each="log : ${userLogs}">
+						<td th:text="${log.id} ?: '-'"></td>
+						<td th:text="${log.user != null ? log.user.username : '-'}"></td>
+						<td th:text="${log.action ?: '-'}"></td>
+						<td th:text="${log.timestamp != null ? log.timestamp : '-'}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div id="includeFooter"></div>
+	<script>
+		new DataTable('#example');
+	</script></div>
+</body>
+</html>

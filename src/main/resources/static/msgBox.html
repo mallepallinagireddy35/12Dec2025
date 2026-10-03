@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<!-- <div class="container">
+		<button type="button" class="btn btn-primary"
+			onclick="showMessageBox('info')">Show Info</button>
+		<button type="button" class="btn btn-danger"
+			onclick="showMessageBox('error')">Show Error Box</button>
+		<button type="button" class="btn btn-warning"
+			onclick="showMessageBox('warning')">Show Warning Box</button>
+		<button type="button" class="btn btn-success"
+			onclick="showMessageBox('success')">Show Success Box</button>
+		<button type="button" class="btn btn-secondary"
+			onclick="showMessageBox()">Show Confirmation Box</button>
+
+	</div> -->
+	<div class="modal fade" id="messageBoxModal" tabindex="-1"
+		aria-labelledby="messageBoxTitle" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title fs-5" id="messageBoxTitle"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p id="messageBoxText"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="closeBtn" class="btn btn-secondary"
+						data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary"
+						id="messageBoxConfirmBtn">Confirm</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function showMessageBox(type) {
+			let iconClass = '';
+			let title = '';
+			let text = '';
+
+			switch (type) {
+			case 'info':
+				iconClass = 'fas fa-info-circle text-info';
+				title = 'Information';
+				text = 'This is an informational message.';
+				break;
+			case 'error':
+				iconClass = 'fas fa-times-circle text-danger';
+				title = 'Error';
+				text = 'An error occurred.';
+				break;
+			case 'warning':
+				iconClass = 'fas fa-exclamation-circle text-warning';
+				title = 'Warning';
+				break;
+			case 'success':
+				iconClass = 'fas fa-check-circle text-success';
+				title = 'Success';
+				text = 'Operation successful.';
+				break;
+			case 'delete':
+				iconClass = 'fas fa-trash text-danger';
+				title = 'Delete';
+				text = 'Are you sure of deleting this Item?';
+				break;
+			case 'template':
+				iconClass = 'fas fa-exclamation-circle text-danger';
+				title = 'Delete';
+				text = 'You can not delete the Default templates';
+				break;
+			}
+
+			const modal = document.getElementById('messageBoxModal');
+			const modalTitle = document.getElementById('messageBoxTitle');
+			const modalText = document.getElementById('messageBoxText');
+			const confirmBtn = document.getElementById('messageBoxConfirmBtn');
+
+			modalTitle.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+			modalText.innerHTML = text;
+
+			$(modal).modal('show');
+			confirmBtn.removeEventListener('click', showAlertBox);
+
+			confirmBtn.addEventListener('click', showAlertBox);
+		}
+
+		function confirmAction() {
+			console.log('Confirmed');
+			$('#messageBoxModal').modal('hide');
+		}
+
+		function showAlertBox(type) {
+			let iconClass = '';
+			let title = '';
+			let text = '';
+
+			switch (type) {
+			case 'info':
+				iconClass = 'fas fa-info-circle text-info';
+				title = 'Information';
+				text = 'This is an informational message.';
+				break;
+			case 'error':
+				iconClass = 'fas fa-times-circle text-danger';
+				title = 'Error';
+				text = 'An error occurred.';
+				break;
+			case 'warning':
+				iconClass = 'fas fa-exclamation-circle text-warning';
+				title = 'Warning';
+				break;
+			case 'success':
+				iconClass = 'fas fa-check-circle text-success';
+				title = 'Success';
+				text = 'Operation successful.';
+				break;
+			case 'delete':
+				iconClass = 'fas fa-trash text-danger';
+				title = 'Delete';
+				text = 'Are you sure of deleting this Item?';
+				break;
+			case 'template':
+				iconClass = 'fas fa-exclamation-circle text-danger';
+				title = 'Delete';
+				text = 'You can not delete the Default templates';
+				break;
+			}
+			
+			const modal = document.getElementById('messageBoxModal');
+			const modalTitle = document.getElementById('messageBoxTitle');
+			const modalText = document.getElementById('messageBoxText');
+			const closeBtn = document.getElementById('closeBtn');
+			const confirmBtn = document.getElementById('messageBoxConfirmBtn');
+			confirmBtn.style.display="none";
+
+			modalTitle.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+			modalText.innerHTML = text;
+
+			closeBtn.innerText = 'Okay';
+
+			$(modal).modal('show');
+
+			confirmBtn.removeEventListener('click', confirmAction);
+
+			confirmBtn.addEventListener('click', confirmAction);
+		}
+	</script>
+</body>
+
+</html>

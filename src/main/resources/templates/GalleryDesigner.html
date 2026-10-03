@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>Gallery Object Designer</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/custom/css/home.css" rel="stylesheet">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<style>
+#galleryOffcanvas {
+	width: 600px;
+}
+</style>
+<script>
+	function convertTableToJSON() {
+		var list_div = document.getElementById('myTable'); // Replace 'myTable' with the ID of your HTML table
+		var rows = list_div.getElementsByTagName('li');
+		var jsonData = [];
+		var temp = '';
+		debugger;
+		var rowData = [];
+		// Iterate through each row of the table
+		for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+			var cells = rows[i].getElementsByTagName('td');
+			var columnValue = document.getElementById('id-' + i).value; // Assumes the first row contains column headers
+			rowData[i] = btoa(columnValue);
+		}
+		temp = rowData.join(',');
+		jsonData.push(temp);
+		var json = '[' + jsonData + ']';
+		document.getElementById("jsonString").value = JSON.stringify(json,
+				null, 2);
+		jsonData = [];
+		for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
+			var cells = rows[i].getElementsByTagName('td');
+			var columnValue = document.getElementById('id-link-' + i).value; // Assumes the first row contains column headers
+			if (columnValue == null || columnValue == '')
+				columnValue = '#';
+			rowData[i] = "'" + btoa(columnValue) + "'";
+		}
+		temp = rowData.join(',');
+		jsonData.push(temp);
+		var json = '[' + jsonData + ']';
+		document.getElementById("linksString").value = JSON.stringify(json,
+				null, 2);
+
+		document.forms[2].submit();
+	}
+</script>
+<script>
+	$(function() {
+		//$("#includeHeader").load("header.html");
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+<style>
+.form-check-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+}
+
+.form-check-label img {
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+	padding: 3px;
+}
+
+.image-label {
+	/* margin-top: 5px; */
+	
+}
+
+.form-check-input {
+	display: none;
+}
+
+.form-check-input:checked+.form-check-label {
+	border: 1px solid #ced4da;
+	border-color: #0d6efd;
+	box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.folder-header {
+	cursor: pointer;
+}
+
+.folder-header i {
+	margin-right: 5px;
+}
+
+.folder-items {
+	display: none;
+}
+
+.folder {
+	border: none;
+}
+
+.list-group-item {
+	padding: 1px;
+	font-size: x-small;
+}
+</style>
+
+</head>
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				Design your Gallery Objects</h3>
+		</div>
+		<div class="mb-5 container mt-5">
+			<form th:action="@{/designGalleryObjects}" method="post">
+				<div class="row">
+					<input type="hidden" id="csrf_token"
+						th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					<div class="col-4">
+						<label for="object_title">Name of the Gallery Item</label> <input
+							type="text" id="object_title" name="object_title"
+							th:value="${object_title}" required class="form-control">
+					</div>
+					<!--				<div class="col-4">-->
+					<!--					<label for="marquee">Object type:</label> <select-->
+					<!--						class="form-select" id="gallery" name="type"-->
+					<!--						onChange="imageCategory()">-->
+					<!--						<option value="" th:selected="${type == null}">--Select--</option>-->
+					<!--						<option value="2" th:selected="${type == '2'}">Pictures</option>-->
+					<!--						<option value="5" th:selected="${type == '5'}">Picture Carousel</option>-->
+					<!--						<option value="7" th:selected="${type == '7'}">Videos</option>-->
+					<!--						<option value="8" th:selected="${type == '8'}">Audios</option>-->
+					<!--						<option value="9" th:selected="${type == '9'}">Documents</option>-->
+					<!--					</select>-->
+					<!--				</div>-->
+					<input type="hidden" th:value="${type}" name="type" id="type">
+					<span id="imageType" class="d-none"> <input type="radio"
+						value="5" name="imgType">Carousel <input type="radio"
+						value="2" name="imgType">Pictures
+					</span> <input type="hidden" name="jsonString" id="jsonString"> <input
+						type="hidden" name="jsonString1" id="jsonString1"> <input
+						type="hidden" name="file_desc1" id="file_desc1"> <input
+						type="hidden" name="object_id" id="object_id"
+						th:value="${object_id}"> <span th:if="${type == '5'}">
+						<div class="col-4 mt-4">
+							<input type="checkbox" name="random" id="random"
+								th:checked="${random == 'true'}">Random Play
+						</div>
+					</span>
+					<div class="col-4 mt-4">
+						<button type="submit" class="btn btn-primary">Design
+							Object</button>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header bg-success text-center text-white">Preview</div>
+					<div class="card-body">
+						<div class="row" th:if="${type == '2'} OR ${type == '5'}" id="selectedItems">
+							<div th:each="datum, datumStat : ${data}" draggable="true"
+								class="col-2 p-3 text-center draggable">
+								<div class="card">
+									<div class="card-header">
+										<div class="d-flex justify-content-between">
+											<div>
+												<i class="fas fa-grip-vertical"></i>
+											</div>
+											<div>
+												<input
+													class="existingImages position-absolute top-0 end-0 m-2"
+													type="checkbox" checked th:value="${datum}"
+													onChange="checkBoxValues(this);" />
+											</div>
+										</div>
+									</div>
+									<div class="card-body">
+										<img th:src="@{static/gallery/image/t_} + ${datum}"
+											class="card-img-top" alt="Image">
+									</div>
+								</div>
+							</div>
+
+							<div class="row" th:if="${type == '7'}">
+								<div th:each="datum,datumStat : ${data}"
+									class="col-2 p-3 text-center">
+									<video width="320" height="240" controls>
+										<source th:src="@{static/gallery/video/} + ${datum}"
+											type="video/mp4" class="rounded  border border-1">
+										<!--<source th:src="@{/getVedio/} + ${datum}" -->
+
+									</video>
+									<input class="existingImages" type="checkbox" checked
+										th:value="${datum}" onChange="checkBoxValues(this);">
+								</div>
+							</div>
+							<div class="row" th:if="${type == '8'}">
+								<div th:each="datum,datumStat : ${data}"
+									class="col-2 p-3 text-center">
+									<audio controls>
+										<!--<source th:src="@{getAudio/} + ${datum}" -->
+										<source th:src="@{static/gallery/audio/} + ${datum}"
+											type="audio/mp4" class="rounded  border border-1">
+									</audio>
+									<input class="existingImages" type="checkbox" checked
+										th:value="${datum}" onChange="checkBoxValues(this);">
+								</div>
+							</div>
+							<div th:if="${data != null}" class="text-center">
+								<!--<button class="btn btn-primary">Load Galleries</button>-->
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-2 p-3 text-center" th:if="${type == '2'}">
+								<a th:href="@{/image}" target="_blank" style="color: black;">
+									<i class="fas fa-folder-plus fa-4x d-block mx-auto"></i> <b
+									class="text-center">Create New Image Group</b>
+								</a>
+							</div>
+							<div class="col-2 p-3 text-center" th:if="${type == '5'}">
+								<a th:href="@{/image}" target="_blank" style="color: black;">
+									<i class="fas fa-folder-plus fa-4x d-block mx-auto"></i> <b
+									class="text-center">Create New Image Group</b>
+								</a>
+							</div>
+							<div class="col-2 p-3 text-center" th:if="${type == '7'}">
+								<a th:href="@{/video}" target="_blank" style="color: black;">
+									<i class="fas fa-folder-plus fa-4x d-block mx-auto"></i> <b
+									class="text-center">Create New Video Group</b>
+								</a>
+							</div>
+							<div class="col-2 p-3 text-center" th:if="${type == '8'}">
+								<a th:href="@{/audio}" target="_blank" style="color: black;">
+									<i class="fas fa-folder-plus fa-4x d-block mx-auto"></i> <b
+									class="text-center">Create New Audio Group</b>
+								</a>
+							</div>
+							<div class="col-2 p-3 text-center" th:if="${type == '9'}">
+								<a th:href="@{/doc}" target="_blank" style="color: black;">
+									<i class="fas fa-folder-plus fa-4x d-block mx-auto"></i> <b
+									class="text-center">Create New Docs Group</b>
+								</a>
+							</div>
+							<div th:each="folder,stat : ${galleryGroups}"
+								class="col-2 p-3 text-center">
+								<div
+									th:attr="onclick=|viewGallery('${folder.group_id}','${type}')|">
+									<i class="fas fa-folder fa-4x d-block mx-auto"></i> <b
+										class="text-center" th:text="${folder.group_id}"></b>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<div id="viewItems"></div>
+			<div class="offcanvas offcanvas-end" id="galleryOffcanvas"
+				data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+				aria-labelledby="offcanvasScrollingLabel">
+				<div class="offcanvas-header">
+					<h5 class="offcanvas-title" id="galleryOffcanvas">Preview</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+						aria-label="Close"></button>
+				</div>
+				<div class="offcanvas-body" id="offcanvasContent"></div>
+			</div>
+
+		</div>
+		<div class="text-center">
+			<button type="button" id="mnr" onClick="submitGalleryData()"
+				class="btn btn-primary mx-auto">Submit</button>
+			<span th:if="${type == '2'} OR ${type == '5'}">
+				<button type="button" id="veera" style="display: block;"
+					onClick="updateDescription()" class="btn btn-primary mx-auto">Update</button>
+			</span>
+		</div>
+		<script>
+			function viewGallery(groupName, typeGiven) {
+				id = "viewItems";
+				debugger;
+				// 			if (typeGiven == '2') {
+				// 				typeGiven = 'image';
+				// 			} else if (typeGiven == '7')
+				// 				typeGiven = 'video';
+				// 			else if (typeGiven == '8')
+				// 				typeGiven = 'audio';
+				var type = {
+					'group' : groupName,
+					'type' : typeGiven
+				};
+				var offcanvasContent = document
+						.getElementById("offcanvasContent");
+				var container = document.createElement("div");
+				container.classList.add("container");
+
+				var folder = document.createElement("div");
+				folder.classList.add("folder");
+
+				var folderHeader = document.createElement("div");
+				folderHeader.classList.add("folder-header");
+				folderHeader.setAttribute("onClick",
+						"folderHeaderClicked(this);");
+				folderHeader.innerHTML = "<i class=\"fas fa-angle-down\"></i> <span class=\"folder-name fw-bold\" > "
+						+ groupName + "</span>";
+				folder.appendChild(folderHeader);
+				container.appendChild(folder);
+				var row = document.createElement("div");
+				row.classList.add("row", "folder-items", "d-flex", "flex-row");
+				var csrfToken = $('meta[name="_csrf"]').attr('content');
+				var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+				$.ajax({
+					type : "POST",
+					url : "/getGalleryItems",
+					data : JSON.stringify(type),
+					dataType : 'json',
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					contentType : "application/json",
+					success : function(data) {
+						for (let i = 0; i < data.length; i++) {
+							//-------------------------------26-11-2024-----------------------------------------------------------------
+							var withoutExtension = data[i].file_name.substring(
+									0, data[i].file_name.lastIndexOf('.'));
+							
+							
+							var check_box = document.createElement("input");
+							check_box.setAttribute("type", "checkbox");
+							check_box.setAttribute("value", data[i].file_name
+									+ "##" + data[i].seq_id);
+							check_box.setAttribute("name", "check");
+							check_box.setAttribute("id", "check"
+									+ withoutExtension);
+							check_box.setAttribute("onClick",
+									"checkBoxValues1('" + withoutExtension
+											+ "');");
+							//---------------------------------------------------------------------------------------------------------------------------
+							var option;
+
+							if (typeGiven == '2' || typeGiven == '5') {
+								option = document.createElement("img");
+								option.setAttribute("src", "static/gallery/"
+										+ "image" + "/"
+										+ data[i].thumbnail_filename);
+								option.classList.add("img-fluid",
+										"img-thumbnail");
+								//------------------------------------------26-11-2024--------------------------------------------------------------------
+								/* var descriptionInput = document.createElement('input');
+								descriptionInput.type = 'text';
+								descriptionInput.classList.add('form-control');
+								descriptionInput.placeholder = 'Image Description';
+								descriptionInput.style.display = 'none';
+								descriptionInput.name = 'file_desc';
+								descriptionInput.id = 'file_desc'+withoutExtension;
+								descriptionInput.required = 'true';	
+								var value1="";
+								var properties = data[i].properties;
+								var parsedValue = JSON.parse(properties.value);
+								 for (let key in parsedValue) {
+								  if (parsedValue.hasOwnProperty(key)) { 									   
+								    if(value1==""){
+									 value1 = parsedValue[key] + " ";	
+									}else{
+									 value1 = value1 + parsedValue[key] + " ";	
+									}
+								  }
+								} 									
+								descriptionInput.setAttribute("value",value1); */
+								//------------------------------------------------------------------------------------------------------------------------														
+								//"images/" + data[i].thumbnail_filename + "/" + typeGiven);
+								//"/getImg/" + data[i].thumbnail_filename);
+							} else if (typeGiven == '7' || typeGiven == '8') {
+								var typeChar = '';
+								var ssr = '';
+								if (typeGiven == 7) {
+									typeChar = 'video';
+								} else if (typeGiven == 8) {
+									typeChar = 'audio';
+								}
+								option = document.createElement(typeChar);
+								option.setAttribute("controls", "");
+								option.setAttribute("width", "100%");
+								option.setAttribute("height", "100%");
+								option.classList.add("img-fluid",
+										"img-thumbnail");
+								let source = document.createElement("source");
+								source.setAttribute("src", "static/gallery/"
+										+ typeChar + "/"
+										+ data[i].thumbnail_filename);
+								source.setAttribute("type", typeChar + "/mp4");
+								option.appendChild(source);
+								console.log(option);
+							} else if (typeGiven == '9') {
+								option = document.createElement("a");
+								option.setAttribute("href",
+										"static/gallery/docs/"
+												+ data[i].thumbnail_filename);
+								option.innerText = data[i].description;
+								option.classList.add("d-block", "border",
+										"border-1", "img-fluid",
+										"img-thumbnail");
+
+							}
+							var col = document.createElement("div");
+							col.classList.add("col-4", "form-check");
+
+							const divRow = document.createElement('div');
+							divRow.classList.add('row', 'g-1');
+
+							const imgCol = document.createElement('div');
+							imgCol.classList.add('col-2');
+							var checkBox = document.createElement("input");
+							checkBox.setAttribute("type", "checkbox");
+							checkBox.classList.add("form-check-input");
+							checkBox.setAttribute("value", data[i].file_name);
+							checkBox.setAttribute("id", data[i].file_name);
+							checkBox.setAttribute("onChange",
+									"checkBoxValues(this);");
+							imgCol.appendChild(checkBox);
+							//imgCol.appendChild(option);
+
+							const descCol = document.createElement('div');
+							descCol.classList.add('col-10');
+							var label = document.createElement("label");
+							label.setAttribute("for", data[i].file_name);
+							label.classList.add("form-check-label", "p-3");
+							let para = document.createElement("span");
+							// 	para.classList.add("text-center");
+							para.innerText = data[i].original_filename;
+							para.classList.add("image-label",
+									"list-group-item", "align-self-center");
+							//--------------------------------------26-11-2024--------------------------------------------------
+							para.appendChild(check_box);
+							//--------------------------------------------------------------------------------------------------
+							//para.appendChild(checkBox);
+							col.appendChild(checkBox);
+
+							descCol.appendChild(para);
+
+							divRow.appendChild(imgCol);
+
+							var p = document.createElement("p");
+							p.innerText = data[i].original_filename;
+
+							//------------------------------------------26-11-2024--------------------------------------------------------------------
+							var descriptionInput = document
+									.createElement('input');
+							descriptionInput.type = 'text';
+							descriptionInput.classList.add('form-control');
+							descriptionInput.placeholder = 'Image Description';
+							descriptionInput.style.display = 'none';
+							descriptionInput.name = 'file_desc';
+							descriptionInput.id = 'file_desc'
+									+ withoutExtension;
+							descriptionInput.required = 'true';
+							var value1 = "";
+							var properties = data[i].properties;
+							var parsedValue = JSON.parse(properties.value);
+							for ( let key in parsedValue) {
+								if (parsedValue.hasOwnProperty(key)) {
+									if (value1 == "") {
+										value1 = parsedValue[key] + " ";
+									} else {
+										value1 = value1 + parsedValue[key]
+												+ " ";
+									}
+								}
+							}
+							descriptionInput.setAttribute("value", value1);
+							//------------------------------------------------------------------------------------------------------------------------									
+
+							col.appendChild(check_box);
+							col.appendChild(label);
+							label.appendChild(option);
+							divRow.appendChild(descCol);
+							col.appendChild(divRow);
+							col.appendChild(para);
+							if (typeGiven == '2' || typeGiven == '5') {
+								col.appendChild(descriptionInput);
+							}
+							row.appendChild(col);
+							folder.appendChild(row);
+							container.appendChild(folder);
+							offcanvasContent.appendChild(container);
+						}
+						var offcanvas = new bootstrap.Offcanvas(document
+								.getElementById('galleryOffcanvas'));
+						offcanvas.show();
+					},
+					error : function(xhr, textStatus, errorThrown) {
+						if (xhr.status == 405) {
+							alert("Not a valid request. Please try again");
+							window.location.reload();
+						}
+					}
+				});
+			}
+		</script>
+		<script>
+			function checkBoxValues1(el) {
+				var checkbox = document.getElementById('check' + el);
+				if (checkbox.checked) {
+					document.getElementById("file_desc" + el).style.display = 'block';
+				} else {
+					document.getElementById("file_desc" + el).style.display = 'none';
+				}
+
+				var ckbox = [], file_desc1 = [], chkbx = "";
+				var c3 = document.getElementsByName('check');
+				var g = c3.length;
+				var j = 0;
+				for (var t1 = 0; t1 < g; t1++) {
+					if (c3[t1].type == 'checkbox' && c3[t1].checked == true) {
+						ckbox[j] = c3[t1].value;
+						var parts = c3[t1].value.split("##");
+						jsonString.push("'" + parts[0] + "'");
+						var withoutExtension = c3[t1].value.substring(0,
+								c3[t1].value.lastIndexOf('.'));
+						//file_desc1[j] = document.getElementById("file_desc"+withoutExtension).value;
+						if (chkbx == "") {
+							chkbx = document.getElementById("file_desc"
+									+ withoutExtension).value;
+						} else {
+							chkbx = chkbx
+									+ "##"
+									+ document.getElementById("file_desc"
+											+ withoutExtension).value;
+						}
+						j++;
+					}
+				}
+				/* if(ckbox.length>0){                    
+				  document.getElementById("veera").style.display = 'block';	
+					 document.getElementById("mnr").style.display = 'none';	
+					 //document.getElementById("jsonString1").value = ckbox;
+					 //document.getElementById("file_desc1").value = chkbx;
+					// alert("==="+JSON.stringify(ckbox)+"==file_desc1=="+JSON.stringify(chkbx))
+				 }else{					 
+				  document.getElementById("mnr").style.display = 'block';
+				  document.getElementById("veera").style.display = 'none';	
+				} */
+				//-----------------------------26-11-2024--------------------------------------------------------------
+				/* if (jsonString.length == 0) {
+					var array = document.getElementsByClassName("existingImages");
+					for (var i = 0; i < array.length; i++) {
+						if (array[i].checked) {
+							jsonString.push("'" + array[i].value + "'");
+						}
+					}
+				}
+				var selectedValue = "'" + el.value + "'";
+				var checked = el.checked;
+				if (checked) {
+					if (jsonString.indexOf(selectedValue) === -1)
+						jsonString.push(selectedValue);
+				} else {
+					var index = jsonString.indexOf(selectedValue);
+					if (index !== -1) {
+						jsonString.splice(index, 1);
+					}
+				} 
+				//alert(jsonString);
+				document.getElementById("jsonString").value = jsonString;
+				 */
+				//-----------------------------------------------------------------------------------------------------			 
+			}
+			/*function checkBoxValues(el) {
+				debugger;
+				if (jsonString.length == 0) {
+					var array = document.getElementsByClassName("existingImages");
+					for (var i = 0; i < array.length; i++) {
+						if (array[i].checked) {
+							jsonString.push("'" + array[i].value + "'");
+						}
+					}
+				}
+				var selectedValue = "'" + el.value + "'";
+				var checked = el.checked;
+				if (checked) {
+					if (jsonString.indexOf(selectedValue) === -1)
+						jsonString.push(selectedValue);
+				} else {
+					var index = jsonString.indexOf(selectedValue);
+					if (index !== -1) {
+						jsonString.splice(index, 1);
+					}
+				}
+				//alert(jsonString);
+				document.getElementById("jsonString").value = jsonString;
+			} */
+			function submitGalleryData() {
+				event.preventDefault();
+				var ckbox = [], file_desc1 = [], chkbx = "", jsonString = [];
+				if (jsonString.length == 0) {
+					var array = document
+							.getElementsByClassName("existingImages");
+					for (var i = 0; i < array.length; i++) {
+						if (array[i].checked) {
+							jsonString.push("'" + array[i].value + "'");
+						}
+					}
+				}
+				//-----------------------26-11-2024--------------------------------------------
+				//var ckbox = [],file_desc1 = [],chkbx = "", jsonString = [];
+				var c3 = document.getElementsByName('check');
+				var g = c3.length;
+				var j = 0;
+				for (var t1 = 0; t1 < g; t1++) {
+					if (c3[t1].type == 'checkbox' && c3[t1].checked == true) {
+						ckbox[j] = c3[t1].value;
+						var parts = c3[t1].value.split("##");
+						jsonString.push("'" + parts[0] + "'");
+						var withoutExtension = c3[t1].value.substring(0,
+								c3[t1].value.lastIndexOf('.'));
+						//file_desc1[j] = document.getElementById("file_desc"+withoutExtension).value;
+						if (chkbx == "") {
+							chkbx = document.getElementById("file_desc"
+									+ withoutExtension).value;
+						} else {
+							chkbx = chkbx
+									+ "##"
+									+ document.getElementById("file_desc"
+											+ withoutExtension).value;
+						}
+						j++;
+					}
+				}
+				//----------------------------07-01-2025---------------------------------------
+				var type = document.getElementById('type').value;
+				var random = "";
+				if (type == 5) {
+					random = document.getElementById("random");
+					if (random.checked) {
+						random = true;
+					} else {
+						random = false;
+					}
+				}
+				//-----------------------------------------------------------------------------				
+				//var jsonString = document.getElementById("jsonString").value;
+				if (jsonString.length < 1)
+					return false;
+				document.getElementById("jsonString").value = '"[' + jsonString
+						+ ']"';
+				if (jsonString == null) {
+					alert("Please select");
+					return false;
+				}
+				jsonString = document.getElementById("jsonString").value;
+				var csrfToken = $('meta[name="_csrf"]').attr('content');
+				var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+				var data = {
+					"object_id" : document.getElementById('object_id').value,
+					"imgType" : "",
+					"jsonString" : jsonString,
+					"type" : document.getElementById('type').value,
+					"marquee" : "",
+					"linksString" : "",
+					"newJson" : "",
+					"list_type" : "",
+					"expString" : "",
+					"object_title" : document.getElementById('object_title').value,
+					"object_title_hi" : "",
+					"styles" : "",
+					"classes" : "",
+					"description" : "",
+					"help_text" : "",
+					"alternate_text" : "",
+					"keywords" : "",
+					"jsonString_hi" : jsonString,
+					"meta_hi" : "",
+					"random" : random
+				};
+				$.ajax({
+					type : "POST",
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					url : "/save",
+					contentType : "application/json",
+					data : JSON.stringify(data),
+					success : function(response) {
+						alert(response.success);
+						document.getElementById("jsonString").value = '';
+					},
+					error : function(xhr, status, error) {
+						console.error("Error:", error)
+					}
+				});
+
+			}
+
+			function updateDescription() {
+				event.preventDefault();
+				var csrfToken = $('meta[name="_csrf"]').attr('content');
+				var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+				var ckbox = [], chkbx = "";
+				var c3 = document.getElementsByName('check');
+				var g = c3.length;
+				var j = 0;
+				for (var t1 = 0; t1 < g; t1++) {
+					if (c3[t1].type == 'checkbox' && c3[t1].checked == true) {
+						ckbox[j] = c3[t1].value;
+						var withoutExtension = c3[t1].value.substring(0,
+								c3[t1].value.lastIndexOf('.'));
+						//file_desc1[j] = document.getElementById("file_desc"+withoutExtension).value;
+						if (chkbx == "") {
+							chkbx = document.getElementById("file_desc"
+									+ withoutExtension).value;
+						} else {
+							chkbx = chkbx
+									+ "##"
+									+ document.getElementById("file_desc"
+											+ withoutExtension).value;
+						}
+						j++;
+					}
+				}
+
+				var data = {
+					"jsonString1" : ckbox,
+					"description" : chkbx,
+
+				};
+
+				$.ajax({
+					type : "POST",
+					beforeSend : function(xhr) {
+						xhr.setRequestHeader(csrfHeader, csrfToken);
+					},
+					headers : {
+						'X-CSRF-TOKEN' : csrfToken,
+						'X-XSRF-HEADER' : csrfHeader
+					},
+					url : "/updateImageDes",
+					contentType : "application/json",
+					data : JSON.stringify(data),
+					success : function(response) {
+						alert(response.success);
+					},
+					error : function(xhr, status, error) {
+						console.error("Error:", error)
+					}
+				});
+			}
+		</script>
+		<script>
+			function folderHeaderClicked(el) {
+				debugger;
+				var $icon = $(el).find('i');
+				var $folderItems = $(el).siblings('.folder-items');
+				var $folder = $(el).parent();
+				$folderItems.slideToggle();
+				$icon.toggleClass('fa-angle-down fa-angle-up');
+				$folder.toggleClass('collapsed expanded');
+				$folderItems.toggleClass('d-flex');
+			}
+		</script>
+		<script>
+  function handleDragStart(event) {
+    event.dataTransfer.setData('text/plain', null);
+    event.target.classList.add('dragging');
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
+
+  function handleDrop(event) {
+	    event.preventDefault();
+	    const dragged = document.querySelector('.dragging');
+	    const target = event.target.closest('.draggable');
+
+	    if (dragged && target && dragged !== target) {
+	        const parent = target.parentNode;
+	        const draggedIndex = Array.from(parent.children).indexOf(dragged);
+	        const targetIndex = Array.from(parent.children).indexOf(target);
+
+	        if (draggedIndex < targetIndex) {
+	            parent.insertBefore(dragged, target.nextSibling);
+	        } else {
+	            parent.insertBefore(dragged, target);
+	        }
+	        updateOrder();
+	    }
+
+	    if (dragged) {
+	        dragged.classList.remove('dragging');
+	    }
+	}
+
+
+  function updateOrder() {
+    const rows = document.querySelectorAll('#selectedItems .draggable');
+    const ids = Array.from(rows).map((row, index) => {
+      row.setAttribute('data-index', index);
+      return index;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+	    const draggableRows = document.querySelectorAll('#selectedItems .draggable');
+	    draggableRows.forEach(row => {
+	        row.addEventListener('dragstart', handleDragStart);
+	        row.addEventListener('dragover', handleDragOver);
+	        row.addEventListener('drop', handleDrop);
+	    });
+	});
+</script>
+	</div>
+</body>
+</html>
