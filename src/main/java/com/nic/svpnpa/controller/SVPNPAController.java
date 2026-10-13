@@ -270,6 +270,18 @@ public class SVPNPAController {
         return response;
     }
 
+	@GetMapping("/lastUpdated")
+	@ResponseBody
+	public Map<String, Object> getLastUpdated() {
+		Map<String, Object> response = new HashMap<>();
+		SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		java.util.Date now = new java.util.Date();
+		response.put("year", yearFormat.format(now));
+		response.put("lastUpdated", dateFormat.format(now));
+		return response;
+	}
+
 
 	@GetMapping("/designTemplate")
 	public String designTemplate() {

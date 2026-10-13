@@ -1,5 +1,70 @@
 @charset "ISO-8859-1";
 
+*,
+html,
+body,
+input,
+button,
+select,
+textarea,
+optgroup {
+	font-family: 'Noto Sans' !important;
+}
+
+/* Explicitly restore Font Awesome and Bootstrap Icons */
+.fa,
+.fas,
+.fa-solid,
+.important_links ul li::before,
+.globalnews li::before,
+.links li::before {
+	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
+	font-weight: 900 !important;
+}
+
+.fa::before,
+.fas::before,
+.fa-solid::before {
+	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
+	font-weight: 900 !important;
+}
+
+.far,
+.fa-regular {
+	font-family: "Font Awesome 6 Free" !important;
+	font-weight: 400 !important;
+}
+
+.far::before,
+.fa-regular::before {
+	font-family: "Font Awesome 6 Free" !important;
+	font-weight: 400 !important;
+}
+
+.fab,
+.fa-brands,
+[class*="fa-brands"] {
+	font-family: "Font Awesome 6 Brands" !important;
+	font-weight: 400 !important;
+}
+
+.fab::before,
+.fa-brands::before,
+[class*="fa-brands"]::before {
+	font-family: "Font Awesome 6 Brands" !important;
+	font-weight: 400 !important;
+}
+
+.bi,
+[class*="bi-"] {
+	font-family: "bootstrap-icons" !important;
+}
+
+.bi::before,
+[class*="bi-"]::before {
+	font-family: "bootstrap-icons" !important;
+}
+
 /* Preview.html Styles */
 /* body {
 		background-image: url("static/bg_login.jpg");

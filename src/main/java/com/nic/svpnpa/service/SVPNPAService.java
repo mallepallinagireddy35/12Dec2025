@@ -673,7 +673,7 @@ public class SVPNPAService {
 					String property[] = (String.valueOf(object.get("properties")).toString().split(","));
 					if (property.length > 1) {
 						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5 class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
 									+ (String) object.get("object_title")
 									+ "</h5>                  <div class=\"card-body border border-2 border-success rounded-5 important_links\">\r\n"
 									+ "<marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
@@ -683,7 +683,7 @@ public class SVPNPAService {
 											String.valueOf(object.get("classes")) + "</marquee>\r\n" + "</div>"));
 						else
 							marquee = new StringBuilder(new StringBuffer(
-									"<h5  class='text-danger fw-bold text-center'>")
+									"<h5  class='text-primary fw-bold text-center'>")
 									.append((String) object.get("object_title"))
 									.append("</h5>                  <div class=\"card-body border border-2 border-success rounded-5 important_links\">\r\n"
 											+ ""))
@@ -805,14 +805,14 @@ public class SVPNPAService {
 					String property[] = ((String) map.get("properties")).toString().split(",");
 					if (property.length > 1) {
 						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
 									+ (String) map.get("object_title")
 									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 									+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
 											(String) map.get("styles"), (String) map.get("classes"))
 									+ "</marquee>");
 						else if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
 									+ (String) map.get("object_title")
 									+ "</h5><div class=\"card-body border border-2 border-success rounded-5 important_links\"><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 									+ property[2] + "'>"
@@ -821,7 +821,7 @@ public class SVPNPAService {
 									+ "</marquee>").append("" + "                  </div>");
 						else
 							marquee = new StringBuilder(new StringBuffer(
-									"<h5  class='text-danger fw-bold text-center'>")
+									"<h5  class='text-primary fw-bold text-center'>")
 									.append((String) map.get("object_title"))
 									.append("</h5><div class=\"card-body border border-2 border-success rounded-5 important_links\">"))
 									.append(parseListData(userArray, linksArray, expArray, property[0],
@@ -915,21 +915,21 @@ public class SVPNPAService {
 				String property[] = ((String) map.get("properties")).toString().split(",");
 				if (property.length > 1) {
 					if (property[1].equals("marquee"))
-						marquee = new StringBuilder("<h5 class='text-danger fw-bold text-center'>"
+						marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
 								+ (String) map.get("object_title")
 								+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 								+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
 										(String) map.get("styles"), (String) map.get("classes"))
 								+ "</marquee>");
 					else if (property[1].equals("marquee"))
-						marquee = new StringBuilder("<h5 class='text-danger fw-bold text-center'>"
+						marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
 								+ (String) map.get("object_title")
 								+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 								+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
 										(String) map.get("styles"), (String) map.get("classes"))
 								+ "</marquee>");
 					else
-						marquee = new StringBuilder(new StringBuffer("<h5 class='text-danger fw-bold text-center'>")
+						marquee = new StringBuilder(new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
 								.append((String) map.get("object_title")).append("</h5>"))
 								.append(parseListData(userArray, linksArray, expArray, property[0],
 										(String) map.get("styles"), (String) map.get("classes")));
@@ -1023,7 +1023,7 @@ public class SVPNPAService {
 					String property[] = (String.valueOf(map.get("properties"))).toString().split(",");
 					if (property.length > 1) {
 						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
 									+ String.valueOf(map.get("object_title"))
 									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 									+ property[2] + "'>"
@@ -1031,7 +1031,7 @@ public class SVPNPAService {
 											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
 									+ "</marquee>");
 						else if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
 									+ String.valueOf(map.get("object_title"))
 									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 									+ property[2] + "'>"
@@ -1039,7 +1039,7 @@ public class SVPNPAService {
 											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
 									+ "</marquee>");
 						else
-							marquee = new StringBuilder(new StringBuffer("<h5 class='text-danger fw-bold text-center'>")
+							marquee = new StringBuilder(new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
 									.append(String.valueOf(map.get("object_title"))).append("</h5>"))
 									.append(parseListData(userArray, linksArray, expArray, property[0],
 											String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))));
@@ -1193,7 +1193,7 @@ public class SVPNPAService {
 					if (property.length > 1) {
 						if (property[1].equals("marquee"))
 					
-							marquee = new StringBuilder("<h5  class='text-danger fw-bold text-center'>"
+							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
 									+ (String) item.get("object_title")
 									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
 									+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
@@ -1201,7 +1201,7 @@ public class SVPNPAService {
 									+ "</marquee>");
 						else
 							marquee = new StringBuilder(
-									new StringBuffer("<h5  class='text-danger fw-bold text-center'>")
+									new StringBuffer("<h5  class='text-primary fw-bold text-center'>")
 											.append((String) item.get("object_title")).append("</h5>"))
 									.append(parseListData(userArray, linksArray, expArray, property[0],
 											(String) item.get("styles"), (String) item.get("classes")));
@@ -1457,13 +1457,13 @@ System.out.println("objects===="+objects);
 			String view_more = "";
 			String list_class = "";
 			if (String.valueOf(map.get("classes")).contains("view-more")) {
-				view_more = "<a href=\"/Preview?page_id=196\" style=\"bottom:10px;left:10px;position:absolute;\" title=\"View all\" onClick=\"marqueePopup(this);\" class=\"btn btn-info\" target=\"_blank\" onClick=\"marqueePopup(this);\" style=\"margin-top: 10px;\">View more</a>";
+				view_more = "<a href=\"/Preview?page_id=196\" style=\"bottom:10px;left:10px;position:absolute;\" title=\"View all\" onClick=\"marqueePopup(this);\" class=\"btn btn-primary\" target=\"_blank\" onClick=\"marqueePopup(this);\" style=\"margin-top: 10px;\">View more</a>";
 				list_class = " border border-2 border-success rounded-5 ";
 			}
 	if (property.length > 1) {
 		if (property[1].equals("marquee"))
 			if (property[2].equals("up"))
-				marquee = new StringBuilder("<h5 class='text-danger fw-bold text-center'>"
+				marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
 						+ String.valueOf(map.get("object_title")) + "</h5><div class=\"card-body "
 						+ list_class
 						+ " important_links\"><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
@@ -1480,7 +1480,7 @@ System.out.println("objects===="+objects);
 						+ parseListData(userArray, linksArray, expArray, property[0],
 								String.valueOf(map.get("styles")),
 								String.valueOf(map.get("classes")))
-						+ "<a href=\"/Preview?page_id=196\" target=\"_blank\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square mx-2\"></i></a></div>\r\n"
+						+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
 						+ "                     <div class=\"mt-controls\">\r\n"
 						+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
 						+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
@@ -1488,7 +1488,7 @@ System.out.println("objects===="+objects);
 						+ "                     </div>");
 			else
 				marquee = new StringBuilder(
-						new StringBuffer("<h5 class='text-danger fw-bold text-center'>")
+						new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
 								.append(String.valueOf(map.get("object_title")))
 								.append("</h5>                  <div class=\"card-body " + list_class
 										+ " important_links\">\r\n" + ""))
@@ -1497,7 +1497,7 @@ System.out.println("objects===="+objects);
 								.append(view_more + "                  </div>"));
 						} else {
 							marquee = new StringBuilder(
-									"<h5 class='text-danger fw-bold text-center'>" + String.valueOf(map.get("object_title"))
+									"<h5 class='text-primary fw-bold text-center'>" + String.valueOf(map.get("object_title"))
 											+ "</h5><div class=\"card-body " + list_class + " important_links\">")
 									.append(parseListData(userArray, linksArray, expArray, property[0],
 											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
@@ -2485,21 +2485,21 @@ System.out.println("objects===="+objects);
 					if (property.length > 1) {
 						if (property[1].equals("marquee"))
 							marquee = new StringBuilder(
-									"<h5 class='text-danger fw-bold text-center'>" + (String) map.get("object_title")
+									"<h5 class='text-primary fw-bold text-center'>" + (String) map.get("object_title")
 											+ "</h5><marquee direction='" + property[2] + "'>"
 											+ parseListData(userArray, linksArray, expArray, property[0],
 													(String) map.get("styles"), (String) map.get("classes"))
 											+ "</marquee>");
 						else if (property[1].equals("marquee"))
 							marquee = new StringBuilder(
-									"<h5  class='text-danger fw-bold text-center'>" + (String) map.get("object_title")
+									"<h5  class='text-primary fw-bold text-center'>" + (String) map.get("object_title")
 											+ "</h5><marquee direction='" + property[2] + "'>"
 											+ parseListData(userArray, linksArray, expArray, property[0],
 													(String) map.get("styles"), (String) map.get("classes"))
 											+ "</marquee>");
 						else
 							marquee = new StringBuilder(
-									new StringBuffer("<h5  class='text-danger fw-bold text-center'>")
+									new StringBuffer("<h5  class='text-primary fw-bold text-center'>")
 											.append((String) map.get("object_title")).append("</h5>"))
 									.append(parseListData(userArray, linksArray, expArray, property[0],
 											(String) map.get("styles"), (String) map.get("classes")));
