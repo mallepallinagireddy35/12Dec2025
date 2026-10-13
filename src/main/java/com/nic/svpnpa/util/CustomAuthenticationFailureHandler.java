@@ -58,20 +58,21 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		response.getOutputStream().println(objectMapper.writeValueAsString(data));
 		
 		String username = request.getParameter("username"); // Retrieve the username parameter
-		Optional<User> userOptional = userRepository.findByUsername(username);
-	
-		
+		Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+	System.out.println("username==="+username);
+	System.out.println("userOptional===="+userOptional.isPresent());
+	System.out.println("exception.getMessage==="+exception.getMessage());
+
 		if (userOptional.isPresent()) {
 			
 			User user = userOptional.get();		
-			
+			System.out.println("======"+user.getEmail());
 			 int newFailedAttempts = user.getFailed_login_attempts() + 1;
 	            user.setFailed_login_attempts(newFailedAttempts);
 	            user.setLastLoginAttempt(LocalDateTime.now());
 
 	            if (newFailedAttempts >= 3) {
 	                user.setLocked(true);
-
 	            	}
 	            //	user.setLocked(false);
 	            	userRepository.save(user);		
@@ -98,8 +99,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 			 response.sendRedirect("/getsignin?badcaptcha");
 		 }
 	    else if (exception instanceof BadCredentialsException) {
-			response.sendRedirect("/getsignin?error=bad_credentials");
-		} else if (exception instanceof AccountLockedException) {
+//			response.sendRedirect("/getsignin?error=bad_credentials");
+//-------------------local-------------------------------------------------------------------------------
+	    	response.sendRedirect(request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/getsignin?error=bad_credentials");
+//--------------------Production--------------------------------------------------------------------------	
+//	    	response.sendRedirect(request.getScheme() + "://" + request.getServerName() +  "/getsignin?error=bad_credentials");
+////	    	response.sendRedirect("https://www.svpnpa.gov.in/getsignin?error=bad_credentials");
+
+	    } else if (exception instanceof AccountLockedException) {
 			response.sendRedirect("/getsignin?locked");
 		} else if (exception instanceof DisabledException) {
 			response.sendRedirect("/getsignin?error=disabled");

@@ -356,6 +356,8 @@ public class SVPNPAController {
 		return "gallery";
 	}
 
+	
+
 	@GetMapping("/galleryObjects")
 	public String galleryObjects(Model model, @RequestParam String type) {
 		try {
@@ -1085,16 +1087,108 @@ public class SVPNPAController {
             logger.error("SVPNPAController::clearTempDirectory::Temporary directory does not exist");
         }
         
-    	} catch (Exception e) {			
+} catch (Exception e) {			
 			logger.error("Exception in SVPNPAController::clearTempDirectory::" + e.getMessage());
             logger.error("Exception in SVPNPAController::clearTempDirectory::" + e.getCause());
             logger.error("Exception in SVPNPAController::clearTempDirectory::" + e.getClass() + "::" + e.getLocalizedMessage());
 		}
     }
 	
+//--------------------------------------12-10-2026-------------------------------------------------
+	@GetMapping("/galleryFolderManager")
+	public String galleryFolderManager(Model model) {
+		return "galleryFolderManager";
+	}
 	
+	@PostMapping("/checkGalleryFolderUsage")
+	@ResponseBody
+	public Map<String, Object> checkGalleryFolderUsage(@RequestBody Map<String, Object> request) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			String groupId = request.get("groupId") != null ? request.get("groupId").toString() : null;
+			Integer mediaType = request.get("mediaType") != null ? Integer.parseInt(request.get("mediaType").toString()) : null;
+
+			if (groupId == null || groupId.trim().isEmpty() || mediaType == null) {
+				result.put("success", false);
+				result.put("message", "groupId and mediaType are required");
+				return result;
+			}
+
+			result = service.checkGalleryFolderUsage(groupId, mediaType);
+			result.put("success", true);
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::checkGalleryFolderUsage::" + e.getMessage());
+			logger.error("Exception in SVPNPAController::checkGalleryFolderUsage::" + e.getCause());
+			logger.error("Exception in SVPNPAController::checkGalleryFolderUsage::" + e.getClass() + "::" + e.getLocalizedMessage());
+			result.put("success", false);
+			result.put("message", "Error checking folder usage: " + e.getMessage());
+		}
+		return result;
+	}
+
+	@PostMapping("/deleteGalleryFolder")
+	@ResponseBody
+	public Map<String, Object> deleteGalleryFolder(@RequestBody Map<String, Object> request,
+			@RequestHeader(name = "X-XSRF-TOKEN", required = false) String csrfToken,
+			@RequestHeader(name = "X-XSRF-HEADER", required = false) String csrfHeader,
+			jakarta.servlet.http.HttpServletRequest httpRequest) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			String groupId = request.get("groupId") != null ? request.get("groupId").toString() : null;
+			Integer mediaType = request.get("mediaType") != null ? Integer.parseInt(request.get("mediaType").toString()) : null;
+			Boolean forceDelete = request.get("forceDelete") != null ? Boolean.parseBoolean(request.get("forceDelete").toString()) : false;
+
+			if (groupId == null || groupId.trim().isEmpty() || mediaType == null) {
+				result.put("success", false);
+				result.put("message", "groupId and mediaType are required");
+				return result;
+			}
+
+			String username = "";
+			try {
+				UserDetails userDetails = loginController.getUserDetails();
+				username = userDetails.getUsername();
+			} catch (Exception ex) {}
+
+			// Get client IP address
+			String clientIp = httpRequest.getHeader("X-Forwarded-For");
+			if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+				clientIp = httpRequest.getHeader("Proxy-Client-IP");
+			}
+			if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+				clientIp = httpRequest.getHeader("WL-Proxy-Client-IP");
+			}
+			if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+				clientIp = httpRequest.getRemoteAddr();
+			}
+			// Handle multiple IPs in X-Forwarded-For (take first one)
+			if (clientIp != null && clientIp.contains(",")) {
+				clientIp = clientIp.split(",")[0].trim();
+			}
+
+			if (forceDelete) {
+				result = service.deleteGalleryFolder(groupId, mediaType, username, clientIp);
+			} else {
+				result = service.checkGalleryFolderUsage(groupId, mediaType);
+				if ((Boolean) result.get("hasUsage")) {
+					result.put("success", false);
+					result.put("message", "Folder is in use. Use forceDelete=true to override.");
+					result.put("requiresConfirmation", true);
+				} else {
+					result = service.deleteGalleryFolder(groupId, mediaType, username, clientIp);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::deleteGalleryFolder::" + e.getMessage());
+			logger.error("Exception in SVPNPAController::deleteGalleryFolder::" + e.getCause());
+			logger.error("Exception in SVPNPAController::deleteGalleryFolder::" + e.getClass() + "::" + e.getLocalizedMessage());
+			result.put("success", false);
+			result.put("message", "Error deleting folder: " + e.getMessage());
+		}
+		return result;
+	}
+
 
 	
-	
-	} 
+	}
 

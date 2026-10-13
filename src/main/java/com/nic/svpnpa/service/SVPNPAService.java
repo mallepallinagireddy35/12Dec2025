@@ -32,8 +32,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -2791,5 +2793,183 @@ System.out.println("objects===="+objects);
 		return count;
 	}
 
+	public Map<String, Object> checkGalleryFolderUsage(String groupId, Integer mediaType) {
+		Map<String, Object> result = new HashMap<>();
+		List<Map<String, Object>> usedInPages = new ArrayList<>();
+		List<String> usedFiles = new ArrayList<>();
+		boolean hasUsage = false;
+
+		try {
+			ArrayList<HashMap<String, Object>> galleryFiles = dbutils.getListMap(
+				"SELECT file_name FROM gallery WHERE group_id = ? AND media_type = ?",
+				new Object[] { groupId, mediaType }
+			);
+
+			if (galleryFiles.isEmpty()) {
+				result.put("hasUsage", false);
+				result.put("message", "No files found in this folder");
+				result.put("usedInPages", usedInPages);
+				result.put("usedFiles", usedFiles);
+				return result;
+			}
+
+			List<String> fileNames = galleryFiles.stream()
+				.map(f -> (String) f.get("file_name"))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+
+			if (fileNames.isEmpty()) {
+				result.put("hasUsage", false);
+				result.put("message", "No valid filenames in folder");
+				result.put("usedInPages", usedInPages);
+				result.put("usedFiles", usedFiles);
+				return result;
+			}
+
+			String placeholders = fileNames.stream().map(f -> "?").collect(Collectors.joining(","));
+			String objectCategory = (mediaType == 2) ? "2" : (mediaType == 4 ? "7" : (mediaType == 3 ? "8" : "9"));
+			if (mediaType == 2) objectCategory = "2,5";
+
+			String sql = "SELECT o.object_id, o.object_title, o.object_category, o.data, o.lang " +
+				"FROM objects o " +
+				"WHERE o.object_category IN (" + objectCategory + ") " +
+				"AND o.data IS NOT NULL";
+
+			ArrayList<HashMap<String, Object>> objects = dbutils.getListMap(sql, null);
+
+			Gson gson = new Gson();
+			for (Map<String, Object> obj : objects) {
+				String data = String.valueOf(obj.get("data"));
+				if (data == null || data.trim().isEmpty()) continue;
+
+				data = data.replace("mvnr", "'");
+				try {
+					String[] fileArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
+					for (String fileName : fileArray) {
+						if (fileNames.contains(fileName)) {
+							hasUsage = true;
+							if (!usedFiles.contains(fileName)) {
+								usedFiles.add(fileName);
+							}
+
+							Integer objId = (Integer) obj.get("object_id");
+							ArrayList<HashMap<String, Object>> pages = dbutils.getListMap(
+								"SELECT p.page_id, pn.page_name, pn.template_id " +
+								"FROM pages p " +
+								"JOIN pages_names pn ON p.page_id = pn.page_id " +
+								"WHERE p.object_id = ?",
+								new Object[] { objId }
+							);
+
+							for (Map<String, Object> page : pages) {
+								Map<String, Object> pageInfo = new HashMap<>();
+								pageInfo.put("page_id", page.get("page_id"));
+								pageInfo.put("page_name", page.get("page_name"));
+								pageInfo.put("object_id", objId);
+								pageInfo.put("object_title", obj.get("object_title"));
+								pageInfo.put("object_category", obj.get("object_category"));
+								pageInfo.put("lang", obj.get("lang"));
+								pageInfo.put("file_name", fileName);
+								usedInPages.add(pageInfo);
+							}
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error parsing object data: " + e.getMessage());
+				}
+			}
+
+			result.put("hasUsage", hasUsage);
+			result.put("usedInPages", usedInPages);
+			result.put("usedFiles", usedFiles);
+			result.put("totalFilesInFolder", fileNames.size());
+			result.put("message", hasUsage ? 
+				"Folder contains " + usedFiles.size() + " file(s) used in " + usedInPages.size() + " page placement(s)" :
+				"Folder is not used in any pages");
+
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAService::checkGalleryFolderUsage::" + e.getMessage());
+			logger.error("Exception in SVPNPAService::checkGalleryFolderUsage::" + e.getCause());
+			logger.error("Exception in SVPNPAService::checkGalleryFolderUsage::" + e.getClass() + "::" + e.getLocalizedMessage());
+			result.put("hasUsage", false);
+			result.put("error", e.getMessage());
+		}
+		return result;
+	}
+
+	public Map<String, Object> deleteGalleryFolder(String groupId, Integer mediaType, String username, String clientIp) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			Map<String, Object> usageCheck = checkGalleryFolderUsage(groupId, mediaType);
+			if ((Boolean) usageCheck.get("hasUsage")) {
+				result.put("success", false);
+				result.put("message", "Cannot delete: folder is in use");
+				result.put("usageDetails", usageCheck);
+				return result;
+			}
+			
+			// 1. Fetch files to be deleted for logging
+			ArrayList<HashMap<String, Object>> filesToDelete = dbutils.getListMap(
+				"SELECT media_type, file_name, path, thumbnail_filename, group_id, original_filename " +
+				"FROM gallery WHERE group_id = ? AND media_type = ?",
+				new Object[] { groupId, mediaType }
+			);
+			
+			// 2. Log each file to gallery_deleted_log before deletion
+			if (!filesToDelete.isEmpty()) {
+				for (Map<String, Object> file : filesToDelete) {
+					dbutils.insertOrUpdate(
+						"INSERT INTO gallery_deleted_log (media_type, file_name, path, thumbnail_filename, group_id, original_filename, deleted_timestamp, deleted_by, deleted_ip) " +
+						"VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)",
+						new Object[] {
+							file.get("media_type"),
+							file.get("file_name"),
+							file.get("path"),
+							file.get("thumbnail_filename"),
+							file.get("group_id"),
+							file.get("original_filename"),
+							username != null && !username.isEmpty() ? username : "system",
+							clientIp != null ? clientIp : "unknown"
+						}
+					);
+				}
+			}
+			
+			// 3. Delete from gallery table
+			int deletedFiles = dbutils.insertOrUpdate(
+				"DELETE FROM gallery WHERE group_id = ? AND media_type = ?",
+				new Object[] { groupId, mediaType }
+			);
+
+			String folderPath = "";
+			if (mediaType == 2) folderPath = galleryAbsolutePath + File.separator + "image" + File.separator;
+			else if (mediaType == 3) folderPath = galleryAbsolutePath + File.separator + "audio" + File.separator;
+			else if (mediaType == 4) folderPath = galleryAbsolutePath + File.separator + "video" + File.separator;
+			else if (mediaType == 5) folderPath = galleryAbsolutePath + File.separator + "docs" + File.separator;
+
+			File folder = new File(folderPath);
+			if (folder.exists() && folder.isDirectory()) {
+				File[] files = folder.listFiles();
+				if (files != null) {
+					for (File file : files) {
+						file.delete();
+					}
+				}
+			}
+
+			result.put("success", true);
+			result.put("message", "Folder deleted successfully. " + deletedFiles + " database records removed and logged.");
+			result.put("deletedRecords", deletedFiles);
+			result.put("loggedRecords", filesToDelete.size());
+
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getMessage());
+			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getCause());
+			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getClass() + "::" + e.getLocalizedMessage());
+			result.put("success", false);
+			result.put("message", "Error deleting folder: " + e.getMessage());
+		}
+		return result;
+	}
 
 }

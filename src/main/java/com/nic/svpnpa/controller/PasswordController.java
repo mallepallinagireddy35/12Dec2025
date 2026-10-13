@@ -136,7 +136,7 @@ public class PasswordController {
 
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    String currentPrincipalName = authentication.getName();
-	    Optional<User> optionalUser = userRepository.findByUsername(currentPrincipalName);
+	    Optional<User> optionalUser = userRepository.findByUsernameAndStatus(currentPrincipalName.trim());
 
 	    if (optionalUser.isPresent()) {
 	        String loggedInUserPasswordHash = userService.getPasswordHashByUsername(currentPrincipalName);
@@ -325,7 +325,7 @@ public class PasswordController {
 		try {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
-        Optional<User> optionalUser = userRepository.findByUsername(currentPrincipalName);
+        Optional<User> optionalUser = userRepository.findByUsernameAndStatus(currentPrincipalName.trim());
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();

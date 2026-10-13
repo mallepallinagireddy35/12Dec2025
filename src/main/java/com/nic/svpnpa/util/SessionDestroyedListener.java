@@ -88,7 +88,7 @@ public class SessionDestroyedListener implements ApplicationListener<HttpSession
     }
 
     private User findUserByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
         return userOptional.orElse(null); // Return null if user not found
     }
 

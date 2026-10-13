@@ -297,23 +297,23 @@ public class AuthController {
 	public ModelAndView loginSubmit(@Valid @RequestParam("username") String username, @RequestParam("password") String password,
 			@RequestParam("captcha") String captcha, HttpServletResponse response, HttpServletRequest request,
 			HttpSession session) {
-
+		System.out.println("loginSubmit====");
 		ModelAndView modelAndView = new ModelAndView();
 
 					
 		// Validate the password before proceeding
 		boolean isPasswordValid = authenticateUser(username, password); // Implement this method
-		System.out.println("isPasswordValid====");
+		System.out.println("isPasswordValid===="+isPasswordValid);
 		if (!isPasswordValid) {
 			System.out.println("isPasswordValid====");
-			modelAndView.setViewName("sign-in");
+			logger.error("Exception in AuthController::loginSubmit::isPasswordValid====" + isPasswordValid);
+	        modelAndView.setViewName("sign-in");
 			modelAndView.addObject("error", "Invalid credentials. Please try again.");
 			return modelAndView;
 		}
 
 		try {
-			Authentication authentication = authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			SecurityContext context = SecurityContextHolder.createEmptyContext(); 
@@ -333,12 +333,6 @@ public class AuthController {
 			modelAndView.setViewName("redirect:/");
 			modelAndView.addObject("token", jwt);
 			response.setHeader("Authorization", "Bearer " + jwt);
-			/*
-			 * modelAndView.addObject("id", userDetails.getId());
-			 * modelAndView.addObject("username", userDetails.getUsername());
-			 * modelAndView.addObject("email", userDetails.getEmail());
-			 * modelAndView.addObject("roles", roles);
-			 */
 			return modelAndView;
 		} catch (BadCaptchaException e) {
 			  modelAndView.setViewName("sign-in"); 
@@ -366,15 +360,50 @@ public class AuthController {
 		return encoder.matches(enteredPassword, userDetails.getPassword());
 	}
 
-	public boolean authenticateUser(String username, String enteredPassword) {
-		Optional<User> userOptional = userRepository.findByUsername(username);
+	public boolean authenticateUser_old(String username, String enteredPassword) {
+		logger.error("Exception in AuthController::loginSubmit::authenticateUser====");
+		try {
+		Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
 		User user = userOptional.get();
-
+System.out.println("username==="+username+"===enteredPassword=="+enteredPassword);
+System.out.println("db-password==="+user.getPassword());
+System.out.println("user==="+(user != null));
 		if (user != null) {
 			return validatePassword(enteredPassword, user);
 		}
-
+		System.out.println("user==="+(user != null));	
+		}catch(Exception e) {
+			e.printStackTrace();
+			
+			logger.error("Exception in AuthController::authenticateUser::" + e.getMessage());
+            logger.error("Exception in AuthController::authenticateUser::" + e.getCause());
+            logger.error("Exception in AuthController::authenticateUser::" + e.getClass() + "::" + e.getLocalizedMessage());	
+		}
 		return false;
+	}
+	
+	public boolean authenticateUser(String username, String enteredPassword) {
+		logger.error("AuthController::authenticateUser====");
+	    try {
+	    	System.out.println("authenticateUser====");
+	        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim().trim());
+	        User user = userOptional.get();
+	        System.out.println("authenticateUser===="+userOptional.isEmpty());
+	        if (userOptional.isEmpty()) {
+	            logger.error("User not found: {}", username);
+	            return false;
+	        }
+
+	        //User user = userOptional.get();
+	        System.out.println("username===" + username);
+	        System.out.println("user found===" + (user != null));
+
+	        return validatePassword(enteredPassword, user);
+
+	    } catch (Exception e) {
+	        logger.error("Exception in AuthController::authenticateUser", e);
+	        return false;
+	    }
 	}
 
 	@RequestMapping(value = "/logout", method = { RequestMethod.GET, RequestMethod.POST })
@@ -384,7 +413,7 @@ public class AuthController {
 		if (authentication != null) {
 			String username = authentication.getName();
 
-			Optional<User> userOptional = userRepository.findByUsername(username);
+			Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
 
 			if (userOptional.isPresent()) {
 				User user = userOptional.get();
@@ -453,7 +482,7 @@ public class AuthController {
 		List<Role> roleList =  new ArrayList<Role>();
 		// names from the database
 		try {
-			Optional<User> userOptional = userRepository.findByUsername(username);
+			Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
 			User user = userOptional.get();
 				
 	    CaptchaDto captchaDto = captchaController.generateCaptchaImage(session, request, response, model);
@@ -476,9 +505,9 @@ public class AuthController {
 		
 		System.out.println("role_name==="+role_name);
 		} catch (Exception e) {
-			logger.error("Exception in AuthController::showRegistrationFormAdmin::" + e.getMessage());
-            logger.error("Exception in AuthController::showRegistrationFormAdmin::" + e.getCause());
-            logger.error("Exception in AuthController::showRegistrationFormAdmin::" + e.getClass() + "::" + e.getLocalizedMessage());
+			logger.error("Exception in AuthController::editUserDetails::" + e.getMessage());
+            logger.error("Exception in AuthController::editUserDetails::" + e.getCause());
+            logger.error("Exception in AuthController::editUserDetails::" + e.getClass() + "::" + e.getLocalizedMessage());
 		}
 		return "editUserDetails";
 	}

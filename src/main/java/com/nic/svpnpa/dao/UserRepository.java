@@ -17,8 +17,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 //  Optional<User> findByUsername(String username);
 	
-	@Query("SELECT u FROM User u WHERE TRIM(u.username) = TRIM(:username) and u.status='A'")
-	Optional<User> findByUsername(@Param("username") String username);
+//  @Query("SELECT u FROM User u WHERE TRIM(u.username) = TRIM(:username) and u.status=:status")
+//  Optional<User> findByUsername1(@Param("username") String username,@Param("status") String status);
+  
+	@Query("""
+		    SELECT u
+		    FROM User u
+		    WHERE TRIM(u.username) = TRIM(:username)
+		      AND u.status = 'A'
+		    """)
+  Optional<User> findByUsernameAndStatus(@Param("username") String username);
 
   Boolean existsByUsername(String username);
 
@@ -35,7 +43,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Object[] findUserStatusInfo(String username, LocalDateTime cutoffTime);
 
   
-  @Query("select u from User u where u.status='A' order by u.id")
+  @Query("""
+  		select u from User u where u.status = 'A' order by u.id
+  		""")
   List<User> getAllUsersList();
 
   

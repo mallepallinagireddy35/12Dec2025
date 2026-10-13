@@ -49,7 +49,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 			String username = authentication.getName();
 
 			
-			Optional<User> userOptional = userRepository.findByUsername(username);
+			Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
 			
 			if(userOptional.isPresent()) {
 				User user = userOptional.get();
