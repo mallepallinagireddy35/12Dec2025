@@ -160,12 +160,8 @@ public class WebSecurityConfig {
 				"/logout", "/static/**", "/registration", "/registration/**", "/signup",
 				"/reset-password/**", "/updateCookie", "/registration", "/home", "/index", "/Preview/**", "/getsignin", "/getPublicForm", "/insertPublicFormData", "/getForm", "/generateOtp","/validateOtp","/translateContent","/translation",
 				"/getsignin", "/Preview/**", "/customerror", "/getCaptcha","/userReport",
-<<<<<<< HEAD
 				"/getCaptcha", "/captcha/**","/getDynamicForm/**","/getDynamicForm/**", "/captcha/**", "/universalSearch/","/universalSearch", "/static/assets/ckeditor_4.22.1/**",
-				"/checkGalleryFolderUsage", "/deleteGalleryFolder", "/galleryFolderManager", "/lastUpdated" };
-=======
-				"/getCaptcha", "/captcha/**","/getDynamicForm/**","/getDynamicForm/**", "/captcha/**", "/universalSearch/","/universalSearch", "/static/assets/ckeditor_4.22.1/**", "/lastUpdated" };
->>>>>>> 2ac49344c8d9c9dab09957e1fe0e2b509ff431df
+				"/checkGalleryFolderUsage", "/deleteGalleryFolder", "/galleryFolderManager" , "/lastUpdated"};
 
 		
 
