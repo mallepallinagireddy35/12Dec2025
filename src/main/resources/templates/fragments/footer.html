@@ -1,65 +1,171 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 
 <body>
-<div th:fragment="footer">
-		<div class="container mt-2 bg-secondary">
-		<div class="d-flex justify-content-between footerList">
-			<div>
-				<ul class="footer">
-					<li><a href="/home" target="_blank">Home</a></li>
-					<li><a href="/Preview?page_id=171" target="_blank">Sitemap</a>
-					</li>
-					<li><a href="/Preview?page_id=27" target="_blank">Contact
-							Us</a></li>
-					<li><a href="/Preview?page_id=36" target="_blank">Website
-							policies</a></li>
-					<li><a href="/Preview?page_id=37" target="_blank">Disclaimer</a>
-					</li>
-					<li><a href="/Preview?page_id=38" target="_blank">Copyright
-							Policy</a></li>
-					<!--<li><a href="/Preview?page_id=39" target="_blank">FAQ's</a>
-					</li>
-					<li><a href="/Preview?page_id=40" target="_blank">Terms
-							& Conditions</a></li>-->
-
-					<li><a href="/static/gallery/docs/96ee147681e8463fb27b3dce5b602f54.pdf" target="_blank">Terms
-							& Conditions</a></li>
-				</ul>
-			</div>
-		
-
-    		<!-- <div th:fragment="footer"> -->
-    		
-    		<!-- Hit Counter -->
-            <div class="hit-counter">
-                <span th:if="${session.lang == 'E'}">
-                    Website Hits:
-                    <span th:text="${session.EnglishhitCount}"></span>
-                </span>
-
-                <span th:unless="${session.lang== 'E'}">
-                    वेबसाइट हिट्स:
-                    <span th:text="${session.EnglishhitCount}"></span>
-                </span>
-            </div>
-    		
-    		<!-- </div> -->
-			<div>
-				<ul class="mt-2">
-					<li><a href="https://www.nic.in/"><img src="static/assets/img/NIClogo.png" width="70%"	height="70%"></a></li>
-				</ul>
-			</div>
+<footer th:fragment="footer" role="contentinfo" class="mt-4 site-footer">
+	<!-- Operational maintenance notice (ops.maintenance-notice, section A5) -->
+	<div class="container-fluid px-4" th:if="${maintenanceNotice != null and !#strings.isEmpty(maintenanceNotice)}">
+		<div class="alert alert-warning d-flex align-items-center gap-2 mt-3 mb-0" role="status">
+			<i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+			<span th:text="${maintenanceNotice}">Maintenance notice</span>
 		</div>
 	</div>
-	<div class="container footerT d-flex justify-content-between">
-		<div class="text-white">@2023 Sardar
-			Vallabhbhai Patel National Police Academy</div>
+	<!-- Main Thematic Footer Container (Restructure Blueprint Page 10) -->
+	<div class="container-fluid text-white py-4 px-4 footer-main-container" style="background-color: var(--brand-key, #162F6A);">
+		
+		<!-- 4 Columns Grid -->
+		<div class="row g-4 footerList">
+			<!-- Col 1: Quick Links -->
+			<div class="col-lg-3 col-md-6">
+				<h2 class="h6 fw-bold text-uppercase border-bottom border-light pb-2 mb-3">Quick Links</h2>
+				<ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
+					<li><a href="/Preview?page_id=18" class="text-white text-decoration-none">Training Calendar</a></li>
+					<li><a href="/Preview?page_id=154" class="text-white text-decoration-none">New Notifications</a></li>
+					<li><a href="/Preview?page_id=159" class="text-white text-decoration-none">Tenders &amp; Quotations</a></li>
+					<li><a href="/Preview?page_id=166" class="text-white text-decoration-none">Vacancies</a></li>
+				</ul>
+			</div>
+
+			<!-- Col 2: Resources -->
+			<div class="col-lg-3 col-md-6">
+				<h2 class="h6 fw-bold text-uppercase border-bottom border-light pb-2 mb-3">Resources</h2>
+				<ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
+					<li><a href="/Preview?page_id=194" class="text-white text-decoration-none">Publications</a></li>
+					<li><a href="/Preview?page_id=166" class="text-white text-decoration-none">Documents</a></li>
+					<li><a href="https://kms.svpnpa.gov.in/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">KMS</a></li>
+					<li><a href="https://elibrary.svpnpa.gov.in/user#/home" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">e-library</a></li>
+					<li><a href="https://www.india.gov.in/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">National Portal</a></li>
+				</ul>
+			</div>
+
+			<!-- Col 3: Help & Support -->
+			<div class="col-lg-3 col-md-6">
+				<h2 class="h6 fw-bold text-uppercase border-bottom border-light pb-2 mb-3">Help &amp; Support</h2>
+				<ul class="list-unstyled mb-0 d-flex flex-column gap-2 small">
+					<li><a href="/Preview?page_id=27" class="text-white text-decoration-none">Contact Us</a></li>
+					<li><a href="/Preview?page_id=163" class="text-white text-decoration-none">RTI</a></li>
+					<li><a href="https://shebox.nic.in/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">SHe-Box</a></li>
+					<li><a href="/Preview?page_id=27" class="text-white text-decoration-none">ICC</a></li>
+					<li><a href="https://pgportal.gov.in/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">Grievance Redressal</a></li>
+				</ul>
+			</div>
+
+			<!-- Col 4: Connect & Compliance -->
+			<div class="col-lg-3 col-md-6">
+				<h2 class="h6 fw-bold text-uppercase border-bottom border-light pb-2 mb-3">Connect</h2>
+				<ul class="list-unstyled mb-3 d-flex flex-column gap-2 small">
+					<li><a th:href="@{/accessibility}" class="text-white text-decoration-none">Accessibility</a></li>
+					<li><a th:href="@{/screen-reader-access}" class="text-white text-decoration-none">Screen Reader Access</a></li>
+					<li><a th:href="@{/dbim-compliance}" class="text-white text-decoration-none">DBIM 3.0 Compliance</a></li>
+					<li><a href="/Preview?page_id=171" class="text-white text-decoration-none">Sitemap</a></li>
+				</ul>
+
+				<!-- Hit Counter -->
+				<div class="hit-counter p-2 border border-secondary rounded bg-dark bg-opacity-25 mb-3 small">
+					<i class="fas fa-chart-simple me-1 text-white"></i>
+					<span th:if="${session.lang == 'H'}">वेबसाइट हिट्स:</span>
+					<span th:unless="${session.lang == 'H'}">Website Hits:</span>
+					<span class="fw-bold text-white" th:text="${session.EnglishhitCount}"></span>
+				</div>
+
+				<!-- NIC Branding Logo -->
+				<div>
+					<a href="https://www.nic.in/" target="_blank" rel="noopener noreferrer">
+						<img src="static/assets/img/NIClogo.png" alt="National Informatics Centre" width="120" height="34" loading="lazy" decoding="async">
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Social Media Row (Page 10) -->
+		<div class="d-flex align-items-center gap-3 pt-3 mt-3 border-top border-secondary flex-wrap">
+			<span class="small fw-semibold text-light">Follow Us:</span>
+			<a th:href="${customSocialFacebook != null and !#strings.isEmpty(customSocialFacebook)} ? ${customSocialFacebook} : 'https://www.facebook.com/SvpNationalPoliceAcademy'" target="_blank" rel="noopener noreferrer" class="text-white" title="Facebook" aria-label="Facebook">
+				<i class="fa-brands fa-facebook fa-lg" aria-hidden="true"></i>
+			</a>
+			<a th:href="${customSocialTwitter != null and !#strings.isEmpty(customSocialTwitter)} ? ${customSocialTwitter} : 'https://twitter.com/svpnpahyd'" target="_blank" rel="noopener noreferrer" class="text-white" title="Twitter / X" aria-label="Twitter">
+				<i class="fa-brands fa-x-twitter fa-lg" aria-hidden="true"></i>
+			</a>
+			<a th:href="${customSocialYoutube != null and !#strings.isEmpty(customSocialYoutube)} ? ${customSocialYoutube} : 'https://www.youtube.com/channel/UCm4BdP-dUi_zF4VFRrQ5M6g'" target="_blank" rel="noopener noreferrer" class="text-white" title="YouTube" aria-label="YouTube">
+				<i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+			</a>
+			<a th:href="${customSocialInstagram != null and !#strings.isEmpty(customSocialInstagram)} ? ${customSocialInstagram} : 'https://www.instagram.com/svp_npa'" target="_blank" rel="noopener noreferrer" class="text-white" title="Instagram" aria-label="Instagram">
+				<i class="fa-brands fa-instagram fa-lg" aria-hidden="true"></i>
+			</a>
+		</div>
+
+		<!-- Mandatory Policy Links Utility Bar (DBIM §5.6 / Annexure F.1) -->
+		<div class="pt-3 mt-3 border-top border-secondary">
+			<ul class="d-flex flex-row flex-wrap flex-lg-nowrap list-unstyled mb-0 gap-2 gap-lg-3 small justify-content-center">
+				<li><a href="/home" class="text-white text-decoration-none">Home</a></li>
+				<li><a href="/Preview?page_id=36" class="text-white text-decoration-none">Website Policies</a></li>
+				<li><a href="/Preview?page_id=37" class="text-white text-decoration-none">Disclaimer</a></li>
+				<li><a href="/Preview?page_id=38" class="text-white text-decoration-none">Copyright Policy</a></li>
+				<li><a href="/Preview?page_id=39" class="text-white text-decoration-none">Help / FAQs</a></li>
+				<li><a href="/Preview?page_id=27" class="text-white text-decoration-none">Feedback</a></li>
+				<li><a href="/Preview?page_id=27" class="text-white text-decoration-none">Report Translation Error</a></li>
+				<li><a href="/static/gallery/docs/96ee147681e8463fb27b3dce5b602f54.pdf" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none">Terms &amp; Conditions</a></li>
+				<li><a href="javascript:void(0)" onclick="if(window.openCookieConsent){window.openCookieConsent();}else{var b=document.getElementById('cookieConsent');if(b)b.hidden=false;}" class="text-white text-decoration-none">Cookie Settings</a></li>
+			</ul>
+		</div>
+
+		<!-- Lineage Statement -->
+		<div class="py-2 mt-2 border-top border-secondary text-center small text-light"
+			 th:if="${(#locale.language == 'hi' and customFooterLineageHi != null and !#strings.isEmpty(customFooterLineageHi)) or (#locale.language != 'hi' and customFooterLineageEn != null and !#strings.isEmpty(customFooterLineageEn))}"
+			 th:text="${#locale.language == 'hi'} ? ${customFooterLineageHi} : ${customFooterLineageEn}">
+			This website belongs to Sardar Vallabhbhai Patel National Police Academy, Ministry of Home Affairs, Government of India.
+		</div>
+		<div class="py-2 mt-2 border-top border-secondary text-center small text-light"
+			 th:unless="${(#locale.language == 'hi' and customFooterLineageHi != null and !#strings.isEmpty(customFooterLineageHi)) or (#locale.language != 'hi' and customFooterLineageEn != null and !#strings.isEmpty(customFooterLineageEn))}">
+			This website belongs to Sardar Vallabhbhai Patel National Police Academy, Ministry of Home Affairs, Government of India.
+		</div>
+
 	</div>
+
+	<!-- Bottom Copyright & Last Updated Strip -->
+	<div class="container-fluid footerT px-4 d-flex justify-content-between flex-wrap py-2 small">
+		<div class="text-white">
+			&copy; <span id="footerYear" th:text="${#dates.year(#dates.createNow())}"></span> <span>Sardar Vallabhbhai Patel National Police Academy</span> | <span>Website maintained by Sardar Vallabhbhai Patel National Police Academy (SVPNPA)</span>
+		</div>
+		<div class="text-white">
+			<span>Last updated:</span> <span id="lastUpdatedDate" th:text="${#dates.format(#dates.createNow(), 'dd-MM-yyyy')}"></span>
+		</div>
 	</div>
+	<script th:inline="none">
+		(function () {
+			try {
+				var now = new Date();
+				var yearEl = document.getElementById('footerYear');
+				if (yearEl) {
+					yearEl.textContent = now.getFullYear();
+				}
+				var dateEl = document.getElementById('lastUpdatedDate');
+				if (dateEl) {
+					var day = String(now.getDate()).padStart(2, '0');
+					var month = String(now.getMonth() + 1).padStart(2, '0');
+					var year = now.getFullYear();
+					dateEl.textContent = day + '-' + month + '-' + year;
+				}
+
+				fetch('/lastUpdated', { headers: { 'Accept': 'application/json' } })
+					.then(function (r) { return r.ok ? r.json() : null; })
+					.then(function (data) {
+						if (!data) { return; }
+						if (data.year && yearEl) {
+							yearEl.textContent = data.year;
+						}
+						if (data.lastUpdated && dateEl) {
+							dateEl.textContent = data.lastUpdated;
+						}
+					})
+					.catch(function () {});
+			} catch (e) {}
+		})();
+	</script>
+	</footer>
 </body>
 
 
