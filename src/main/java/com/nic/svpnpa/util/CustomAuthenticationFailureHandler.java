@@ -58,7 +58,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		response.getOutputStream().println(objectMapper.writeValueAsString(data));
 		
 		String username = request.getParameter("username"); // Retrieve the username parameter
-		Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+		Optional<User> userOptional = userRepository.findByUsername(username.trim());
 	System.out.println("username==="+username);
 	System.out.println("userOptional===="+userOptional.isPresent());
 	System.out.println("exception.getMessage==="+exception.getMessage());

@@ -363,7 +363,7 @@ public class AuthController {
 	public boolean authenticateUser_old(String username, String enteredPassword) {
 		logger.error("Exception in AuthController::loginSubmit::authenticateUser====");
 		try {
-		Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+		Optional<User> userOptional = userRepository.findByUsername(username.trim());
 		User user = userOptional.get();
 System.out.println("username==="+username+"===enteredPassword=="+enteredPassword);
 System.out.println("db-password==="+user.getPassword());
@@ -386,7 +386,7 @@ System.out.println("user==="+(user != null));
 		logger.error("AuthController::authenticateUser====");
 	    try {
 	    	System.out.println("authenticateUser====");
-	        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim().trim());
+	        Optional<User> userOptional = userRepository.findByUsername(username.trim().trim());
 	        User user = userOptional.get();
 	        System.out.println("authenticateUser===="+userOptional.isEmpty());
 	        if (userOptional.isEmpty()) {
@@ -413,7 +413,7 @@ System.out.println("user==="+(user != null));
 		if (authentication != null) {
 			String username = authentication.getName();
 
-			Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+			Optional<User> userOptional = userRepository.findByUsername(username.trim());
 
 			if (userOptional.isPresent()) {
 				User user = userOptional.get();
@@ -482,7 +482,7 @@ System.out.println("user==="+(user != null));
 		List<Role> roleList =  new ArrayList<Role>();
 		// names from the database
 		try {
-			Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+			Optional<User> userOptional = userRepository.findByUsername(username.trim());
 			User user = userOptional.get();
 				
 	    CaptchaDto captchaDto = captchaController.generateCaptchaImage(session, request, response, model);

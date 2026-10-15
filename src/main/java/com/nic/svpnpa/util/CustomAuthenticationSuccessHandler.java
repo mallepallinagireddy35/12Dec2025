@@ -117,7 +117,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 	        Authentication authentication) throws IOException, ServletException {
 	    String username = authentication.getName();
 
-	    Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+	    Optional<User> userOptional = userRepository.findByUsername(username.trim());
 	    System.out.println("username==="+username);
 		System.out.println("userOptional===="+userOptional.isEmpty());
 	    if (userOptional.isPresent()) {
@@ -172,7 +172,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 	}
 
 	private User findUserByUsername(String username) {
-		Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+		Optional<User> userOptional = userRepository.findByUsername(username.trim());
 		return userOptional.orElse(null); // Return null if user not found
 	}
 

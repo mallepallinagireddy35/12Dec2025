@@ -42,7 +42,7 @@ public class LogoutSuccessListener implements ApplicationListener<LogoutSuccessE
 	}
 
 	private User findUserByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+        Optional<User> userOptional = userRepository.findByUsername(username.trim());
         return userOptional.orElse(null);  //Return null if user not found
     }
 }

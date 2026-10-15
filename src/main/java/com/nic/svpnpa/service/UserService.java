@@ -22,7 +22,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsernameAndStatus(username.trim());
+        return userRepository.findByUsername(username.trim());
     }
 
     public Optional<User> findByResetToken(String resetToken) {
@@ -33,7 +33,7 @@ public class UserService {
         userRepository.save(user);
     }
     public void unlockUser(String username) {
-        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+        Optional<User> userOptional = userRepository.findByUsername(username.trim());
         try {
         userOptional.ifPresent(user -> {
             user.setLocked(false);
@@ -72,7 +72,7 @@ public class UserService {
     }
 
     public void lockUser(String username) {
-        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+        Optional<User> userOptional = userRepository.findByUsername(username.trim());
         userOptional.ifPresent(user -> {
             user.setLocked(true);
             userRepository.save(user);
@@ -80,7 +80,7 @@ public class UserService {
     }
     
     public String getPasswordHashByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsernameAndStatus(username.trim());
+        Optional<User> userOptional = userRepository.findByUsername(username.trim());
         
         return userOptional.map(User::getPassword).orElse(null); // Assuming getPasswordHash() returns the hash from User entity
     }
