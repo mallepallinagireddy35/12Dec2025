@@ -9,6 +9,7 @@
 <!-- Import CSS -->
 <link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
 <link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/custom/css/portal.css" rel="stylesheet">
 <link rel="icon" href="static/assets/img/academy_logo_lg.png">
 <link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
 
@@ -17,7 +18,6 @@
 <script src="static/assets/jQuery-1.11.3/jquery-ui.min.js"></script>
 <script src="static/assets/bootstrap_5.3/js/popper.min.js"></script>
 <script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
-<script src="static/assets/bootstrap_5.3/js/bootstrap.min.js"></script>
 <script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
 <!-- Import ViewerJS Plugin-->
 <link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
@@ -33,6 +33,19 @@
 	margin-top: 3px;
 	margin-bottom: 3px;
 	padding: 3px;
+	box-sizing: border-box;
+	overflow-wrap: break-word;
+}
+
+.templateBox img:not(.header-icon),
+.templateBox figure:not(.header-icon),
+.templateBox figure img:not(.header-icon),
+#pagedesign [class*="col-"] img:not(.header-icon),
+#pagedesign [class*="col-"] figure:not(.header-icon),
+#pagedesign [class*="col-"] figure img:not(.header-icon),
+.col-12:not(#header *):not(.header-logo-col *) img:not(.header-icon) {
+	max-width: 100% !important;
+	height: auto !important;
 }
 
 .objContainer {
@@ -42,12 +55,85 @@
 .objContainer:hover {
 	overflow-x: scroll;
 }
+
+.theme-preset-card {
+	cursor: pointer;
+	border-radius: 8px;
+	overflow: hidden;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.theme-preset-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.theme-preset-card.selected {
+	border-color: #0d6efd !important;
+	box-shadow: 0 0 0 3px rgba(13,110,253,0.3) !important;
+}
+.theme-preset-card.selected .theme-check-icon {
+	display: inline-block !important;
+}
+
+/* DBIM Icon Resources Picker Styling */
+.dbim-card {
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	background: #ffffff;
+}
+.dbim-card:hover {
+	border-color: #0d6efd;
+	box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+	transform: translateY(-3px);
+}
+.dbim-card .dbim-img-wrapper {
+	height: 96px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f9fa;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	padding: 8px;
+}
+.dbim-card .dbim-img-wrapper img {
+	max-height: 76px;
+	max-width: 100%;
+	object-fit: contain;
+}
+.dbim-card .card-footer-custom {
+	padding: 6px 8px;
+	background: #ffffff;
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+.dbim-card .dbim-title {
+	font-size: 0.72rem;
+	font-weight: 500;
+	color: #333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+}
+.dbim-tab-pane {
+	max-height: 520px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-right: 6px;
+}
+#modalHeaderIconPreview img {
+	height: 1.1em;
+	width: auto;
+	vertical-align: -0.15em;
+}
 </style>
 </head>
 <script>
 	$(function() {
 		//	$("#includeHeader").load("header.html");
-		$("#includeObjSelector").load("static/objectSelector.html");
+		$("#includeObjSelector").load("static/objectSelector.html?v=" + new Date().getTime());
 		$("#includeMsgBox").load("static/msgBox.html");
 		$("#includeFooter").load("static/footer.html");
 	});
@@ -177,7 +263,272 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Centralized Appearance Settings Modal -->
+		<div class="modal fade" id="appearanceSettingsModal" tabindex="-1" style="z-index: 1065;" aria-labelledby="appearanceSettingsModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content shadow-lg border-0 rounded-3">
+					<div class="modal-header bg-primary text-white py-3">
+						<h5 class="modal-title d-flex align-items-center" id="appearanceSettingsModalLabel">
+							<i class="fas fa-palette me-2"></i>Customize Card Appearance
+						</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body p-4">
+						<input type="hidden" id="appModalObjectId" value="" />
+						<input type="hidden" id="appModalSelectedTheme" value="navy" />
+
+						<div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+							<div>
+								<span class="badge bg-secondary me-2">Object ID: <strong id="appModalObjIdDisplay">--</strong></span>
+								<span class="fw-semibold text-dark" id="appModalObjTitleDisplay">Object Title</span>
+							</div>
+							<span class="badge bg-info text-dark" id="appModalCategoryDisplay">List Item</span>
+						</div>
+
+						<!-- Theme Preset Selector Cards -->
+						<label class="form-label fw-bold text-dark mb-2">
+							<i class="fas fa-swatchbook me-1 text-primary"></i>Choose Visual Theme:
+						</label>
+						<div class="row g-3 mb-4">
+							<!-- Preset 1: Dark Navy -->
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2" id="presetCardNavy" onclick="selectModalTheme('navy')">
+									<div class="card-header py-2 text-white fw-bold d-flex align-items-center justify-content-between" style="background-color: #162f6a; font-size: 0.9rem;">
+										<span>Dark Navy</span>
+										<i class="fas fa-check-circle theme-check-icon text-warning" style="display: none;"></i>
+									</div>
+									<div class="card-body p-3 text-white" style="background-color: #162f6a; font-size: 0.8rem;">
+										<div class="border-bottom border-secondary pb-1 mb-1 d-flex justify-content-between">
+											<span>Row Item 1</span> <span class="fw-bold">&gt;</span>
+										</div>
+										<div class="border-bottom border-secondary pb-1 mb-1 d-flex justify-content-between">
+											<span>Row Item 2</span> <span class="fw-bold">&gt;</span>
+										</div>
+										<div class="text-end mt-2">
+											<span class="badge bg-light text-dark px-2 py-1">Navy Blue</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Preset 2: Clean Light -->
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2" id="presetCardLight" onclick="selectModalTheme('light')">
+									<div class="card-header py-2 fw-bold d-flex align-items-center justify-content-between border-bottom" style="background-color: #ffffff; color: var(--brand-key, #162f6a); font-size: 0.9rem;">
+										<span><i class="fas fa-search-plus me-1 text-primary"></i>Clean Light</span>
+										<i class="fas fa-check-circle theme-check-icon text-primary" style="display: none;"></i>
+									</div>
+									<div class="card-body p-3 bg-white" style="font-size: 0.8rem; color: #222;">
+										<div class="border-bottom pb-1 mb-1 d-flex justify-content-between">
+											<span>Row Item 1</span> <span class="fw-bold text-muted">&gt;</span>
+										</div>
+										<div class="border-bottom pb-1 mb-1 d-flex justify-content-between">
+											<span>Row Item 2</span> <span class="fw-bold text-muted">&gt;</span>
+										</div>
+										<div class="text-end mt-2">
+											<span class="badge bg-light text-primary border px-2 py-1">Clean White</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Preset 3: Custom Theme -->
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2" id="presetCardCustom" onclick="selectModalTheme('custom')">
+									<div class="card-header py-2 bg-light fw-bold text-dark d-flex align-items-center justify-content-between border-bottom" style="font-size: 0.9rem;">
+										<span><i class="fas fa-sliders-h me-1 text-success"></i>Custom Colors</span>
+										<i class="fas fa-check-circle theme-check-icon text-success" style="display: none;"></i>
+									</div>
+									<div class="card-body p-3 bg-light text-muted" style="font-size: 0.8rem;">
+										<p class="mb-2">Customize card background, title, and body text colors.</p>
+										<div class="text-end mt-2">
+											<span class="badge bg-secondary px-2 py-1">Customizer</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Custom Color Pickers (Collapsible) -->
+						<div id="modalCustomColorsSection" class="p-3 mb-4 rounded border bg-light" style="display: none;">
+							<h6 class="fw-bold text-dark mb-3"><i class="fas fa-paint-brush me-1 text-success"></i>Custom Color Configuration</h6>
+							<div class="row g-3">
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Card Background:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="modalCustomBgColor" value="#162f6a" oninput="onCustomBgColorChange(this.value)">
+										<input type="text" class="form-control" id="modalCustomBgColorText" value="#162f6a" oninput="onCustomBgColorChange(this.value)">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Title / Accent Color:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="modalCustomTitleColor" value="#ffffff" oninput="onCustomTitleColorChange(this.value)">
+										<input type="text" class="form-control" id="modalCustomTitleColorText" value="#ffffff" oninput="onCustomTitleColorChange(this.value)">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Text / Body Color:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="modalCustomTextColor" value="#ffffff" oninput="onCustomTextColorChange(this.value)">
+										<input type="text" class="form-control" id="modalCustomTextColorText" value="#ffffff" oninput="onCustomTextColorChange(this.value)">
+									</div>
+								</div>
+							</div>
+							<small class="text-muted d-block mt-2">
+								<i class="fas fa-info-circle text-primary me-1"></i>
+								Selecting background color automatically sets high-contrast text color (white on blue/dark backgrounds).
+							</small>
+						</div>
+
+						<!-- Header Icon Selector -->
+						<div class="mb-4">
+							<label class="form-label fw-bold text-dark mb-2">
+								<i class="fas fa-icons me-1 text-primary"></i>Header Icon (Optional):
+							</label>
+							<div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+								<button type="button" class="btn btn-sm btn-outline-secondary modal-icon-btn" onclick="setModalHeaderIcon('fas fa-search-plus')">
+									<i class="fas fa-search-plus me-1"></i>Search +
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-secondary modal-icon-btn" onclick="setModalHeaderIcon('fas fa-newspaper')">
+									<i class="fas fa-newspaper me-1"></i>News
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-secondary modal-icon-btn" onclick="setModalHeaderIcon('fas fa-bullhorn')">
+									<i class="fas fa-bullhorn me-1"></i>Announce
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-secondary modal-icon-btn" onclick="setModalHeaderIcon('fas fa-bell')">
+									<i class="fas fa-bell me-1"></i>Notice
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-secondary modal-icon-btn" onclick="setModalHeaderIcon('fas fa-link')">
+									<i class="fas fa-link me-1"></i>Link
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-danger" onclick="setModalHeaderIcon('')">
+									<i class="fas fa-times me-1"></i>None
+								</button>
+							</div>
+							<div class="input-group input-group-sm" style="max-width: 350px;">
+								<span class="input-group-text"><span id="modalHeaderIconPreview"><i class="fas fa-info-circle"></i></span></span>
+								<input type="text" class="form-control" id="modalHeaderIconInput" placeholder="e.g. fas fa-search-plus" oninput="updateModalHeaderIconFromInput(this.value)">
+							</div>
+						</div>
+
+						<!-- "VIEW MORE" Button Option & Target Page Mapping -->
+						<div class="mb-4 p-3 rounded border bg-light">
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<label class="form-label fw-bold text-dark mb-0">
+									<i class="fas fa-arrow-up-right-from-square me-1 text-primary"></i>"VIEW MORE &gt;" Button:
+								</label>
+								<div class="form-check form-switch m-0">
+									<input class="form-check-input" type="checkbox" id="modalShowViewMoreCheck" checked onchange="toggleModalViewMoreOption()">
+									<label class="form-check-label fw-bold text-primary small" for="modalShowViewMoreCheck">Enable Button</label>
+								</div>
+							</div>
+							<div id="modalViewMoreUrlContainer">
+								<div class="row g-2 mb-2">
+									<div class="col-md-5">
+										<div class="input-group input-group-sm">
+											<span class="input-group-text">Page ID:</span>
+											<input type="text" id="modalViewMorePageId" class="form-control" placeholder="e.g. 196" oninput="onModalViewMorePageIdChange(this.value)">
+										</div>
+									</div>
+									<div class="col-md-7">
+										<select class="form-select form-select-sm" id="modalViewMorePageSelect" onchange="onModalViewMorePageSelectChange(this.value)">
+											<option value="">-- Or Select Existing Page --</option>
+										</select>
+									</div>
+								</div>
+								<div class="input-group input-group-sm mb-1">
+									<span class="input-group-text">Target URL:</span>
+									<input type="text" id="modalViewMoreUrl" class="form-control" placeholder="/Preview?page_id=..." oninput="updateModalPreview()">
+								</div>
+								<small class="text-muted d-block">
+									<i class="fas fa-info-circle text-primary me-1"></i>
+									When enabled, displays a "VIEW MORE &gt;" navigation button on the card linking to the selected page or URL.
+								</small>
+							</div>
+							<div id="modalViewMoreDisabledMsg" class="text-muted small mt-1" style="display: none;">
+								<i class="fas fa-ban text-secondary me-1"></i> "VIEW MORE &gt;" button is disabled for this list.
+							</div>
+						</div>
+
+						<!-- Live Card Preview -->
+						<div class="mb-2">
+							<label class="form-label fw-bold text-dark mb-2">
+								<i class="fas fa-eye me-1 text-primary"></i>Live Card Appearance Preview:
+							</label>
+							<div class="p-3 rounded border bg-light shadow-sm" style="min-height: 200px; max-height: 380px; overflow-y: auto;">
+								<div id="modalLivePreviewContainer">
+									<!-- Dynamic preview populated via JS -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer bg-light py-2 px-3">
+						<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-primary btn-sm px-3" id="btnSaveAppearance" onclick="saveObjectAppearance()">
+							<i class="fas fa-check me-1"></i>Save &amp; Attach to Object
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- <div id="includeFooter">-->
+
+		<!-- DBIM Resources Modal - choose an icon to insert before the object title -->
+		<div class="modal fade" id="objectIconModal" tabindex="-1" aria-labelledby="objectIconModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content shadow-lg border-0">
+					<div class="modal-header bg-light py-2 px-3 border-bottom">
+						<div class="d-flex align-items-center flex-grow-1 flex-wrap gap-2">
+							<h5 class="modal-title fs-5 mb-0" id="objectIconModalLabel">
+								<i class="fas fa-icons text-primary me-2"></i>DBIM Resources - Insert Icon
+							</h5>
+							<span class="badge bg-secondary-subtle text-secondary border ms-2">
+								Target: <strong id="objectIconTargetBadge" class="text-primary">Object</strong>
+							</span>
+						</div>
+						<div class="d-flex align-items-center gap-2">
+							<div class="input-group input-group-sm" style="width: 260px;">
+								<span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+								<input type="text" id="objectIconSearchInput" class="form-control" placeholder="Search icons...">
+								<button class="btn btn-outline-secondary" type="button" id="objectIconSearchClear" title="Clear search" style="display: none;">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+							<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+					</div>
+					<div class="modal-body p-4">
+						<ul class="nav nav-tabs mb-3" id="objectIconNavTabs" role="tablist"></ul>
+						<div class="tab-content" id="objectIconTabContent">
+							<div class="text-center py-5" id="objectIconLoadingSpinner">
+								<div class="spinner-border text-primary" role="status"></div>
+								<p class="mt-2 text-muted">Loading DBIM resources library...</p>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer bg-light py-2 px-3 border-top d-flex justify-content-between align-items-center">
+						<div class="small text-muted" id="objectIconStatusText">
+							<i class="fas fa-info-circle me-1 text-primary"></i>Click any icon to insert it before the object title.
+						</div>
+						<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+			<div id="objectIconToast" class="toast align-items-center text-bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body">
+						<i class="fas fa-check-circle me-2"></i><span id="objectIconToastText">Icon inserted successfully!</span>
+					</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 <script>
@@ -186,6 +537,16 @@
 		document.getElementById("page_name").value = document.getElementById("page_name_given").value;
 	}
 	var jsonStringLatest = [];
+	function getSlotIndex(pid) {
+		var slotEl = document.getElementById(pid);
+		if (!slotEl) return -1;
+		var allSlots = Array.from(document.querySelectorAll('#mainContainer span[id^="s"]'));
+		var idx = allSlots.indexOf(slotEl);
+		if (idx !== -1) return idx;
+		var num = parseInt(pid.substring(1), 10);
+		return isNaN(num) ? -1 : num - 1;
+	}
+
 	function list1(objectid) {
 		var type = {
 			'objectid' : objectid
@@ -211,15 +572,50 @@
 					contentType : "application/json",
 					success : function(data) {
 						document.getElementById(pid).innerHTML = '';
-						dv.innerHTML = data[0][0];
+						dv.id = "slotted-obj-wrap-" + objectid;
+						dv.setAttribute("data-bs-toggle", "modal");
+						dv.setAttribute("data-bs-target", "#selectionPopup");
+						dv.setAttribute("onclick", "getid(this);");
+						dv.style.cursor = "pointer";
+						dv.innerHTML = `
+							<div class="slot-toolbar d-flex justify-content-between align-items-center bg-light border px-2 py-1 mb-2 rounded">
+								<span class="small fw-bold text-secondary"><i class="fas fa-layer-group me-1"></i>Object #${objectid}</span>
+								<div>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" title="Appearance Settings" onclick="openAppearanceSettingsModal('${objectid}', event)">
+										<i class="fas fa-cog me-1"></i>Appearance
+									</button>
+									<button type="button" class="btn btn-sm btn-outline-success py-0 px-2 ms-1" title="Insert DBIM icon before title" onclick="openObjectIconPicker('${objectid}', event)">
+										<i class="fas fa-icons me-1"></i>Icon
+									</button>
+									<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 ms-1" title="Remove from slot" onclick="removeSlotItem('${pid}', '${objectid}', event)">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+							</div>
+							<div id="slotted-content-${objectid}">
+								${data[0][0]}
+							</div>
+						`;
 						document.getElementById(pid).appendChild(dv);
-						debugger;
+
+						try {
+							var selectModalEl = document.getElementById('selectionPopup');
+							if (selectModalEl) {
+								var selectModal = bootstrap.Modal.getInstance(selectModalEl);
+								if (selectModal) selectModal.hide();
+							}
+						} catch (ignored) {}
+
 						if (jsonStringLatest.length == 0) {
-							jsonStringLatest = document
-									.getElementById("existingJson").value
-									.split(',');
+							var existingVal = document.getElementById("existingJson").value;
+							if (existingVal && existingVal.trim() !== '') {
+								jsonStringLatest = existingVal.split(',');
+							}
 						}
-						jsonStringLatest[parseInt(pid.substring(1)) - 1] = objectid;
+						var slotIdx = getSlotIndex(pid);
+						if (slotIdx >= 0) {
+							jsonStringLatest[slotIdx] = String(objectid);
+						}
 
 						console.log(jsonStringLatest);
 					},
@@ -352,15 +748,35 @@
 		// 		}
 		// 		temp = rowData.join(',');
 		// 		jsonData.push(temp); 
-		debugger;
 		if (jsonStringLatest.length == 0) {
-			jsonStringLatest = document.getElementById("existingJson").value.split(',');
+			var existingVal = document.getElementById("existingJson").value;
+			if (existingVal && existingVal.trim() !== '') {
+				jsonStringLatest = existingVal.split(',');
+			}
 		}
-		var json = '[' + jsonStringLatest + ']';
+
+		// Also scan all slots in document order to capture any slotted wraps
+		var allSlots = Array.from(document.querySelectorAll('#mainContainer span[id^="s"]'));
+		for (var i = 0; i < allSlots.length; i++) {
+			var slot = allSlots[i];
+			var slottedWrap = slot.querySelector('[id^="slotted-obj-wrap-"]');
+			if (slottedWrap) {
+				var slottedId = slottedWrap.id.replace('slotted-obj-wrap-', '');
+				jsonStringLatest[i] = slottedId;
+			}
+		}
+
+		var cleanArray = [];
+		for (var i = 0; i < allSlots.length; i++) {
+			var val = jsonStringLatest[i];
+			if (val !== undefined && val !== null && String(val).trim() !== '' && String(val).trim() !== '-1') {
+				cleanArray.push(String(val).trim());
+			}
+		}
+
+		var json = '[' + cleanArray.join(',') + ']';
 		console.log(json);
-		debugger;
-		console.log(JSON.stringify(json, null, 2));
-		document.getElementById("jsonString").value = JSON.stringify(json,null, 2);
+		document.getElementById("jsonString").value = JSON.stringify(json, null, 2);
 		//document.forms[3].submit();
 		
 		    var csrfToken = $('meta[name="_csrf"]').attr('content');
@@ -400,7 +816,7 @@
 </script>
 <script>
 	function getid(e) {
-		var id = $(e).parent().attr('id');
+		var id = $(e).closest('[id^="s"]').attr('id') || $(e).parent().attr('id');
 		document.getElementById("plusign_id").value = id;
 	}
 	function getContent(el) {
@@ -492,6 +908,703 @@
 			selectedCount++;
 			updateSelectedCount();
 		});
+	});
+
+	// =========================================================================
+	// Centralized Appearance Settings Modal Logic
+	// =========================================================================
+	function openAppearanceSettingsModal(objectId, event) {
+		if (event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+
+		document.getElementById('appModalObjectId').value = objectId;
+		document.getElementById('appModalObjIdDisplay').innerText = objectId;
+
+		$.ajax({
+			type : "GET",
+			url : "/getObjectAppearance?object_id=" + objectId,
+			dataType : "json",
+			success : function(data) {
+				if (data.status === "success") {
+					document.getElementById('appModalObjTitleDisplay').innerText = data.object_title || 'Untitled Object';
+					var catText = data.object_category == '3' ? 'List Item' : (data.object_category == '11' ? 'Cards' : 'Object');
+					document.getElementById('appModalCategoryDisplay').innerText = catText;
+
+					var theme = data.theme || 'navy';
+					var icon = data.header_icon || '';
+					var viewMoreUrl = data.view_more_url || '';
+					var showViewMore = true;
+					if (data.show_view_more !== undefined) {
+						showViewMore = (data.show_view_more === true || data.show_view_more === 'true');
+					} else if (viewMoreUrl) {
+						showViewMore = (viewMoreUrl.trim() !== '' && viewMoreUrl !== '#');
+					}
+					var chk = document.getElementById('modalShowViewMoreCheck');
+					if (chk) chk.checked = showViewMore;
+					toggleModalViewMoreOption(false);
+
+					document.getElementById('modalViewMoreUrl').value = viewMoreUrl;
+					var matchedPageId = '';
+					var m = viewMoreUrl.match(/page_id=(\d+)/i) || viewMoreUrl.match(/^(\d+)$/);
+					if (m) matchedPageId = m[1];
+					document.getElementById('modalViewMorePageId').value = matchedPageId;
+					populateModalPagesDropdown(matchedPageId);
+
+					selectModalTheme(theme, false);
+					setModalHeaderIcon(icon, false);
+
+					if (theme === 'custom' && styles) {
+						var bgMatch = styles.match(/background(?:-color)?:\s*([^;]+)/i);
+						var colorMatch = styles.match(/(?:^|;)\s*color:\s*([^;]+)/i);
+						if (bgMatch) {
+							var bgVal = bgMatch[1].trim();
+							document.getElementById('modalCustomBgColor').value = bgVal;
+							document.getElementById('modalCustomBgColorText').value = bgVal;
+						}
+						if (colorMatch) {
+							var colVal = colorMatch[1].trim();
+							document.getElementById('modalCustomTextColor').value = colVal;
+							document.getElementById('modalCustomTextColorText').value = colVal;
+						}
+					}
+
+					window.modalOriginalRenderedHtml = data.renderedHtml || '';
+					updateModalPreview();
+
+					var modalEl = document.getElementById('appearanceSettingsModal');
+					var bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+					bsModal.show();
+				} else {
+					alert("Failed to load object appearance: " + (data.message || 'Unknown error'));
+				}
+			},
+			error : function(xhr) {
+				alert("Error fetching appearance details: " + xhr.statusText);
+			}
+		});
+	}
+
+	function populateModalPagesDropdown(selectedPageId) {
+		var selectEl = document.getElementById('modalViewMorePageSelect');
+		if (!selectEl) return;
+		if (window.allPagesCache && window.allPagesCache.length > 0) {
+			renderPageSelectOptions(window.allPagesCache, selectedPageId);
+			return;
+		}
+		$.ajax({
+			type: "GET",
+			url: "/getListPages",
+			dataType: "json",
+			success: function(pages) {
+				window.allPagesCache = pages || [];
+				renderPageSelectOptions(window.allPagesCache, selectedPageId);
+			}
+		});
+	}
+
+	function renderPageSelectOptions(pages, selectedPageId) {
+		var selectEl = document.getElementById('modalViewMorePageSelect');
+		if (!selectEl) return;
+		var html = '<option value="">-- Or Select Existing Page --</option>';
+		pages.forEach(function(p) {
+			var pid = String(p.page_id);
+			var isSel = (String(selectedPageId) === pid) ? ' selected' : '';
+			var name = p.page_name ? p.page_name : ('Page ' + pid);
+			html += '<option value="' + pid + '"' + isSel + '>' + escapeHtml(name) + ' (ID: ' + pid + ')</option>';
+		});
+		selectEl.innerHTML = html;
+	}
+
+	function onModalViewMorePageIdChange(pid) {
+		var urlInput = document.getElementById('modalViewMoreUrl');
+		var selectEl = document.getElementById('modalViewMorePageSelect');
+		pid = (pid || '').trim();
+		if (pid) {
+			urlInput.value = '/Preview?page_id=' + pid;
+			if (selectEl) selectEl.value = pid;
+		} else {
+			urlInput.value = '';
+			if (selectEl) selectEl.value = '';
+		}
+		updateModalPreview();
+	}
+
+	function onModalViewMorePageSelectChange(pid) {
+		var pageIdInput = document.getElementById('modalViewMorePageId');
+		var urlInput = document.getElementById('modalViewMoreUrl');
+		pid = (pid || '').trim();
+		if (pid) {
+			pageIdInput.value = pid;
+			urlInput.value = '/Preview?page_id=' + pid;
+		} else {
+			pageIdInput.value = '';
+			urlInput.value = '';
+		}
+		updateModalPreview();
+	}
+
+	function toggleModalViewMoreOption(doUpdate) {
+		var enabled = document.getElementById('modalShowViewMoreCheck') ? document.getElementById('modalShowViewMoreCheck').checked : true;
+		var container = document.getElementById('modalViewMoreUrlContainer');
+		var msg = document.getElementById('modalViewMoreDisabledMsg');
+		if (container) container.style.display = enabled ? 'block' : 'none';
+		if (msg) msg.style.display = enabled ? 'none' : 'block';
+		if (doUpdate !== false) {
+			updateModalPreview();
+		}
+	}
+
+	function getContrastTextColor(colorVal) {
+		if (!colorVal) return '#ffffff';
+		var hex = colorVal.trim();
+		if (hex.startsWith('#')) hex = hex.substring(1);
+		if (hex.length === 3) {
+			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+		}
+		if (hex.length !== 6) return '#ffffff';
+
+		var r = parseInt(hex.substring(0, 2), 16);
+		var g = parseInt(hex.substring(2, 4), 16);
+		var b = parseInt(hex.substring(4, 6), 16);
+
+		// Any blue-dominant tone (deep blue, navy, royal blue)
+		var isBlue = (b > 80 && b >= g && b > r * 0.8) || (b > 110);
+		// Perceived relative luminance
+		var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+		if (isBlue || luminance < 0.55) {
+			return '#ffffff'; // When background is blue or dark, text MUST be white!
+		} else {
+			return '#162f6a'; // Deep blue text for bright light background
+		}
+	}
+
+	function onCustomBgColorChange(colorVal) {
+		if (!colorVal) return;
+		var picker = document.getElementById('modalCustomBgColor');
+		var textInput = document.getElementById('modalCustomBgColorText');
+		if (picker && picker.value !== colorVal) {
+			try { picker.value = colorVal; } catch(e){}
+		}
+		if (textInput && textInput.value !== colorVal) {
+			textInput.value = colorVal;
+		}
+
+		// When background color is selected, automatically update text color (white if blue/dark)
+		var autoTextColor = getContrastTextColor(colorVal);
+
+		var textPicker = document.getElementById('modalCustomTextColor');
+		var textTextInput = document.getElementById('modalCustomTextColorText');
+		var titlePicker = document.getElementById('modalCustomTitleColor');
+		var titleTextInput = document.getElementById('modalCustomTitleColorText');
+
+		if (textPicker) textPicker.value = autoTextColor;
+		if (textTextInput) textTextInput.value = autoTextColor;
+		if (titlePicker) titlePicker.value = autoTextColor;
+		if (titleTextInput) titleTextInput.value = autoTextColor;
+
+		updateModalPreview();
+	}
+
+	function onCustomTextColorChange(colorVal) {
+		if (!colorVal) return;
+		var picker = document.getElementById('modalCustomTextColor');
+		var textInput = document.getElementById('modalCustomTextColorText');
+		if (picker && picker.value !== colorVal) {
+			try { picker.value = colorVal; } catch(e){}
+		}
+		if (textInput && textInput.value !== colorVal) {
+			textInput.value = colorVal;
+		}
+		updateModalPreview();
+	}
+
+	function onCustomTitleColorChange(colorVal) {
+		if (!colorVal) return;
+		var picker = document.getElementById('modalCustomTitleColor');
+		var textInput = document.getElementById('modalCustomTitleColorText');
+		if (picker && picker.value !== colorVal) {
+			try { picker.value = colorVal; } catch(e){}
+		}
+		if (textInput && textInput.value !== colorVal) {
+			textInput.value = colorVal;
+		}
+		updateModalPreview();
+	}
+
+	function selectModalTheme(theme, shouldUpdatePreview) {
+		document.getElementById('appModalSelectedTheme').value = theme;
+
+		['presetCardNavy', 'presetCardLight', 'presetCardCustom'].forEach(function(id) {
+			var el = document.getElementById(id);
+			if (el) el.classList.remove('selected');
+		});
+
+		var customPanel = document.getElementById('modalCustomColorsSection');
+		if (theme === 'navy') {
+			var el = document.getElementById('presetCardNavy');
+			if (el) el.classList.add('selected');
+			if (customPanel) customPanel.style.display = 'none';
+		} else if (theme === 'light') {
+			var el = document.getElementById('presetCardLight');
+			if (el) el.classList.add('selected');
+			if (customPanel) customPanel.style.display = 'none';
+		} else if (theme === 'custom') {
+			var el = document.getElementById('presetCardCustom');
+			if (el) el.classList.add('selected');
+			if (customPanel) customPanel.style.display = 'block';
+		}
+
+		if (shouldUpdatePreview !== false) {
+			updateModalPreview();
+		}
+	}
+
+	function isImageIconVal(val) {
+		if (!val) return false;
+		var v = String(val).trim().toLowerCase();
+		if (v.indexOf('?') >= 0) v = v.substring(0, v.indexOf('?'));
+		if (v.indexOf('#') >= 0) v = v.substring(0, v.indexOf('#'));
+		return /\.(png|svg|jpe?g|gif|webp|bmp|ico)$/.test(v);
+	}
+
+	function setModalHeaderIcon(iconClass, shouldUpdatePreview) {
+		var icon = iconClass || '';
+		document.getElementById('modalHeaderIconInput').value = icon;
+		var iconPreview = document.getElementById('modalHeaderIconPreview');
+		if (iconPreview) {
+			if (isImageIconVal(icon)) {
+				iconPreview.innerHTML = '<img src="' + icon + '" alt="" />';
+			} else {
+				iconPreview.innerHTML = '<i class="' + (icon ? icon + ' text-primary' : 'fas fa-ban text-muted') + '"></i>';
+			}
+		}
+		if (shouldUpdatePreview !== false) {
+			updateModalPreview();
+		}
+	}
+
+	function updateModalHeaderIconFromInput(val) {
+		var icon = val || '';
+		var iconPreview = document.getElementById('modalHeaderIconPreview');
+		if (iconPreview) {
+			if (isImageIconVal(icon)) {
+				iconPreview.innerHTML = '<img src="' + icon + '" alt="" />';
+			} else {
+				iconPreview.innerHTML = '<i class="' + (icon ? icon + ' text-primary' : 'fas fa-ban text-muted') + '"></i>';
+			}
+		}
+		updateModalPreview();
+	}
+
+	function updateModalPreview() {
+		var theme = document.getElementById('appModalSelectedTheme').value;
+		var icon = document.getElementById('modalHeaderIconInput').value;
+		var viewMoreUrl = document.getElementById('modalViewMoreUrl') ? document.getElementById('modalViewMoreUrl').value.trim() : '';
+		var container = document.getElementById('modalLivePreviewContainer');
+		if (!container) return;
+
+		if (window.modalOriginalRenderedHtml) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = window.modalOriginalRenderedHtml;
+			var card = tempDiv.querySelector('.modern-list-card') || tempDiv.querySelector('.card') || tempDiv.firstElementChild;
+			if (card) {
+				card.classList.remove('list-card-navy', 'list-card-light', 'list-card-custom');
+				card.classList.add('list-card-' + theme);
+
+				if (theme === 'custom') {
+					var bgColor = document.getElementById('modalCustomBgColor').value;
+					var textColor = document.getElementById('modalCustomTextColor').value;
+					var titleColor = document.getElementById('modalCustomTitleColor').value;
+					card.style.backgroundColor = bgColor;
+					card.style.color = textColor;
+					var titleEl = card.querySelector('.modern-list-card-title') || card.querySelector('h5, h4');
+					if (titleEl) titleEl.style.color = titleColor;
+				} else {
+					card.style.backgroundColor = '';
+					card.style.color = '';
+				}
+
+				var iconEl = card.querySelector('.modern-list-card-header i:first-child');
+				if (iconEl) {
+					if (icon) {
+						iconEl.className = icon + ' me-2';
+						iconEl.style.display = 'inline-block';
+					} else {
+						iconEl.style.display = 'none';
+					}
+				} else if (icon) {
+					var headerTitle = card.querySelector('.modern-list-card-title');
+					if (headerTitle) {
+						headerTitle.insertAdjacentHTML('afterbegin', '<i class="' + icon + ' me-2"></i>');
+					}
+				}
+
+				// Preview View More button
+				var isViewMoreEnabled = document.getElementById('modalShowViewMoreCheck') ? document.getElementById('modalShowViewMoreCheck').checked : false;
+				var existingFooter = tempDiv.querySelector('.modern-list-footer');
+				if (isViewMoreEnabled) {
+					var targetLink = (viewMoreUrl && viewMoreUrl !== '#') ? viewMoreUrl : '#';
+					if (!existingFooter) {
+						var wrap = tempDiv.querySelector('.modern-list-card-wrapper') || tempDiv;
+						wrap.insertAdjacentHTML('beforeend', '<div class=\"modern-list-footer\"><a href=\"' + targetLink + '\" class=\"btn-list-view-more\" onclick=\"return false;\">VIEW MORE <i class=\"fas fa-chevron-right\"></i></a></div>');
+					} else {
+						var a = existingFooter.querySelector('a');
+						if (a) a.href = targetLink;
+					}
+				} else if (existingFooter) {
+					existingFooter.remove();
+				}
+
+				container.innerHTML = tempDiv.innerHTML;
+				return;
+			}
+		}
+
+		var title = document.getElementById('appModalObjTitleDisplay').innerText || 'Title';
+		var isViewMoreEnabled = document.getElementById('modalShowViewMoreCheck') ? document.getElementById('modalShowViewMoreCheck').checked : false;
+		var iconHtml = icon
+			? (isImageIconVal(icon)
+				? '<img class="header-icon me-2" src="' + icon + '" alt="" style="height:1.4rem;" />'
+				: '<i class="' + icon + ' me-2"></i>')
+			: '';
+		var footerHtml = isViewMoreEnabled
+			? '<div class="modern-list-footer"><a href="' + (viewMoreUrl || '#') + '" class="btn-list-view-more" onclick="return false;">VIEW MORE <i class="fas fa-chevron-right"></i></a></div>'
+			: '';
+
+		container.innerHTML = `
+			<div class="modern-list-card-wrapper">
+				<div class="modern-list-card list-card-${theme}">
+					<div class="modern-list-card-header">
+						<div class="modern-list-card-title">${iconHtml}${title}</div>
+					</div>
+					<div class="modern-list-card-body" style="height: 180px; max-height: 180px; overflow-y: auto;">
+						<ul class="modern-list-items">
+							<li class="modern-list-item"><a href="#" class="modern-list-item-link" onclick="return false;"><span class="modern-list-item-text">Sample List Notification 1 <span class="badge rounded-pill text-warning border border-warning modern-list-badge-new">New</span></span><i class="fas fa-chevron-right modern-list-item-chevron"></i></a></li>
+							<li class="modern-list-item"><a href="#" class="modern-list-item-link" onclick="return false;"><span class="modern-list-item-text">Sample List Notification 2</span><i class="fas fa-chevron-right modern-list-item-chevron"></i></a></li>
+						</ul>
+					</div>
+				</div>
+				${footerHtml}
+			</div>
+		`;
+	}
+
+	function saveObjectAppearance() {
+		var objectId = document.getElementById('appModalObjectId').value;
+		var theme = document.getElementById('appModalSelectedTheme').value;
+		var headerIcon = document.getElementById('modalHeaderIconInput').value;
+		var isViewMoreEnabled = document.getElementById('modalShowViewMoreCheck') ? document.getElementById('modalShowViewMoreCheck').checked : false;
+		var viewMoreUrl = isViewMoreEnabled ? (document.getElementById('modalViewMoreUrl') ? document.getElementById('modalViewMoreUrl').value.trim() : '') : '';
+		var btn = document.getElementById('btnSaveAppearance');
+
+		var styles = "";
+		var classes = "list-card-" + theme;
+		if (isViewMoreEnabled) {
+			classes += " has-view-more";
+		}
+
+		if (theme === 'custom') {
+			var bgColor = document.getElementById('modalCustomBgColor').value;
+			var titleColor = document.getElementById('modalCustomTitleColor').value;
+			var textColor = document.getElementById('modalCustomTextColor').value;
+			styles = "background-color: " + bgColor + " !important; color: " + textColor + " !important;";
+		}
+
+		var csrfToken = $('meta[name="_csrf"]').attr('content') || $('#csrf_token').val();
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+		btn.disabled = true;
+		btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
+
+		$.ajax({
+			type : "POST",
+			url : "/updateObjectAppearance",
+			contentType : "application/json",
+			data : JSON.stringify({
+				object_id : objectId,
+				theme : theme,
+				header_icon : headerIcon,
+				show_view_more : isViewMoreEnabled,
+				view_more_url : viewMoreUrl,
+				classes : classes,
+				styles : styles
+			}),
+			beforeSend : function(xhr) {
+				if (csrfHeader && csrfToken) xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			success : function(res) {
+				btn.disabled = false;
+				btn.innerHTML = '<i class="fas fa-check me-1"></i>Save &amp; Attach to Object';
+
+				if (res.status === "success") {
+					var modalCard = document.getElementById('object-card-body-' + objectId);
+					if (modalCard && res.renderedHtml) {
+						modalCard.innerHTML = res.renderedHtml;
+					}
+
+					var slotEl = document.getElementById('slotted-content-' + objectId);
+					if (slotEl && res.renderedHtml) {
+						slotEl.innerHTML = res.renderedHtml;
+					}
+
+					var modalEl = document.getElementById('appearanceSettingsModal');
+					var bsModal = bootstrap.Modal.getInstance(modalEl);
+					if (bsModal) bsModal.hide();
+
+					alert('Appearance settings attached to Object #' + objectId + ' successfully!');
+				} else {
+					alert('Error saving appearance: ' + (res.message || 'Unknown error'));
+				}
+			},
+			error : function(xhr) {
+				btn.disabled = false;
+				btn.innerHTML = '<i class="fas fa-check me-1"></i>Save &amp; Attach to Object';
+				alert('Failed to save appearance: ' + xhr.statusText);
+			}
+		});
+	}
+
+	function removeSlotItem(pid, objectid, event) {
+		if (event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+		if (confirm("Remove this object from this slot?")) {
+			document.getElementById(pid).innerHTML = '<div class="text-center p-4 border border-dashed text-muted" data-bs-target="#selectionPopup" onclick="getid(this);" data-bs-toggle="modal" style="cursor: pointer;"><i class="fas fa-plus fa-2x mb-2"></i><br>Click to add item</div>';
+			var slotIdx = getSlotIndex(pid);
+			if (slotIdx >= 0 && jsonStringLatest.length > 0) {
+				jsonStringLatest[slotIdx] = '-1';
+			}
+		}
+	}
+
+	// =========================================================================
+	// DBIM Resources Icon Picker (insert icon before object title)
+	// =========================================================================
+	var objectIconDbimData = null;
+	var objectIconDbimLoaded = false;
+	var objectIconTargetId = null;
+
+	var objectIconSlugMeta = {
+		'banner-images': { title: 'Banner Images', icon: 'fa-images' },
+		'contextual-icons': { title: 'Contextual Icons', icon: 'fa-icons' },
+		'functional-icons': { title: 'Functional Icons', icon: 'fa-shapes' },
+		'persona-illustrations': { title: 'Persona Illustrations', icon: 'fa-user-group' },
+		'pm-images': { title: 'PM Images', icon: 'fa-user-tie' }
+	};
+
+	function objectIconSlugTitle(slug) {
+		if (objectIconSlugMeta[slug] && objectIconSlugMeta[slug].title) return objectIconSlugMeta[slug].title;
+		return slug.split('-').map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+	}
+
+	function objectIconSlugIcon(slug) {
+		if (objectIconSlugMeta[slug] && objectIconSlugMeta[slug].icon) return objectIconSlugMeta[slug].icon;
+		return 'fa-folder';
+	}
+
+	function escapeIconHtml(str) {
+		if (str === null || str === undefined) return '';
+		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+	}
+
+	function escapeIconJs(str) {
+		if (!str) return '';
+		return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+	}
+
+	function openObjectIconPicker(objectId, event) {
+		if (event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+		objectIconTargetId = objectId;
+		var badge = document.getElementById('objectIconTargetBadge');
+		if (badge) badge.textContent = 'Object #' + objectId;
+		var modalEl = document.getElementById('objectIconModal');
+		if (modalEl) {
+			try {
+				bootstrap.Modal.getOrCreateInstance(modalEl).show();
+			} catch (e) {
+				if (typeof $(modalEl).modal === 'function') $(modalEl).modal('show');
+			}
+		}
+		if (!objectIconDbimLoaded) {
+			loadObjectIconResources();
+		}
+	}
+
+	async function loadObjectIconResources() {
+		var spinner = document.getElementById('objectIconLoadingSpinner');
+		if (spinner) spinner.style.display = 'block';
+		var data = null;
+		try {
+			var res = await fetch('/getDbimResources');
+			if (res.ok) {
+				var json = await res.json();
+				if (json && json.slugs && Object.keys(json.slugs).length > 0) data = json;
+			}
+		} catch (e) { console.error('getDbimResources failed', e); }
+		if (!data) {
+			try {
+				var res2 = await fetch('/static/assets/dbim-resources/manifest.json');
+				if (res2.ok) data = await res2.json();
+			} catch (e) { console.error('manifest.json failed', e); }
+		}
+		if (!data || !data.slugs) {
+			if (spinner) spinner.innerHTML = '<div class="alert alert-danger my-3"><i class="fas fa-triangle-exclamation me-2"></i>Failed to load DBIM resources. Please ensure static files exist under /static/assets/dbim-resources/.</div>';
+			return;
+		}
+		objectIconDbimData = data;
+		objectIconDbimLoaded = true;
+		renderObjectIconTabs(data.slugs);
+	}
+
+	function renderObjectIconTabs(slugs) {
+		var navTabs = document.getElementById('objectIconNavTabs');
+		var tabContent = document.getElementById('objectIconTabContent');
+		if (!navTabs || !tabContent) return;
+		navTabs.innerHTML = '';
+		tabContent.innerHTML = '';
+		Object.keys(slugs).forEach(function(slug, index) {
+			var items = slugs[slug] || [];
+			var isActive = (index === 0);
+			var safe = slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+			var tabId = 'tab-oicon-' + safe;
+			var paneId = 'pane-oicon-' + safe;
+			navTabs.insertAdjacentHTML('beforeend',
+				'<li class="nav-item" role="presentation">' +
+				'<button class="nav-link ' + (isActive ? 'active' : '') + '" id="' + tabId + '" data-bs-toggle="tab" data-bs-target="#' + paneId + '" type="button" role="tab">' +
+				'<i class="fas ' + objectIconSlugIcon(slug) + ' me-1 text-primary"></i> ' + escapeIconHtml(objectIconSlugTitle(slug)) +
+				'<span class="badge bg-secondary-subtle text-dark border ms-1">' + items.length + '</span></button></li>');
+
+			var gridHtml = '<div class="tab-pane fade ' + (isActive ? 'show active' : '') + ' dbim-tab-pane" id="' + paneId + '" role="tabpanel">' +
+				'<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 dbim-grid" id="grid-' + paneId + '">';
+			items.forEach(function(item) {
+				var filename = item.filename || '';
+				var title = item.title || filename;
+				var imgUrl = '/static/assets/dbim-resources/' + slug + '/' + encodeURIComponent(filename);
+				gridHtml += '<div class="col dbim-item-col" data-title="' + escapeIconHtml(String(title).toLowerCase()) + '" data-filename="' + escapeIconHtml(String(filename).toLowerCase()) + '">' +
+					'<div class="card h-100 dbim-card shadow-sm" onclick="selectObjectIcon(\'' + escapeIconJs(imgUrl) + '\', \'' + escapeIconJs(title) + '\')" title="Click to insert before title">' +
+					'<div class="dbim-img-wrapper"><img src="' + imgUrl + '" loading="lazy" alt="' + escapeIconHtml(title) + '"></div>' +
+					'<div class="card-footer-custom"><span class="dbim-title" title="' + escapeIconHtml(title) + '">' + escapeIconHtml(title) + '</span></div>' +
+					'</div></div>';
+			});
+			gridHtml += '</div></div>';
+			tabContent.insertAdjacentHTML('beforeend', gridHtml);
+		});
+	}
+
+	function selectObjectIcon(imgUrl, title) {
+		var objectId = objectIconTargetId;
+		if (!objectId) return;
+		$.ajax({
+			type: 'GET',
+			url: '/getObjectAppearance?object_id=' + encodeURIComponent(objectId),
+			dataType: 'json',
+			success: function(data) {
+				saveObjectIcon(objectId, imgUrl,
+					(data && data.theme) ? data.theme : 'navy',
+					(data && data.styles) ? data.styles : '',
+					(data && data.view_more_url) ? data.view_more_url : '',
+					title);
+			},
+			error: function() {
+				saveObjectIcon(objectId, imgUrl, 'navy', '', '', title);
+			}
+		});
+	}
+
+	function saveObjectIcon(objectId, iconUrl, theme, styles, viewMoreUrl, title) {
+		var csrfToken = $('meta[name="_csrf"]').attr('content');
+		var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+		$.ajax({
+			type: 'POST',
+			url: '/updateObjectAppearance',
+			contentType: 'application/json',
+			data: JSON.stringify({
+				object_id: objectId,
+				theme: theme,
+				header_icon: iconUrl,
+				view_more_url: viewMoreUrl,
+				classes: 'list-card-' + theme,
+				styles: styles
+			}),
+			beforeSend: function(xhr) {
+				if (csrfHeader && csrfToken) xhr.setRequestHeader(csrfHeader, csrfToken);
+			},
+			success: function(res) {
+				if (res && res.status === 'success') {
+					if (res.renderedHtml) {
+						var slotEl = document.getElementById('slotted-content-' + objectId);
+						if (slotEl) slotEl.innerHTML = res.renderedHtml;
+						var cardBody = document.getElementById('object-card-body-' + objectId);
+						if (cardBody) cardBody.innerHTML = res.renderedHtml;
+					}
+					showObjectIconToast(title);
+					var modalEl = document.getElementById('objectIconModal');
+					if (modalEl) {
+						var m = bootstrap.Modal.getInstance(modalEl);
+						if (m) m.hide();
+					}
+				} else {
+					alert('Error saving icon: ' + ((res && res.message) || 'Unknown error'));
+				}
+			},
+			error: function(xhr) {
+				alert('Failed to save icon: ' + xhr.statusText);
+			}
+		});
+	}
+
+	function showObjectIconToast(name) {
+		var toastEl = document.getElementById('objectIconToast');
+		if (!toastEl) return;
+		var textEl = document.getElementById('objectIconToastText');
+		if (textEl) textEl.textContent = 'Icon inserted before title' + (name ? ' (' + name + ')' : '') + '!';
+		try {
+			bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 }).show();
+		} catch (e) {}
+	}
+
+	$(document).on('input', '#objectIconSearchInput', function() {
+		var query = $(this).val().trim().toLowerCase();
+		$('#objectIconSearchClear').toggle(Boolean(query));
+		var activePane = $('#objectIconTabContent .tab-pane.active');
+		if (!activePane.length) return;
+		var visible = 0;
+		var items = activePane.find('.dbim-item-col');
+		items.each(function() {
+			var t = $(this).attr('data-title') || '';
+			var f = $(this).attr('data-filename') || '';
+			if (!query || t.indexOf(query) >= 0 || f.indexOf(query) >= 0) {
+				$(this).show(); visible++;
+			} else {
+				$(this).hide();
+			}
+		});
+		var noMatch = activePane.find('.dbim-no-match');
+		if (visible === 0 && items.length > 0) {
+			if (!noMatch.length) {
+				noMatch = $('<div class="dbim-no-match col-12 text-center py-4 text-muted"><i class="fas fa-search me-1"></i> No matching icons found in this tab.</div>');
+				activePane.find('.dbim-grid').append(noMatch);
+			}
+			noMatch.show();
+		} else if (noMatch.length) {
+			noMatch.hide();
+		}
+	});
+
+	$(document).on('click', '#objectIconSearchClear', function() {
+		$('#objectIconSearchInput').val('').trigger('input').focus();
+	});
+
+	$(document).on('shown.bs.tab', '#objectIconNavTabs button', function() {
+		var searchVal = $('#objectIconSearchInput').val();
+		if (searchVal) $('#objectIconSearchInput').trigger('input');
 	});
 </script>
 

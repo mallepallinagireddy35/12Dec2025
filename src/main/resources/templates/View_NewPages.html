@@ -24,7 +24,6 @@
 <script>
 	$(function () {
 		//$("#includeHeader").load("header.html");
-		$("#includeFooter").load("static/footer.html");
 		//	$("#includeObjSelector").load("objectSelector.html");
 		$("#includeMsgBox").load("static/msgBox.html");
 
@@ -33,7 +32,39 @@
 </script>
 <style>
 body {
-	color: #000080;
+	color: var(--dbim-deep-earthy-brown, #150202);
+	font-family: 'Noto Sans', sans-serif !important;
+}
+
+/* Header Logo & Emblem Protection */
+#header .logo img,
+#header .logo .national_emblem,
+#header .logo .academy_logo,
+#header .national_emblem,
+#header .academy_logo {
+	width: 75px !important;
+	height: 100px !important;
+	max-width: 75px !important;
+	max-height: 100px !important;
+	min-width: 75px !important;
+	min-height: 100px !important;
+	flex-shrink: 0 !important;
+	object-fit: contain !important;
+	display: inline-block !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Prevent image overflow from columns */
+.fadein [class*="col-"] img,
+#myTable [class*="col-"] img:not(.header-icon),
+.templateBox img:not(.header-icon),
+.templateBox figure img:not(.header-icon),
+.paragraph-content-wrapper img:not(.header-icon),
+.col-12:not(#header *):not(.header-logo-col *) img:not(.header-icon),
+p:not(#header *) img:not(.header-icon) {
+	max-width: 100% !important;
+	height: auto !important;
 }
 
 /* Scrollbar */
@@ -730,7 +761,7 @@ input:checked+.slider:before {
 		<div id="includeMsgBox"></div>
 		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-		<div class="mb-5 container mt-5">
+		<div id="main" class="mb-5 container mt-5" role="main" tabindex="-1">
 			<div class="mt-3 mb-3 container">
 				<div class="float-end mb-2">
 					<div class="input-group">
@@ -917,6 +948,7 @@ input:checked+.slider:before {
         }); 
     </script>
 	</div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 
 </html>

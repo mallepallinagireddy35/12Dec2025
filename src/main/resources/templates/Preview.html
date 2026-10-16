@@ -6,12 +6,16 @@
 <title th:text="${page_title}">Preview</title>
 <meta name="description" th:content="${page_description}" content="Description">
 <meta name="keywords" th:content="${page_keywords}" content="Keywords">
-<!-- Import CSS -->
+<!-- DBIM Mandatory Typography: Noto Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
 <link rel="icon" href="static/assets/img/svpnpaLogo.png">
 <link href="static/assets/bootstrap_5.3/css/bootstrap.css"
 	rel="stylesheet">
 <link href="static/assets/custom/css/style.css" rel="stylesheet">
 <link href="static/assets/custom/css/inlinestyles.css" rel="stylesheet">
+<link href="static/assets/custom/css/carousel.css" rel="stylesheet">
 <link href="static/assets/fontawesome_6.4/css/all.min.css"
 	rel="stylesheet">
 <link rel="stylesheet" href="static/assets/Viewerjs_1.11/css/viewer.css">
@@ -83,9 +87,9 @@
 		<div id="includeMsgBox"></div>
 		<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}"
 			th:value="${_csrf.token}" />
-		<div class="fadein">
+		<main id="main" class="fadein" role="main" tabindex="-1">
 			<div th:utext="${viewObject}"></div>
-		</div>
+		</main>
 
 
 		
@@ -208,6 +212,7 @@
 <script>
     function shuffleCarousel() {
       const carouselInner = document.querySelector('.random-slides');
+      if (!carouselInner) return;
       const slides = Array.from(carouselInner.children);
 
       for (let i = slides.length - 1; i > 0; i--) {

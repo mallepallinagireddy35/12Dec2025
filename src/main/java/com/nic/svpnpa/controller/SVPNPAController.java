@@ -30,8 +30,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.ModelAndView;
+import java.util.Locale;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.sql.DataSource;
@@ -90,6 +92,9 @@ public class SVPNPAController {
 	
 	@Value("${galleryPath}")
 	String galleryPath;
+
+	@Value("${galleryAbsolutePath:}")
+	String galleryAbsolutePath;
 	String role;
 	private StringBuilder viewObject;
 	private String page_title;
@@ -123,7 +128,7 @@ public class SVPNPAController {
 	public String index(Model model,HttpSession session,HttpServletRequest request, HttpServletResponse response) {
 //		return "redirect:/Preview?page_id=195";		
 		clearTempDirectory();
-		int page_id=195;
+		int page_id=385; //195
 		String username = "";	
 		try {
 			UserDetails userDetails = loginController.getUserDetails();
@@ -131,9 +136,35 @@ public class SVPNPAController {
 			username = userDetails.getUsername();
 			}catch(Exception ex) {}
 			logger.error("SVPNPAController::index::session===" + session);
-			logger.error("SVPNPAController::index::lang===" + lang);
+			String reqLang = request.getParameter("lang");
+			if (reqLang != null && !reqLang.trim().isEmpty()) {
+				this.lang = ("H".equalsIgnoreCase(reqLang.trim()) || "hi".equalsIgnoreCase(reqLang.trim())) ? "H" : "E";
+				session.setAttribute("lang", this.lang);
+			} else if (session.getAttribute("lang") != null && !((String) session.getAttribute("lang")).isEmpty()) {
+				String sLang = ((String) session.getAttribute("lang")).trim();
+				this.lang = ("H".equalsIgnoreCase(sLang) || "hi".equalsIgnoreCase(sLang)) ? "H" : "E";
+			} else {
+				this.lang = "E";
+				session.setAttribute("lang", this.lang);
+			}
+			service.lang = this.lang;
+			Locale locale = "H".equalsIgnoreCase(this.lang) ? Locale.forLanguageTag("hi") : Locale.ENGLISH;
+			session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+			try {
+				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+				if (localeResolver != null) {
+					localeResolver.setLocale(request, response, locale);
+				}
+			} catch (Exception ignored) {}
+			try {
+				Cookie langCookie = new Cookie("lang", this.lang);
+				langCookie.setPath("/");
+				langCookie.setMaxAge(365 * 24 * 60 * 60);
+				response.addCookie(langCookie);
+			} catch (Exception ignored) {}
+			logger.error("SVPNPAController::index::lang===" + this.lang);
 			
-		List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username,lang);
+		List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username, this.lang);
 		logger.error("SVPNPAController::index::list==size===" + list.size());
 		session.setAttribute("menulist", list);
 		if (!username.equalsIgnoreCase("") && !username.equalsIgnoreCase("null")) {
@@ -141,7 +172,7 @@ public class SVPNPAController {
 		} else {
 			session.setAttribute("username", "");
 		}
-		session.setAttribute("lang",lang.trim());
+		session.setAttribute("lang", this.lang.trim());
 		this.role=service.getRole(username);
 		session.setAttribute("role", service.getRole(username));
 		service.PreviewPage(page_id, model);
@@ -170,7 +201,7 @@ public class SVPNPAController {
 	}
 	
 	@GetMapping("/Preview")
-	public String PreviewPage(@RequestParam int page_id, Model model, HttpSession session,HttpServletRequest request) {
+	public String PreviewPage(@RequestParam int page_id, Model model, HttpSession session,HttpServletRequest request, HttpServletResponse response) {
 		String username = "";	
 		try {
 			UserDetails userDetails = loginController.getUserDetails();
@@ -178,8 +209,34 @@ public class SVPNPAController {
 			username = userDetails.getUsername();
 			}catch(Exception ex) {}
 			logger.error("SVPNPAController::PreviewPage::session===" + session);
-			logger.error("SVPNPAController::PreviewPage::lang===" + lang);
-		List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username,lang);
+			String reqLang = request.getParameter("lang");
+			if (reqLang != null && !reqLang.trim().isEmpty()) {
+				this.lang = ("H".equalsIgnoreCase(reqLang.trim()) || "hi".equalsIgnoreCase(reqLang.trim())) ? "H" : "E";
+				session.setAttribute("lang", this.lang);
+			} else if (session.getAttribute("lang") != null && !((String) session.getAttribute("lang")).isEmpty()) {
+				String sLang = ((String) session.getAttribute("lang")).trim();
+				this.lang = ("H".equalsIgnoreCase(sLang) || "hi".equalsIgnoreCase(sLang)) ? "H" : "E";
+			} else {
+				this.lang = "E";
+				session.setAttribute("lang", this.lang);
+			}
+			service.lang = this.lang;
+			Locale locale = "H".equalsIgnoreCase(this.lang) ? Locale.forLanguageTag("hi") : Locale.ENGLISH;
+			session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+			try {
+				LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+				if (localeResolver != null) {
+					localeResolver.setLocale(request, response, locale);
+				}
+			} catch (Exception ignored) {}
+			try {
+				Cookie langCookie = new Cookie("lang", this.lang);
+				langCookie.setPath("/");
+				langCookie.setMaxAge(365 * 24 * 60 * 60);
+				response.addCookie(langCookie);
+			} catch (Exception ignored) {}
+			logger.error("SVPNPAController::PreviewPage::lang===" + this.lang);
+		List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username, this.lang);
 		System.out.println("list==="+list.size());
 		logger.error("SVPNPAController::PreviewPage::list==size===" + list.size());
 		session.setAttribute("menulist", list);
@@ -188,7 +245,7 @@ public class SVPNPAController {
 		} else {
 			session.setAttribute("username", "");
 		}
-		session.setAttribute("lang",lang);
+		session.setAttribute("lang", this.lang);
 		this.role=service.getRole(username);
 		session.setAttribute("role", service.getRole(username));
 		service.PreviewPage(page_id, model);
@@ -227,7 +284,7 @@ public class SVPNPAController {
 	public String home(Model model, HttpSession session,HttpServletRequest request) {
 		try {
 			if (viewObject == null) {
-				return "redirect:/Preview?page_id=195";
+				return "redirect:/Preview?page_id=385"; //195
 			}
 			
 			model.addAttribute("viewObject", viewObject.toString());
@@ -323,22 +380,38 @@ public class SVPNPAController {
 //			session.setAttribute("EnglishhitCount", hits.getEnglishHits());
 //		}
 			
-		List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username, langSelected);
-		if (langSelected == null || langSelected.isEmpty())
-			langSelected = lang;
-		if (langSelected.equals("E") || langSelected.equals("H")) {
-//			Cookie cookie = new Cookie("lang", langSelected);
-//			cookie.setMaxAge(Integer.MAX_VALUE);
-//			cookie.setHttpOnly(true);
-//			cookie.setSecure(true);
-//			response.addCookie(cookie);
-			session.setAttribute("lang", langSelected);
-			this.lang = langSelected;
-			service.lang = langSelected;
-			return "Success";
-		} else {
-			return null;
-		}		
+		if (langSelected == null || langSelected.trim().isEmpty()) {
+			langSelected = (lang != null && !lang.trim().isEmpty()) ? lang : "E";
+		}
+		langSelected = ("H".equalsIgnoreCase(langSelected.trim()) || "hi".equalsIgnoreCase(langSelected.trim())) ? "H" : "E";
+		session.setAttribute("lang", langSelected);
+		this.lang = langSelected;
+		service.lang = langSelected;
+		Locale locale = "H".equalsIgnoreCase(langSelected) ? Locale.forLanguageTag("hi") : Locale.ENGLISH;
+		session.setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+		try {
+			LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+			if (localeResolver != null) {
+				localeResolver.setLocale(request, response, locale);
+			}
+		} catch (Exception ex) {
+			logger.error("Could not set locale on LocaleResolver: " + ex.getMessage());
+		}
+		try {
+			Cookie cookie = new Cookie("lang", langSelected);
+			cookie.setPath("/");
+			cookie.setMaxAge(365 * 24 * 60 * 60);
+			response.addCookie(cookie);
+		} catch (Exception ex) {
+			logger.error("Could not set cookie in setCookie: " + ex.getMessage());
+		}
+		try {
+			List<WebMenuBean> list = loginDaoImpl.getDynamicMenuList(username, langSelected);
+			session.setAttribute("menulist", list);
+		} catch (Exception ex) {
+			logger.error("Could not get dynamic menu list in setCookie: " + ex.getMessage());
+		}
+		return "Success";		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Exception in SVPNPAController::setCookie::" + e.getMessage());
@@ -412,6 +485,22 @@ public class SVPNPAController {
 	@GetMapping("/paragraph")
 	public String indexParagraph(Model model) {
 		return "paragraph";
+	}
+
+	@GetMapping(value = "/getDbimResources", produces = "application/json")
+	@ResponseBody
+	public String getDbimResources() {
+		try {
+			org.springframework.core.io.ClassPathResource resource = new org.springframework.core.io.ClassPathResource("static/assets/dbim-resources/manifest.json");
+			if (resource.exists()) {
+				try (java.io.InputStream is = resource.getInputStream()) {
+					return new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::getDbimResources::" + e.getMessage());
+		}
+		return "{}";
 	}
 
 	@GetMapping("/embed")
@@ -708,6 +797,84 @@ public class SVPNPAController {
 		return "ListDesigner";
 	}
 
+	@GetMapping("/cards")
+	public String cardsDesigner(Model model) {
+		return "CardsDesigner";
+	}
+
+	@GetMapping("/navtabs")
+	public String navTabsDesigner(Model model) {
+		return "NavTabsDesigner";
+	}
+
+	@GetMapping("/getNavTabEligibleObjects")
+	@ResponseBody
+	public ArrayList<HashMap<String, Object>> getNavTabEligibleObjects() {
+		return service.getNavTabEligibleObjects();
+	}
+
+	@RequestMapping(value = "/getChildObjectPreview", method = {RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public Map<String, Object> getChildObjectPreview(
+			@RequestParam(name = "object_id", required = false) Integer objectIdParam,
+			@RequestParam(name = "lang", required = false, defaultValue = "E") String langParam,
+			@RequestBody(required = false) Map<String, Object> payload) {
+		Map<String, Object> map = new HashMap<>();
+		if (payload != null && payload.containsKey("object_id")) {
+			map.put("object_id", payload.get("object_id"));
+			map.put("lang", payload.getOrDefault("lang", "E"));
+		} else if (objectIdParam != null) {
+			map.put("object_id", objectIdParam);
+			map.put("lang", langParam);
+		}
+		return service.getChildObjectPreview(map);
+	}
+
+	@PostMapping("/uploadCardImage")
+	@ResponseBody
+	public ResponseEntity<?> uploadCardImage(@RequestParam("file") MultipartFile file) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			if (file == null || file.isEmpty()) {
+				result.put("success", false);
+				result.put("message", "File is empty");
+				return ResponseEntity.badRequest().body(result);
+			}
+			String originalFilename = file.getOriginalFilename();
+			String ext = "";
+			if (originalFilename != null && originalFilename.lastIndexOf('.') > 0) {
+				ext = originalFilename.substring(originalFilename.lastIndexOf('.'));
+			}
+			String newFileName = UUID.randomUUID().toString() + ext;
+
+			Path targetDir = Paths.get("src", "main", "resources", "static", "gallery", "image");
+			if (!Files.exists(targetDir)) {
+				Files.createDirectories(targetDir);
+			}
+			Files.write(targetDir.resolve(newFileName), file.getBytes());
+
+			try {
+				if (galleryAbsolutePath != null && !galleryAbsolutePath.trim().isEmpty()) {
+					Path absDir = Paths.get(galleryAbsolutePath, "image");
+					if (!Files.exists(absDir)) {
+						Files.createDirectories(absDir);
+					}
+					Files.write(absDir.resolve(newFileName), file.getBytes());
+				}
+			} catch (Exception ignored) {}
+
+			result.put("success", true);
+			result.put("fileName", newFileName);
+			result.put("url", "static/gallery/image/" + newFileName);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::uploadCardImage::" + e.getMessage(), e);
+			result.put("success", false);
+			result.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+		}
+	}
+
 	@GetMapping("/getImage")
 	public String getImage(Model model) {
 		service.getImage(model);
@@ -807,6 +974,35 @@ public class SVPNPAController {
 		}
 		return items;
 	}
+
+	@GetMapping("/getObjectAppearance")
+	@ResponseBody
+	public Map<String, Object> getObjectAppearance(@RequestParam int object_id) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			result = service.getObjectAppearance(object_id);
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::getObjectAppearance::" + e.getMessage(), e);
+			result.put("status", "error");
+			result.put("message", e.getMessage());
+		}
+		return result;
+	}
+
+	@PostMapping("/updateObjectAppearance")
+	@ResponseBody
+	public Map<String, Object> updateObjectAppearance(@RequestBody Map<String, Object> payload) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			result = service.updateObjectAppearance(payload);
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAController::updateObjectAppearance::" + e.getMessage(), e);
+			result.put("status", "error");
+			result.put("message", e.getMessage());
+		}
+		return result;
+	}
+
 	@GetMapping("/getListPages")
 	@ResponseBody
 	public ArrayList<HashMap<String, Object>> getListPages(Model model) {

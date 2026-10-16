@@ -1,679 +1,1034 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}"
-	th:inline="text" encoding="UTF-8">
+	encoding="UTF-8">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<style>
-@import
-	url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap')
-	;
-
-:root {
-	--bs-font-sans-serif: 'Noto Sans' !important;
-	--bs-body-font-family: 'Noto Sans' !important;
-}
-
-*, html, body, input, button, select, textarea, optgroup {
-	font-family: 'Noto Sans' !important;
-}
-
-/* Explicitly restore Font Awesome and Bootstrap Icons */
-.fa, .fas, .fa-solid,
-.important_links ul li::before,
-.globalnews li::before,
-.links li::before {
-	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
-	font-weight: 900 !important;
-}
-
-.fa::before, .fas::before, .fa-solid::before {
-	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
-	font-weight: 900 !important;
-}
-
-.far, .fa-regular {
-	font-family: "Font Awesome 6 Free" !important;
-	font-weight: 400 !important;
-}
-
-.far::before, .fa-regular::before {
-	font-family: "Font Awesome 6 Free" !important;
-	font-weight: 400 !important;
-}
-
-.fab, .fa-brands, [class*="fa-brands"] {
-	font-family: "Font Awesome 6 Brands" !important;
-	font-weight: 400 !important;
-}
-
-.fab::before, .fa-brands::before, [class*="fa-brands"]::before {
-	font-family: "Font Awesome 6 Brands" !important;
-	font-weight: 400 !important;
-}
-
-.bi, [class*="bi-"] {
-	font-family: "bootstrap-icons" !important;
-}
-
-.bi::before, [class*="bi-"]::before {
-	font-family: "bootstrap-icons" !important;
-}
-
-.uniBox {
-	display: block;
-	border: 2px solid #ffb606;
-	padding: 16px 16px;
-	border-radius: 14px;
-	color: #ffb606;
-	font-weight: 600
-}
-
-.menu-item {
-	display: flex;
-	align-items: center;
-}
-
-.menu-item img {
-	margin-right: 5px;
-	/* Adjust as needed */
-}
-
-.preloader {
-	position: fixed;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 999999;
-	background: url(static/assets/img/preloader.gif) center no-repeat #fff;
-	text-align: center;
-}
-
-#menuToggle {
-	display: none;
-}
-</style>
-<style>
-.switch {
-	position: relative;
-	/* display: inline-block; */
-	width: 40px;
-	height: 20px;
-	top: 10px;
-	align-content: center;
-}
-
-.switch input {
-	opacity: 0;
-	width: 0;
-	height: 0;
-	align-content: center;
-}
-
-.slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #ccc;
-	-webkit-transition: 0.4s;
-	transition: 0.4s;
-	align-content: center;
-}
-
-.slider:before {
-	align-content: center;
-	position: absolute;
-	content: "";
-	height: 25px;
-	width: 25px;
-	left: 0px;
-	/* bottom: 4px; */
-	top: 0;
-	bottom: 0;
-	margin: auto 0;
-	-webkit-transition: 0.4s;
-	transition: 0.4s;
-	box-shadow: 0 0px 15px #2020203d;
-	background: white url('sunny.png');
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-input:checked+.slider {
-	background-color: #2196f3;
-}
-
-input:focus+.slider {
-	box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked+.slider:before {
-	-webkit-transform: translateX(24px);
-	-ms-transform: translateX(24px);
-	transform: translateX(20px);
-	background: white url('night.png');
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-.slider.round {
-	border-radius: 30px;
-}
-
-.slider.round:before {
-	border-radius: 50%;
-}
-</style>
-<style>
-.bodyLayout {
-	background: black;
-	color: yellow;
-}
-</style>
-
 <body>
-	<header id="header" class="align-items-center">
-		<div class="accebility-bg">
-			<div class="d-flex justify-content-between">
-				<div>
-					<ul class="top-menu" id="example1">
-						<li><a href="/Preview?page_id=167" title="Media Room">
-								<div class="menu-item">
-									<i class="fas fa-photo-film"></i><span
-										class="text-uppercase mx-2" title="Media">Media</span>
-								</div>
-						</a></li>
-						<li><a href="https://surakshaplaza.svpnpa.gov.in/"
-							title="Suraksha Plaza">
-								<div class="menu-item">
-									<i class="fas fa-cart-shopping"></i><span
-										class="text-uppercase mx-2" title="Suraksha Plaza">Suraksha
-										Plaza</span>
-								</div>
-						</a></li>
-						<!-- <li>
-							<div class="alignEnd">
-								<label id="switch" class="switch"> <input
-									type="checkbox" id="layoutSwitch"> <span
-									class="slider round"></span>
-								</label>
-							</div>
-						</li> -->
-					</ul>
-				</div>
-				<div>
-					<ul class="top-menu" id="example1">
-						<li><a
-							href="https://www.facebook.com/SvpNationalPoliceAcademy"
-							target="_blank" title="facebook"> <i
-								class="fa-brands fa-facebook-f"></i>
-						</a></li>
-						<li><a href="https://twitter.com/svpnpahyd" target="_blank"
-							title="twitter"> <i
-								class="fa-brands fa-twitter"></i>
-						</a></li>
-						<li><a
-							href="https://www.youtube.com/channel/UCm4BdP-dUi_zF4VFRrQ5M6g"
-							target="_blank" title="Youtube"> <i
-								class="fa-brands fa-youtube"></i>
-						</a></li>
-						<li><a
-							href="https://en.wikipedia.org/wiki/Sardar_Vallabhbhai_Patel_National_Police_Academy"
-							target="_blank" title="Wikipedia"> <i
-								class="fa-brands fa-wikipedia-w"></i>
-						</a></li>
-						<li><a href="#skipCont" title="skip to main content"><i
-								class="fas fa-arrow-turn-down" title="Accessibility Option"></i></a>
-						</li>
-						<!-- <li><a href="#"><img src="static/assets/img/sc.png"
-								width="24" height="24" alt="Screen-Reader-Access"
-								title="Screen Reader Access"></a></li> -->
-						<li>
-							<!-- 						<a href="#"><img
-								src="static/assets/img/ico-accessibility.png" width="24"
-								height="24" alt="Accessibility-option"
-								></a> --> <a href="#"><i class="fas fa-wheelchair"
-								title="Accessibility Option"></i></a>
-							<ul>
-								<li><a href="javascript:void(0);"
-									title="Increase font size" onclick="set_font_size('increase')">A<sup>+</sup><span
-										class="hidethis">Increase font size</span></a></li>
-								<li><a href="javascript:void(0);" title="Reset font size"
-									onclick="set_font_size('')">A <span class="hidethis">Reset
-											font size</span></a></li>
-								<li><a href="javascript:void(0);"
-									title="Decrease font size" onclick="set_font_size('decrease')">A<sup>-</sup>
-										<span class="hidethis">Decrease font size</span></a></li>
-								<!-- <li class="hight-contrast"><a href="javascript:void(0);"
-									title="High Contrast" class="hc"
-									onclick="chooseStyle('change', 60);">A <span
-										class="hidethis">High Contrast</span></a></li>
-								<li><a href="javascript:void(0);" title="Normal"
-									class="normal" onclick="chooseStyle('style', 60);">A <span
-										class="hidethis">Normal</span></a></li> -->
-							</ul>
-						</li>
-						<li>
-							<!-- <a href="#"><img
-								src="static/assets/img/ico-site-search.png" width="24"
-								height="24" title="Icons Site Search" alt="site-search"></a> -->
-							<a href="#"><i class="fas fa-search" title="Search"></i></a>
-							<ul>
-								<li class="slave"><label for="q">Search</label>
-									<form action="/universalSearch" id="cse-search-box"
-										name="searchform"
-										onsubmit=" if(this.q.value == '' || this.q.value.length < 1) { alert('Please enter a Search Keyword'); return false; }else {return true;}"
-										role="search" class="navbar-form">
-										<div class="input-group input-group-sm">
-											<input type="hidden" name="cx"
-												value="009166207481149357514:oulbmfsyia4"> <input
-												type="hidden" name="cof" value="FORID:10"> <input
-												type="hidden" name="ie" value="UTF-8"> <input
-												type="text" class="form-control search" id="q" name="value"
-												placeholder="Enter Your Keyword"
-												aria-label="Enter Your Keyword" aria-describedby="searchBtn">
-											<button class="btn btn-outline-secondary" type="submit"
-												id="searchBtn">Submit</button>
-										</div>
-									</form></li>
-							</ul>
-						</li>
-						<li title="Sitemap">
-							<!-- <a href="/Preview?page_id=171">
-								<img src="static/assets/img/ico-sitemap.png" width="24" height="24"
-								alt="sitemap" title="Sitemap"></a> --> <a
-							href="/Preview?page_id=171"><i class="fa-solid fa-sitemap"></i></a>
-						</li>
-						<li class="contact-show"><a href="javascript:void(0)"
-							th:attr="onclick=|langSelected('${session.lang}','${session.page_id}')|"
-							class="last-font" th:title="#{hindi.link.title}"> <span
-								th:if="${session.lang=='E'}" class="btn btn-danger"
-								th:text="#{hindi.button.text}"></span> <span
-								th:if="${session.lang=='H'}" class="btn btn-danger"
-								th:text="#{english.button.text}"></span>
-						</a></li>
+	<!-- Header from SVPNPA.html -->
+			<!-- DBIM 3.0 Mandatory Typography: Noto Sans -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+		<header id="header" th:fragment="header" th:attr="data-palette=${themePalette != null and themePalette != '' ? themePalette : 'blue'}">
+		<!-- DBIM 3.0 §5.4 - Skip to main content (first focusable element) -->
+		<a class="skip-link" href="#main">Skip to main content</a>
+		<script th:inline="javascript">
+			(function(){
+				var pal = /*[[${themePalette != null and themePalette != '' ? themePalette : 'blue'}]]*/ 'blue';
+				document.documentElement.setAttribute('data-palette', pal);
+			})();
+		</script>
+		<link href="static/assets/custom/css/portal.css" rel="stylesheet" />
+		<style>
+			/* Disable all animations and slide effects on header */
+			header, #header {
+				animation: none !important;
+				-webkit-animation: none !important;
+				transform: none !important;
+				-webkit-transform: none !important;
+			}
 
-					</ul>
-				</div>
-			</div>
-		</div>
-		<div class="row p-2">
-			<div class="col-md-4">
-				<h1 class="logo">
-					<img src="static/assets/img/nationalEmblem.svg" height="120px"
-						alt="Emblem" title="Emblem"> <img
-						src="static/assets/img/svpnpaLogo.svg" height="120px" alt="SVPNPA"
-						title="SVPNPA Logo"> <a href="/"
-						title="Sardar Vallabhbhai Patel National Police Academy">
-						<span style="font-size: 14px; font-weight: 500; line-height: 1.3; display: block;" th:text="#{logo.title3}"></span>
-						<span style="color: #000080; font-size: 16px; font-weight: 600; line-height: 1.3; display: block;" th:text="#{logo.title1}"></span>
-						<span style="color: #000080; font-size: 16px; font-weight: 600; line-height: 1.3; display: block;" th:text="#{logo.title2}"></span>
-					</a>
-				</h1>
+			/* ============================================================
+			   TOP HEADER LAYOUT & SEPARATOR CLEANUP
+			   ============================================================ */
+			/* Completely remove all vertical divider lines */
+			#header .menutop li,
+			#header .menutop li:last-child,
+			#header .header-actions-col li,
+			#header .header-actions-col > *,
+			#header .header-action-item {
+				border-right: none !important;
+				border-left: none !important;
+				padding: 0 !important;
+			}
+			#header .vr, #header .vertical-line, #header .divider-vertical {
+				display: none !important;
+			}
 
-			</div>
-			<div class="col-md-8 pull-right menu-part">
-				<!--					<button type="button" class="btn btn-info d-lg-none d-block" data-bs-toggle="modal"-->
-				<!--						data-bs-target="#menuModal">-->
-				<!--						<i class="fa fa-bars" onClick="mobile_menu()" aria-hidden="true"></i>-->
-				<!--					</button>-->
+			/* Header Container & Strictly Single Row Alignment */
+			#header .px-120 {
+				padding-left: clamp(16px, 2.5vw, 40px) !important;
+				padding-right: clamp(16px, 2.5vw, 40px) !important;
+			}
+			#header .header-top-row {
+				display: flex !important;
+				align-items: center !important;
+				justify-content: space-between !important;
+				flex-wrap: nowrap !important;
+				gap: 12px !important;
+				padding: 6px 0 !important;
+				width: 100% !important;
+			}
+			#header .header-logo-col {
+				display: flex !important;
+				align-items: center !important;
+				flex: 0 1 auto !important;
+				min-width: 0 !important;
+			}
+			#header .logoMain {
+				min-width: 0 !important;
+			}
+			#header .logo {
+				display: inline-flex !important;
+				align-items: center !important;
+				gap: 10px !important;
+				min-width: 0 !important;
+				text-decoration: none !important;
+			}
+			#header .logo img,
+			#header .logo .national_emblem,
+			#header .logo .academy_logo,
+			#header .national_emblem,
+			#header .academy_logo {
+				width: 75px !important;
+				height: 100px !important;
+				max-width: 75px !important;
+				max-height: 100px !important;
+				min-width: 75px !important;
+				min-height: 100px !important;
+				flex-shrink: 0 !important;
+				object-fit: contain !important;
+				display: inline-block !important;
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+			#header .logo-text {
+				min-width: 0 !important;
+				height: auto !important;
+				line-height: 1.25 !important;
+			}
+			#header .logo-ministry {
+				font-size: 13px !important;
+				color: #214aab !important;
+				white-space: nowrap !important;
+				font-family: 'Noto Sans', sans-serif !important;
+			}
+			#header .logo-academy-name {
+				font-size: clamp(13px, 1.3vw, 17px) !important;
+				color: #162f6a !important;
+				white-space: nowrap !important;
+				font-family: 'Noto Sans', sans-serif !important;
+			}
+			#header .header-actions-col {
+				display: flex !important;
+				align-items: center !important;
+				justify-content: flex-end !important;
+				flex-wrap: nowrap !important;
+				gap: 8px !important;
+				flex: 0 0 auto !important;
+			}
 
+			/* Clean, modern Header Search Box - Single Row */
+			#header .header-search-form {
+				margin: 0 !important;
+				width: clamp(150px, 16vw, 220px) !important;
+				flex: 0 1 auto !important;
+			}
+			#header .header-search-box {
+				display: flex !important;
+				flex-direction: row !important;
+				flex-wrap: nowrap !important;
+				align-items: center !important;
+				border: 1.5px solid #ced4da !important;
+				border-radius: 20px !important;
+				background-color: #ffffff !important;
+				padding: 2px 6px 2px 12px !important;
+				margin: 0 !important;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+				transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+				width: 100% !important;
+				height: 32px !important;
+			}
+			#header .header-search-box:focus-within {
+				border-color: #162f6a !important;
+				box-shadow: 0 2px 6px rgba(22, 47, 106, 0.16) !important;
+			}
+			#header .header-search-input {
+				border: none !important;
+				background: transparent !important;
+				box-shadow: none !important;
+				outline: none !important;
+				font-size: 13px !important;
+				padding: 2px 4px !important;
+				color: #212529 !important;
+				flex: 1 1 auto !important;
+				min-width: 0 !important;
+			}
+			#header .header-search-input:focus {
+				outline: none !important;
+				box-shadow: none !important;
+			}
+			#header .header-search-btn {
+				border: none !important;
+				background: transparent !important;
+				color: #162f6a !important;
+				padding: 2px 6px !important;
+				font-size: 13px !important;
+				cursor: pointer !important;
+				border-radius: 50% !important;
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				flex: 0 0 auto !important;
+				transition: color 0.2s ease, transform 0.15s ease !important;
+			}
+			#header .header-search-btn:hover {
+				color: #ff9900 !important;
+				transform: scale(1.1) !important;
+			}
 
-				<nav role="navigation">
-					<div id="menuToggle">
-						<input type="checkbox" /> <span></span> <span></span> <span></span>
-						<ul class="clearfix d-lg-none d-block sf-menu" id="menu">
-							<!-- Home Link -->
-							<li th:if="${session.lang=='E'}"><a
-								class="nav-link scrollto active" th:href="@{/}">Home</a></li>
-							<li th:unless="${session.lang=='E'}"><a
-								class="nav-link scrollto active" th:href="@{/}">होम</a></li>
+			/* Unified Toolbar Action & Icon Buttons - Single Row */
+			#header .header-action-btn,
+			#header .header-icon-btn {
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				gap: 5px !important;
+				height: 32px !important;
+				padding: 0 10px !important;
+				font-size: 12px !important;
+				font-weight: 600 !important;
+				border-radius: 6px !important;
+				border: 1px solid #ced4da !important;
+				background: #ffffff !important;
+				color: #162f6a !important;
+				cursor: pointer !important;
+				text-decoration: none !important;
+				white-space: nowrap !important;
+				flex-shrink: 0 !important;
+				transition: all 0.2s ease !important;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+			}
+			#header .header-icon-btn {
+				width: 32px !important;
+				min-width: 32px !important;
+				padding: 0 !important;
+			}
+			#header .header-action-btn:hover,
+			#header .header-icon-btn:hover {
+				border-color: #162f6a !important;
+				background-color: #f1f5f9 !important;
+				color: #0b1a3d !important;
+			}
+			#header .btn-lang-active {
+				border-color: #162f6a !important;
+				color: #162f6a !important;
+			}
 
-							<!-- Main Menu -->
-							<li th:each="menu : ${session.menulist}" class="dropdown"><span
-								th:if="${menu.menuList.size() > 0}"> <a href="#"><span
-										th:text="${menu.mainlevel_desc}"></span> <i
-										class="bi bi-chevron-down"></i></a>
-							</span> <span th:unless="${menu.menuList.size() > 0}"> <a
-									th:href="@{|/${menu.menu_url}|}"><span
-										th:text="${menu.mainlevel_desc}"></span> <i
-										class="bi bi-chevron-down"></i></a>
-							</span> <!-- Submenu Items -->
-								<ul th:if="${menu.menuList.size() > 0}">
-									<li th:each="submenu : ${menu.menuList}" class="dropdown">
-										<span th:if="${submenu.subMenu.size() > 0}"> <a
-											href="#"> <span th:text="${submenu.level1_desc}"></span>
-												<i class="bi bi-chevron-right"></i>
-										</a>
-									</span> <span th:unless="${submenu.subMenu.size() > 0}"> <a
-											th:href="@{|/${submenu.menu_url}|}"> <span
-												th:text="${submenu.level1_desc}"></span> <i
-												class="bi bi-chevron-right"></i>
-										</a>
-									</span>
-										<ul th:if="${submenu.subMenu.size() > 0}">
-											<li th:if="${submenu.subMenu.size() > 0}"
-												th:each="subsubmenu : ${submenu.subMenu}"><a
-												th:href="${subsubmenu.menu_url}" target="_self"><span
-													class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
-												<ul>
-													<li th:each="lastmenu : ${subsubmenu.menuList}"><a
-														th:href="@{|/${lastmenu.menu_url}|}" target="_self"> <span
-															class="data-hover" th:text="${lastmenu.level3_desc}"></span>
-													</a></li>
-												</ul></li>
-											<li th:unless="${submenu.subMenu.size() gt 0}"><a
-												th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
-													class="data-hover" th:text="${submenu.level2_desc}"></span>
-											</a></li>
-										</ul>
-										<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
-									</li>
-								</ul>
-								<ul th:unless="${menu.menuList.size() gt 0}"></ul></li>
-							<li class="dropdown" th:if="${session.username==''}"><span>
-									<a th:if="${session.lang=='E'}" href="#">Digital Learning<i
-										class="bi bi-chevron-down"></i></a> <a
-									th:unless="${session.lang=='E'}" href="#">डिजिटल लर्निंग<i
-										class="bi bi-chevron-down"></i></a>
-							</span>
-								<ul>
-									<li><a href="/Preview?page_id=231"> <!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->
-											<span th:if="${session.lang=='E'}" class="data-hover">Digital
-												Library</span> <span th:unless="${session.lang=='E'}"
-											class="data-hover">डिजिटल लाइब्रेरी</span>
-									</a></li>
-									<li><a target="_blank"
-										href="https://lms.svpnpa.gov.in/login/index.php"> <span
-											th:if="${session.lang=='E'}" class="data-hover">LMS</span> <span
-											th:unless:if="${session.lang=='E'}" class="data-hover">एलएमएस</span>
-									</a></li>
-									<li><a target="_blank" href="https://kms.svpnpa.gov.in/">
-											<span th:if="${session.lang=='E'}" class="data-hover">Knowledge
-												Management System(KMS)</span> <span
-											th:unless:if="${session.lang=='E'}" class="data-hover">ज्ञान
-												प्रबंधन प्रणाली (केएमएस)</span>
-									</a></li>
-								</ul></li>
-							<li th:if="${session.username==''}"><a
-								th:if="${session.lang=='E'}" class="btn-warning"
-								th:href="@{/getsignin}" id="statusButton">Login</a> <a
-								th:unless="${session.lang=='E'}" class="btn-warning"
-								th:href="@{/getsignin}" id="statusButton">लॉग इन करें</a></li>
-							<li th:unless="${session.username==''}">
-							<li th:if="${session.lang=='E'}"><a class="btn-warning"
-								th:href="@{/logout}" id="statusButton">Logout</a></li>
-							<li th:unless:if="${session.lang=='E'}"><a
-								th:unless="${session.lang=='E'}" class="btn-warning"
-								th:href="@{/logout}" id="statusButton">लॉग आउट करें</a></li>
-							</li>
-							<!-- LogIn Link -->
-							<!-- <li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
-						</ul>
-					</div>
-				</nav>
+			/* Font Sizing Dropdown Menu */
+			#header .font-size-dropdown {
+				position: relative !important;
+				display: inline-block !important;
+			}
+			#header .font-size-dropdown .dropdown-menu {
+				position: absolute !important;
+				top: calc(100% + 4px) !important;
+				right: 0 !important;
+				left: auto !important;
+				min-width: 140px !important;
+				background: #ffffff !important;
+				border: 1px solid #ced4da !important;
+				border-radius: 8px !important;
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+				padding: 4px 0 !important;
+				margin: 0 !important;
+				z-index: 99999 !important;
+				display: none;
+			}
+			#header .font-size-dropdown .dropdown-menu.show {
+				display: block !important;
+			}
+			#header .font-size-dropdown .dropdown-item {
+				display: flex !important;
+				align-items: center !important;
+				justify-content: space-between !important;
+				padding: 7px 14px !important;
+				font-size: 13px !important;
+				color: #212529 !important;
+				text-decoration: none !important;
+				cursor: pointer !important;
+				background: transparent !important;
+				border: none !important;
+				width: 100% !important;
+				transition: background 0.15s ease !important;
+			}
+			#header .font-size-dropdown .dropdown-item:hover {
+				background-color: #f1f5f9 !important;
+				color: #162f6a !important;
+			}
 
-				<div id="main-nav" class="navigation-bg">
-					<nav>
-						<ul class="clearfix d-lg-block d-none sf-menu" id="example">
-							<!-- Home Link -->
-							<li th:if="${session.lang=='E'}"><a
-								class="nav-link scrollto active" th:href="@{/}">Home</a></li>
-							<li th:unless="${session.lang=='E'}"><a
-								class="nav-link scrollto active" th:href="@{/}">होम</a></li>
+			/* ============================================================
+			   RESPONSIVE TOP HEADER & MOBILE UTILITIES
+			   ============================================================ */
+			@media (max-width: 991.98px) {
+				#header .px-120 {
+					padding-left: 12px !important;
+					padding-right: 12px !important;
+				}
+				#header .header-top-row {
+					flex-wrap: wrap !important;
+					gap: 8px !important;
+					padding: 6px 0 4px !important;
+				}
+				#header .header-logo-col {
+					width: 100% !important;
+					flex: 1 1 100% !important;
+					justify-content: flex-start !important;
+				}
+				#header .logo img,
+				#header .logo .national_emblem,
+				#header .logo .academy_logo,
+				#header .national_emblem,
+				#header .academy_logo {
+					width: 48px !important;
+					height: 64px !important;
+					max-width: 48px !important;
+					max-height: 64px !important;
+					min-width: 48px !important;
+					min-height: 64px !important;
+				}
+				#header .logo-ministry {
+					font-size: 11px !important;
+				}
+				#header .logo-academy-name {
+					font-size: 13.5px !important;
+					line-height: 1.2 !important;
+					white-space: normal !important;
+				}
+				#header .header-actions-col {
+					width: 100% !important;
+					flex: 1 1 100% !important;
+					justify-content: space-between !important;
+					gap: 6px !important;
+					padding-top: 4px !important;
+					border-top: 1px solid #e9ecef !important;
+				}
+				#header .header-search-form {
+					flex: 1 1 auto !important;
+					width: auto !important;
+					min-width: 100px !important;
+					max-width: none !important;
+				}
+			}
 
+			@media (max-width: 480px) {
+				#header .logo img,
+				#header .logo .national_emblem,
+				#header .logo .academy_logo,
+				#header .national_emblem,
+				#header .academy_logo {
+					width: 38px !important;
+					height: 50px !important;
+					max-width: 38px !important;
+					max-height: 50px !important;
+					min-width: 38px !important;
+					min-height: 50px !important;
+				}
+				#header .logo {
+					gap: 6px !important;
+				}
+				#header .logo-academy-name {
+					font-size: 12px !important;
+				}
+				#header .header-action-btn,
+				#header .header-icon-btn {
+					padding: 0 6px !important;
+					font-size: 11px !important;
+				}
+				#header .header-action-btn span {
+					font-size: 11px !important;
+				}
+			}
 
-							<!-- Main Menu -->
-							<li th:each="menu : ${session.menulist}" class="dropdown"><span
-								th:if="${menu.menuList.size() > 0}"> <a href="#"><span
-										th:text="${menu.mainlevel_desc}"></span> <i
-										class="bi bi-chevron-down"></i></a>
-							</span> <span th:unless="${menu.menuList.size() > 0}"> <a
-									th:href="@{|/${menu.menu_url}|}"><span
-										th:text="${menu.mainlevel_desc}"></span> <i
-										class="bi bi-chevron-down"></i></a>
-							</span> <!-- Submenu Items -->
-								<ul th:if="${menu.menuList.size() > 0}">
-									<li th:each="submenu : ${menu.menuList}" class="dropdown">
-										<span th:if="${submenu.subMenu.size() > 0}"> <a
-											href="#"> <span th:text="${submenu.level1_desc}"></span>
-												<i class="bi bi-chevron-right"></i>
-										</a>
-									</span> <span th:unless="${submenu.subMenu.size() > 0}"> <a
-											th:href="@{|/${submenu.menu_url}|}"> <span
-												th:text="${submenu.level1_desc}"></span> <i
-												class="bi bi-chevron-right"></i>
-										</a>
-									</span>
-										<ul th:if="${submenu.subMenu.size() > 0}">
-											<li th:if="${submenu.subMenu.size() > 0}"
-												th:each="subsubmenu : ${submenu.subMenu}"><a
-												th:href="${subsubmenu.menu_url}" target="_self"><span
-													class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
-												<ul>
-													<li th:each="lastmenu : ${subsubmenu.menuList}"><a
-														th:href="@{|/${lastmenu.menu_url}|}" target="_self"> <span
-															class="data-hover" th:text="${lastmenu.level3_desc}"></span>
-													</a></li>
-												</ul></li>
-											<li th:unless="${submenu.subMenu.size() gt 0}"><a
-												th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
-													class="data-hover" th:text="${submenu.level2_desc}"></span>
-											</a></li>
-										</ul>
-										<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
-									</li>
-								</ul>
-								<ul th:unless="${menu.menuList.size() gt 0}"></ul></li>
-							<li class="dropdown" th:if="${session.username==''}"><span>
-									<a th:if="${session.lang=='E'}" href="#">Digital Learning<i
-										class="bi bi-chevron-down"></i></a> <a
-									th:unless="${session.lang=='E'}" href="#">डिजिटल लर्निंग<i
-										class="bi bi-chevron-down"></i></a>
-							</span>
-								<ul>
-									<li><a href="/Preview?page_id=231"> <!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->
-											<span th:if="${session.lang=='E'}" class="data-hover">Digital
-												Library</span> <span th:unless="${session.lang=='E'}"
-											class="data-hover">डिजिटल लाइब्रेरी</span>
-									</a></li>
-									<li><a target="_blank"
-										href="https://lms.svpnpa.gov.in/login/index.php"> <span
-											th:if="${session.lang=='E'}" class="data-hover">LMS</span> <span
-											th:unless="${session.lang=='E'}" class="data-hover">एलएमएस</span>
-
-
-									</a></li>
-									<li><a target="_blank" href="https://kms.svpnpa.gov.in/">
-											<span th:if="${session.lang=='E'}" class="data-hover">Knowledge
-												Management System(KMS)</span> <span
-											th:unless="${session.lang=='E'}" class="data-hover">ज्ञान
-												प्रबंधन प्रणाली (केएमएस)</span>
-									</a></li>
-								</ul></li>
-							<li th:if="${session.username==''}"><a
-								th:if="${session.lang=='E'}" th:href="@{/getsignin}"
-								id="statusButton"
-								style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Login</a>
-								<a th:unless="${session.lang=='E'}" th:href="@{/getsignin}"
-								id="statusButton"
-								style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग
-									इन करें</a></li>
-							<li th:unless="${session.username==''}"><a
-								th:if="${session.lang=='E'}" th:href="@{/logout}"
-								id="statusButton"
-								style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Logout</a>
-								<a th:unless="${session.lang=='E'}" th:href="@{/logout}"
-								id="statusButton"
-								style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग
-									आउट करें</a></li>
-							<!-- LogIn Link -->
-							<!--						<li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
-						</ul>
-					</nav>
-				</div>
-			</div>
-		</div>
-		<div class="modal fade" id="menuModal" tabindex="-1"
-			aria-labelledby="menuModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-body">
-						<button type="button" class="close" data-bs-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<div id="mobile-menu">
-							<div id="main-nav" class="navigation-bg">
-								<nav>
-									<ul class="clearfix sf-menu" id="example">
-										<!-- Home Link -->
-										<li th:if="${session.lang=='E'}"><a
-											class="nav-link scrollto active" th:href="@{/}">Home</a></li>
-										<li th:unless="${session.lang=='E'}"><a
-											class="nav-link scrollto active" th:href="@{/}">होम</a></li>
-
-										<!-- Main Menu -->
-										<li th:each="menu : ${session.menulist}" class="dropdown">
-											<span th:if="${menu.menuList.size() > 0}"> <a href="#"><span
-													th:text="${menu.mainlevel_desc}"></span> <i
-													class="bi bi-chevron-down"></i></a>
-										</span> <span th:unless="${menu.menuList.size() > 0}"> <a
-												th:href="@{|/${menu.menu_url}|}"><span
-													th:text="${menu.mainlevel_desc}"></span> <i
-													class="bi bi-chevron-down"></i></a>
-										</span> <!-- Submenu Items -->
-											<ul th:if="${menu.menuList.size() > 0}">
-												<li th:each="submenu : ${menu.menuList}" class="dropdown">
-													<span th:if="${submenu.subMenu.size() > 0}"> <a
-														href="#"> <span th:text="${submenu.level1_desc}"></span>
-															<i class="bi bi-chevron-right"></i>
-													</a>
-												</span> <span th:unless="${submenu.subMenu.size() > 0}"> <a
-														th:href="@{|/${submenu.menu_url}|}"> <span
-															th:text="${submenu.level1_desc}"></span> <i
-															class="bi bi-chevron-right"></i>
-													</a>
-												</span>
-													<ul th:if="${submenu.subMenu.size() > 0}">
-														<li th:if="${submenu.subMenu.size() > 0}"
-															th:each="subsubmenu : ${submenu.subMenu}"><a
-															th:href="${subsubmenu.menu_url}" target="_self"><span
-																class="data-hover" th:text="${subsubmenu.level2_desc}"></span></a>
-															<ul>
-																<li th:each="lastmenu : ${subsubmenu.menuList}"><a
-																	th:href="@{|/${lastmenu.menu_url}|}" target="_self">
-																		<span class="data-hover"
-																		th:text="${lastmenu.level3_desc}"></span>
-																</a></li>
-															</ul></li>
-														<li th:unless="${submenu.subMenu.size() gt 0}"><a
-															th:href="@{|/${submenu.menu_url}|}" target="_self"> <span
-																class="data-hover" th:text="${submenu.level2_desc}"></span>
-														</a></li>
-													</ul>
-													<ul th:unless="${submenu.subMenu.size() gt 0}"></ul>
-												</li>
-											</ul>
-											<ul th:unless="${menu.menuList.size() gt 0}"></ul>
-										</li>
-										<li class="dropdown" th:if="${session.username==''}"><span>
-												<a th:if="${session.lang=='E'}" href="#">Digital
-													Learning<i class="bi bi-chevron-down"></i>
-												</ath:if="${session.lang=='E'}"> <a th:unless="${session.lang=='E'}" href="#">डिजिटल
-														लर्निंग<i class="bi bi-chevron-down"></i>
-												</a>
-										</span>
-											<ul>
-												<li><a href="/Preview?page_id=231"> <!--href="https://elibrary.svpnpa.gov.in/user#/home"> -->
-														<span th:if="${session.lang=='E'}" class="data-hover">Digital
-															Library</span> <span th:unless="${session.lang=='E'}"
-														class="data-hover">डिजिटल लाइब्रेरी</span>
-												</a></li>
-												<li><a target="_blank"
-													href="https://lms.svpnpa.gov.in/login/index.php"> <span
-														th:if="${session.lang=='E'}" class="data-hover">LMS</span>
-														<span th:unless="${session.lang=='E'}" class="data-hover">एलएमएस</span>
-												</a></li>
-												<li><a target="_blank"
-													href="https://kms.svpnpa.gov.in/"> <span
-														th:if="${session.lang=='E'}" class="data-hover">Knowledge
-															Management System(KMS)</span> <span
-														th:unless="${session.lang=='E'}" class="data-hover">ज्ञान
-															प्रबंधन प्रणाली (केएमएस)</span>
-												</a></li>
-											</ul></li>
-										<li th:if="${session.username==''}"><a
-											th:if="${session.lang=='E'}" class="" th:href="@{/getsignin}"
-											id="statusButton"
-											style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Login</a>
-											<a th:unless="${session.lang=='E'}" class=""
-											th:href="@{/getsignin}" id="statusButton"
-											style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग
-												इन करें</a></li>
-										<li th:unless="${session.username==''}"><a
-											th:if="${session.lang=='E'}" class="" th:href="@{/logout}"
-											id="statusButton"
-											style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">Logout</a>
-											<a th:unless="${session.lang=='E'}" class=""
-											th:href="@{/logout}" id="statusButton"
-											style="background: #00a4e3; padding: 5px; border-radius: 4px; margin-top: -5px;">लॉग
-												आउट करें</a></li>
-										<!-- LogIn Link -->
-										<!--<li><a class="nav-link scrollto active" href="/getsignin">LogIn</a></li>-->
-									</ul>
-								</nav>
-							</div>
+			/* ============================================================
+			   GLOBAL DARK CONTRAST / HIGH CONTRAST (WOB)
+			   ============================================================ */
+			html.wob, html.theme-high-contrast,
+			body.wob, body.theme-high-contrast {
+				background-color: #0b0c0e !important;
+				background: #0b0c0e !important;
+				color: #ffff00 !important;
+			}
+			body.wob *, body.theme-high-contrast * {
+				border-color: #444444 !important;
+			}
+			body.wob h1, body.wob h2, body.wob h3, body.wob h4, body.wob h5, body.wob h6,
+			body.theme-high-contrast h1, body.theme-high-contrast h2, body.theme-high-contrast h3,
+			body.theme-high-contrast h4, body.theme-high-contrast h5, body.theme-high-contrast h6,
+			body.wob p, body.wob span, body.wob li, body.wob label,
+			body.theme-high-contrast p, body.theme-high-contrast span, body.theme-high-contrast li,
+			body.theme-high-contrast label {
+				color: #ffff00 !important;
+			}
+			body.wob strong, body.theme-high-contrast strong,
+			body.wob b, body.theme-high-contrast b {
+				color: #ffffff !important;
+			}
+			body.wob a, body.theme-high-contrast a {
+				color: #00ffff !important;
+			}
+			body.wob a:hover, body.theme-high-contrast a:hover {
+				color: #ffffff !important;
+				text-decoration: underline !important;
+			}
+			body.wob #header, body.theme-high-contrast #header,
+			body.wob header, body.theme-high-contrast header,
+			body.wob nav, body.theme-high-contrast nav,
+			body.wob nav.main, body.theme-high-contrast nav.main,
+			body.wob .navigation-bg, body.theme-high-contrast .navigation-bg,
+			body.wob main, body.theme-high-contrast main,
+			body.wob section, body.theme-high-contrast section,
+			body.wob .card, body.theme-high-contrast .card,
+			body.wob .card-body, body.theme-high-contrast .card-body,
+			body.wob .card-header, body.theme-high-contrast .card-header,
+			body.wob .card-footer, body.theme-high-contrast .card-footer,
+			body.wob .modal-content, body.theme-high-contrast .modal-content,
+			body.wob .dropdown-menu, body.theme-high-contrast .dropdown-menu,
+			body.wob footer, body.theme-high-contrast footer,
+			body.wob .site-footer, body.theme-high-contrast .site-footer,
+			body.wob .footer-main-container, body.theme-high-contrast .footer-main-container {
+				background-color: #0b0c0e !important;
+				background: #0b0c0e !important;
+				color: #ffff00 !important;
+			}
+			body.wob .burger, body.theme-high-contrast .burger {
+				color: #ffff00 !important;
+				border-color: #ffff00 !important;
+			}
+			body.wob .menu, body.theme-high-contrast .menu {
+				background: #0b0c0e !important;
+			}
+			body.wob .menu>li>a, body.theme-high-contrast .menu>li>a {
+				color: #ffff00 !important;
+			}
+			body.wob .dropdown, body.theme-high-contrast .dropdown,
+			body.wob .dropdown .sub, body.theme-high-contrast .dropdown .sub {
+				background: #14171c !important;
+			}
+			body.wob .dropdown a, body.theme-high-contrast .dropdown a {
+				color: #00ffff !important;
+			}
+			body.wob .header-search-box, body.theme-high-contrast .header-search-box {
+				background: #1a1a1a !important;
+				border-color: #ffff00 !important;
+			}
+			body.wob .header-search-input, body.theme-high-contrast .header-search-input {
+				color: #ffff00 !important;
+			}
+			body.wob .header-search-btn, body.theme-high-contrast .header-search-btn {
+				color: #ffff00 !important;
+			}
+			body.wob .header-action-btn, body.theme-high-contrast .header-action-btn,
+			body.wob .header-icon-btn, body.theme-high-contrast .header-icon-btn {
+				border-color: #ffff00 !important;
+				color: #ffff00 !important;
+				background: #0b0c0e !important;
+			}
+			body.wob .header-action-btn:hover, body.theme-high-contrast .header-action-btn:hover,
+			body.wob .header-icon-btn:hover, body.theme-high-contrast .header-icon-btn:hover {
+				background: #ffff00 !important;
+				color: #000000 !important;
+			}
+			body.wob .font-size-dropdown .dropdown-menu, body.theme-high-contrast .font-size-dropdown .dropdown-menu {
+				background: #0b0c0e !important;
+				border-color: #ffff00 !important;
+			}
+			body.wob .font-size-dropdown .dropdown-item, body.theme-high-contrast .font-size-dropdown .dropdown-item {
+				color: #ffff00 !important;
+			}
+			body.wob .font-size-dropdown .dropdown-item:hover, body.theme-high-contrast .font-size-dropdown .dropdown-item:hover {
+				background: #ffff00 !important;
+				color: #000000 !important;
+			}
+			body.wob .logo-text .logo-ministry, body.wob .logo-text .logo-academy-name,
+			body.theme-high-contrast .logo-text .logo-ministry, body.theme-high-contrast .logo-text .logo-academy-name {
+				color: #ffff00 !important;
+			}
+		</style>
+		<div class="px-120">
+			<div class="header-top-row">
+				<!-- MHA Logo Start -->
+				<div class="header-logo-col">
+					<div class="logoMain">
+						<div class="logo">
+							<a class="logo-emblem-link" th:href="@{/}" aria-label="National Emblem"
+								rel="home"><img class="national_emblem"
+								src="static/assets/img/nationalEmblem.svg" alt="National Emblem"
+								width="75" height="100" title="National Emblem" loading="lazy"></a>
+							<a class="logo-academy-link" th:href="@{/}"
+								aria-label="Sardar Vallabhbhai Patel National Police Academy"
+								rel="home"><img class="academy_logo national_emblem"
+								src="static/assets/img/svpnpaLogo.svg"
+								alt="Sardar Vallabhbhai Patel National Police Academy"
+								width="75" height="100"
+								title="Sardar Vallabhbhai Patel National Police Academy"
+								loading="lazy">
+								<span class="logo-text">
+									<span class="d-block logo-ministry" style="color: #214aab !important; font-family: 'Noto Sans', sans-serif !important;"
+										th:text="${#locale.language == 'hi' or session.lang == 'H'} ? (${customHeaderMinistryHi != null and !#strings.isEmpty(customHeaderMinistryHi)} ? ${customHeaderMinistryHi} : #{logo.title3}) : (${customHeaderMinistryEn != null and !#strings.isEmpty(customHeaderMinistryEn)} ? ${customHeaderMinistryEn} : #{logo.title3})">Ministry of Home Affairs</span>
+									<strong class="d-block logo-academy-name" style="color: #162f6a !important; font-family: 'Noto Sans', sans-serif !important;"
+										th:text="${#locale.language == 'hi' or session.lang == 'H'} ? (${customHeaderTitleHi != null and !#strings.isEmpty(customHeaderTitleHi)} ? ${customHeaderTitleHi} : #{logo.title1} + ' ' + #{logo.title2}) : (${customHeaderTitleEn != null and !#strings.isEmpty(customHeaderTitleEn)} ? ${customHeaderTitleEn} : #{logo.title1} + ' ' + #{logo.title2})">Sardar Vallabhbhai Patel<br>National Police Academy</strong>
+								</span>
+							</a>
 						</div>
 					</div>
 				</div>
+				<!-- MHA Logo End -->
+
+				<!-- Header Actions & Search Right Column -->
+				<div class="header-actions-col">
+					<!-- Search Form -->
+					<form th:action="@{/universalSearch}" method="get"
+						id="headerSearchForm" name="headersearchform"
+						onsubmit="if(!this.elements['value'].value.trim()) { return false; } return true;"
+						class="header-search-form" role="search">
+						<div class="header-search-box">
+							<label for="edit-keys" class="visually-hidden" th:text="#{header.search}">Search</label>
+							<input type="search" id="edit-keys" name="value" maxlength="128"
+								class="header-search-input"
+								th:placeholder="#{header.search.placeholder}"
+								placeholder="Search..." aria-label="Search">
+							<button type="submit" class="header-search-btn"
+								id="edit-submit" th:aria-label="#{header.search}" title="Search">
+								<i class="fas fa-search" aria-hidden="true"></i>
+							</button>
+						</div>
+					</form>
+
+					<!-- Skip to main menu icon button -->
+					<a href="#menu" role="button" title="Skip to main menu" aria-label="Skip to main menu" class="header-icon-btn">
+						<i class="fas fa-arrow-turn-down" aria-hidden="true"></i>
+						<span class="visually-hidden">Skip to main menu</span>
+					</a>
+
+					<!-- Font Sizing Dropdown (A+, A, A-) -->
+					<div class="font-size-dropdown">
+						<button type="button" class="header-icon-btn font-size-toggle" id="fontSizeToggleBtn" onclick="toggleFontSizeMenu(event)" title="Text Sizing" aria-expanded="false" aria-haspopup="true">
+							<span class="fw-bold">A</span>
+							<i class="fas fa-chevron-down" style="font-size: 9px; margin-left: 2px;" aria-hidden="true"></i>
+						</button>
+						<div class="dropdown-menu shadow" id="fontSizeDropdownMenu" role="menu">
+							<button type="button" class="dropdown-item" onclick="setFontSizeOption('increase')"><strong>A<sup>+</sup></strong></button>
+							<button type="button" class="dropdown-item" onclick="setFontSizeOption('reset')"><strong>A</strong></button>
+							<button type="button" class="dropdown-item" onclick="setFontSizeOption('decrease')"><strong>A<sup>-</sup></strong></button>
+						</div>
+					</div>
+
+					<!-- Dark Contrast Toggle Button -->
+					<button type="button" class="header-action-btn" onclick="toggleDarkContrast()" title="Dark Contrast">
+						<i class="fas fa-circle-half-stroke" aria-hidden="true"></i>
+						<span>Dark Contrast</span>
+					</button>
+
+					<!-- Language Switcher Button -->
+					<button type="button"
+						id="headerLangSwitchBtn"
+						th:attr="data-curlang=${session.lang != null and session.lang != '' ? session.lang : 'E'},data-pageid=${session.page_id != null ? session.page_id : ''}"
+						onclick="handleLangSwitch(this)"
+						class="header-action-btn btn-lang-active"
+						th:title="${session.lang == 'H'} ? 'Switch to English' : 'हिंदी में बदलें'"
+						aria-label="Change Language">
+						<span th:text="${session.lang == 'H'} ? 'English' : 'हिन्दी'">हिन्दी</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		<!-- Navigation from SVPNPA.html -->
+		<nav class="main">
+			<div class="wrap">
+				<button type="button" class="burger" id="mobileMenuBurger" aria-label="Toggle navigation menu" aria-expanded="false"
+					onclick="toggleMobileMenu(this)"><i class="fas fa-bars" aria-hidden="true"></i></button>
+				<ul class="menu" id="menu">
+					<!-- Dynamic Menu Items -->
+					<li th:each="menu : ${session.menulist}"
+						th:class="${menu.menuList != null and menu.menuList.size() > 0 ? 'has-sub' : ''}">
+						<a th:if="${menu.menuList != null and menu.menuList.size() > 0}"
+						href="#"><span th:text="${menu.mainlevel_desc}"></span></a> <a
+						th:unless="${menu.menuList != null and menu.menuList.size() > 0}"
+						th:href="@{|/${menu.menu_url}|}"><span
+							th:text="${menu.mainlevel_desc}"></span></a> <!-- Submenu Level 1 -->
+						<ul th:if="${menu.menuList != null and menu.menuList.size() > 0}"
+							class="dropdown">
+							<li th:each="submenu : ${menu.menuList}"
+								th:class="${submenu.subMenu != null and submenu.subMenu.size() > 0 ? 'has-sub' : ''}">
+								<a
+								th:if="${submenu.subMenu != null and submenu.subMenu.size() > 0}"
+								href="#"><span th:text="${submenu.level1_desc}"></span></a> <a
+								th:unless="${submenu.subMenu != null and submenu.subMenu.size() > 0}"
+								th:href="@{|/${submenu.menu_url}|}"><span
+									th:text="${submenu.level1_desc}"></span></a> <!-- Submenu Level 2 -->
+								<ul
+									th:if="${submenu.subMenu != null and submenu.subMenu.size() > 0}"
+									class="dropdown sub">
+									<li th:each="subsubmenu : ${submenu.subMenu}"
+										th:class="${subsubmenu.menuList != null and subsubmenu.menuList.size() > 0 ? 'has-sub' : ''}">
+										<a
+										th:if="${subsubmenu.menuList != null and subsubmenu.menuList.size() > 0}"
+										href="#"><span th:text="${subsubmenu.level2_desc}"></span></a>
+										<a
+										th:unless="${subsubmenu.menuList != null and subsubmenu.menuList.size() > 0}"
+										th:href="@{|/${subsubmenu.menu_url}|}"><span
+											th:text="${subsubmenu.level2_desc}"></span></a> <!-- Submenu Level 3 -->
+										<ul
+											th:if="${subsubmenu.menuList != null and subsubmenu.menuList.size() > 0}"
+											class="dropdown sub">
+											<li th:each="lastmenu : ${subsubmenu.menuList}"><a
+												th:href="@{|/${lastmenu.menu_url}|}"><span
+													th:text="${lastmenu.level3_desc}"></span></a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+
+				<!-- Login / Console Auth Buttons -->
+				<div class="d-flex align-items-center ms-auto nav-auth-item">
+					<a
+						th:if="${(session.username == null or session.username == '') and (session.lang == null or session.lang == '' or session.lang == 'E')}"
+						class="loginBtn btn-nav-auth" th:href="@{/getsignin}"
+						id="statusButton-desktop-login">Login</a> <a
+						th:if="${(session.username == null or session.username == '') and session.lang == 'H'}"
+						class="loginBtn btn-nav-auth" th:href="@{/getsignin}"
+						id="statusButton-desktop-login-hi">लॉग इन करें</a><a th:if="${session.username != null and session.username != ''}"
+						class="loginBtn btn-nav-auth" th:href="@{/logout}"
+						id="statusButton-desktop-logout">Logout</a>
+				</div>
+			</div>
+		</nav>
+		<script th:inline="javascript">
+			// ============================================================
+			// FONT SIZING DROPDOWN & ACTIONS
+			// ============================================================
+			function toggleFontSizeMenu(event) {
+				if (event) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
+				var menu = document.getElementById('fontSizeDropdownMenu');
+				var btn = document.getElementById('fontSizeToggleBtn');
+				if (menu) {
+					var isOpen = menu.classList.toggle('show');
+					if (btn) {
+						btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+					}
+				}
+			}
+
+			function setFontSizeOption(type) {
+				changeFontSize(type);
+				var menu = document.getElementById('fontSizeDropdownMenu');
+				var btn = document.getElementById('fontSizeToggleBtn');
+				if (menu) menu.classList.remove('show');
+				if (btn) btn.setAttribute('aria-expanded', 'false');
+			}
+
+			document.addEventListener('click', function(e) {
+				var menu = document.getElementById('fontSizeDropdownMenu');
+				var btn = document.getElementById('fontSizeToggleBtn');
+				if (menu && menu.classList.contains('show')) {
+					if (!menu.contains(e.target) && !btn.contains(e.target)) {
+						menu.classList.remove('show');
+						if (btn) btn.setAttribute('aria-expanded', 'false');
+					}
+				}
+			});
+
+			function changeFontSize(type) {
+				var size = parseInt(localStorage.getItem('fontSize') || '100', 10);
+				if (type === 'increase' && size < 120) size += 10;
+				else if (type === 'decrease' && size > 80) size -= 10;
+				else if (type === 'reset') size = 100;
+				localStorage.setItem('fontSize', size);
+				
+				var root = document.documentElement;
+				var body = document.body;
+				var fsEl = document.getElementById('fontSize');
+				if (size === 100) {
+					if (root) root.style.fontSize = '';
+					if (body) body.style.fontSize = '';
+					if (fsEl) fsEl.style.fontSize = '';
+				} else {
+					if (root) root.style.fontSize = size + '%';
+					if (body) body.style.fontSize = Math.round(16 * (size / 100)) + 'px';
+					if (fsEl) fsEl.style.fontSize = size + '%';
+				}
+				try {
+					document.cookie = "fontSize=" + size + ";path=/;max-age=31536000";
+				} catch(e) {}
+			}
+
+			(function() {
+				var saved = parseInt(localStorage.getItem('fontSize') || '100', 10);
+				if (saved && saved !== 100) {
+					var apply = function() {
+						document.documentElement.style.fontSize = saved + '%';
+						if (document.body) document.body.style.fontSize = Math.round(16 * (saved / 100)) + 'px';
+						var fsEl = document.getElementById('fontSize');
+						if (fsEl) fsEl.style.fontSize = saved + '%';
+					};
+					if (document.readyState === 'loading') {
+						document.addEventListener('DOMContentLoaded', apply);
+					} else {
+						apply();
+					}
+				}
+			})();
+
+			// ============================================================
+			// LANGUAGE SWITCHER
+			// ============================================================
+			function handleLangSwitch(btnEl) {
+				var curLang = 'E';
+				if (btnEl && btnEl.getAttribute('data-curlang')) {
+					curLang = btnEl.getAttribute('data-curlang');
+				} else {
+					var match = document.cookie.match(/(?:^|;\s*)lang=([^;]+)/);
+					if (match && match[1]) curLang = match[1];
+				}
+				var targetLang = (curLang.toUpperCase() === 'H') ? 'E' : 'H';
+
+				// Set cookie immediately
+				document.cookie = "lang=" + targetLang + ";path=/;max-age=31536000";
+
+				// Determine page_id if available
+				var pageId = '';
+				if (btnEl && btnEl.getAttribute('data-pageid')) {
+					pageId = btnEl.getAttribute('data-pageid');
+				}
+
+				// Build destination URL
+				var url = new URL(window.location.href);
+				url.searchParams.set('lang', targetLang);
+				if (pageId && !url.searchParams.has('page_id')) {
+					url.searchParams.set('page_id', pageId);
+				}
+				var dest = url.toString();
+
+				var updateUrl = /*[[@{/updateCookie}]]*/ '/updateCookie';
+				if (window.jQuery) {
+					$.ajax({
+						type: "GET",
+						url: updateUrl + "?langSelected=" + encodeURIComponent(targetLang),
+						cache: false,
+						complete: function() {
+							window.location.href = dest;
+						}
+					});
+				} else {
+					fetch(updateUrl + "?langSelected=" + encodeURIComponent(targetLang))
+						.finally(function() {
+							window.location.href = dest;
+						});
+				}
+			}
+
+			// ============================================================
+			// CONTRAST / HIGH CONTRAST (WOB)
+			// ============================================================
+			function applyContrastTheme(theme) {
+				var isHigh = (theme === 'high');
+				var root = document.documentElement;
+				var body = document.body;
+				if (isHigh) {
+					if (root) {
+						root.classList.add('wob', 'theme-high-contrast');
+						root.setAttribute('data-contrast', 'high');
+					}
+					if (body) {
+						body.classList.add('wob', 'theme-high-contrast');
+					}
+				} else {
+					if (root) {
+						root.classList.remove('wob', 'theme-high-contrast');
+						root.removeAttribute('data-contrast');
+					}
+					if (body) {
+						body.classList.remove('wob', 'theme-high-contrast');
+					}
+				}
+			}
+
+			function toggleDarkContrast() {
+				var isDark = document.body.classList.contains('wob') || document.body.classList.contains('theme-high-contrast') || (localStorage.getItem('svpnpa_contrast') === 'high');
+				var on = !isDark;
+				var theme = on ? 'high' : 'standard';
+				localStorage.setItem('svpnpa_contrast', theme);
+				localStorage.setItem('wob', on ? 'true' : 'false');
+				applyContrastTheme(theme);
+			}
+
+			(function() {
+				var savedContrast = 'standard';
+				try { savedContrast = localStorage.getItem('svpnpa_contrast') || (localStorage.getItem('wob') === 'true' ? 'high' : 'standard'); } catch(e) {}
+				if (savedContrast === 'high') {
+					applyContrastTheme('high');
+					if (document.readyState === 'loading') {
+						document.addEventListener('DOMContentLoaded', function() { applyContrastTheme('high'); });
+					}
+				}
+			})();
+		</script>
+		<script>
+		// Cards section: single-row horizontal carousel scroll
+		function scrollCardsCarousel(btn, dir) {
+			if (!btn) return;
+			var wrap = btn.closest('.cards-carousel-wrap');
+			if (!wrap) return;
+			var track = wrap.querySelector('.cards-carousel-track');
+			if (!track) return;
+			var amount = Math.max(track.clientWidth * 0.8, 240);
+			track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+		}
+
+		// Highlight the active menu item (and its parent chain) based on current URL
+		(function(){
+			function norm(p){
+				if(!p) return '';
+				return p.replace(/\/+$/,'').toLowerCase();
+			}
+			function initActiveMenu(){
+				var path = norm(window.location.pathname);
+				if (!path || path === '/' || path === '/home') return;
+				var links = document.querySelectorAll('#header nav.main .menu a[href]');
+				var match = null;
+				links.forEach(function(a){
+					var href = a.getAttribute('href') || '';
+					if (!href || href.charAt(0) === '#') return;
+					var p;
+					try { p = norm(new URL(a.href, window.location.origin).pathname); } catch(e){ return; }
+					if (!p || p === '/' || p === '/home') return;
+					if (p === path) match = a;
+				});
+				if (!match) return;
+				match.classList.add('active');
+				var li = match.closest('li');
+				while (li) {
+					li.classList.add('active');
+					var ul = li.parentElement;
+					li = (ul && ul.tagName === 'UL') ? ul.closest('li') : null;
+				}
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initActiveMenu);
+			} else {
+				initActiveMenu();
+			}
+		})();
+
+		// Mobile Navigation Toggle
+		function toggleMobileMenu(btn) {
+			var menu = document.getElementById('menu');
+			var burger = btn || document.getElementById('mobileMenuBurger') || document.querySelector('.burger');
+			if (!menu) return;
+			var isOpen = menu.classList.toggle('open');
+			if (burger) {
+				burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+				burger.classList.toggle('active', isOpen);
+				var icon = burger.querySelector('i');
+				if (icon) {
+					icon.className = isOpen ? 'fas fa-xmark' : 'fas fa-bars';
+				} else {
+					burger.textContent = isOpen ? '✕' : '☰';
+				}
+			}
+		}
+
+		// Close mobile menu when clicking outside
+		document.addEventListener('click', function(e) {
+			var menu = document.getElementById('menu');
+			var burger = document.getElementById('mobileMenuBurger') || document.querySelector('.burger');
+			if (menu && menu.classList.contains('open')) {
+				if (!menu.contains(e.target) && burger && !burger.contains(e.target)) {
+					menu.classList.remove('open');
+					if (burger) {
+						burger.setAttribute('aria-expanded', 'false');
+						burger.classList.remove('active');
+						var icon = burger.querySelector('i');
+						if (icon) icon.className = 'fas fa-bars';
+						else burger.textContent = '☰';
+					}
+				}
+			}
+		});
+
+		// Mobile Submenu Accordion Handler
+		(function() {
+			function initMobileSubmenus() {
+				var hasSubs = document.querySelectorAll('#menu .has-sub');
+				hasSubs.forEach(function(li) {
+					var link = li.querySelector(':scope > a');
+					if (!link) return;
+					link.addEventListener('click', function(e) {
+						if (window.innerWidth <= 991.98) {
+							var href = link.getAttribute('href') || '';
+							// Expand/collapse submenu on tap if placeholder or hash
+							if (href === '#' || href === '' || href.charAt(0) === '#') {
+								e.preventDefault();
+								e.stopPropagation();
+								var wasOpen = li.classList.contains('submenu-open');
+								var parentUl = li.parentElement;
+								if (parentUl) {
+									var openSiblings = parentUl.querySelectorAll(':scope > .has-sub.submenu-open');
+									openSiblings.forEach(function(sib) {
+										if (sib !== li) sib.classList.remove('submenu-open');
+									});
+								}
+								li.classList.toggle('submenu-open', !wasOpen);
+							}
+						}
+					});
+				});
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initMobileSubmenus);
+			} else {
+				initMobileSubmenus();
+			}
+		})();
+
+		// SVPNPA.html desktop menu scroll and fixed submenu positioning
+		(function(){
+		  document.documentElement.classList.add('js-menu');
+		  const desktop=()=>matchMedia('(min-width:992px)').matches;
+		  const gap=8;
+		  document.querySelectorAll('.menu>li').forEach(li=>{
+		    const dd=li.querySelector(':scope>.dropdown'); if(!dd)return;
+		    li.addEventListener('mouseenter',()=>{
+		      if(!desktop())return;
+		      dd.style.maxHeight=(innerHeight-dd.getBoundingClientRect().top-gap)+'px';
+		    });
+		  });
+		  document.querySelectorAll('.has-sub').forEach(li=>{
+		    const sub=li.querySelector(':scope>.sub'); if(!sub)return;
+		    const place=()=>{
+		      if(!desktop())return;
+		      const r=li.getBoundingClientRect();
+		      sub.style.maxHeight=(innerHeight-gap*2)+'px';
+		      const w=sub.offsetWidth,h=sub.offsetHeight;
+		      const left=(r.right+w+gap>innerWidth)?Math.max(gap,r.left-w):r.right;
+		      const top=Math.max(gap,Math.min(r.top,innerHeight-h-gap));
+		      sub.style.left=left+'px';sub.style.top=top+'px';sub.style.right='auto';
+		      sub.style.maxHeight=(innerHeight-top-gap)+'px';
+		    };
+		    li.addEventListener('mouseenter',place);
+		    li.addEventListener('focusin',place);
+		    if (li.parentElement) {
+		      li.parentElement.addEventListener('scroll',()=>{if(li.matches(':hover'))place()},{passive:true});
+		    }
+		  });
+		  addEventListener('resize',()=>document.querySelectorAll('.dropdown').forEach(d=>{
+		    if(!desktop()){d.style.maxHeight='';d.style.left='';d.style.top='';}
+		  }));
+		})();
+		</script>
+
+		<!-- DBIM 3.0 §5.4 - Guarantee a focusable skip target exists on every page -->
+		<script>
+		(function(){
+			function ensureMain(){
+				if (document.getElementById('main')) return;
+				var el = document.createElement('span');
+				el.id = 'main';
+				el.setAttribute('tabindex', '-1');
+				el.setAttribute('role', 'main');
+				var hdr = document.getElementById('header');
+				if (hdr && hdr.parentNode) {
+					hdr.parentNode.insertBefore(el, hdr.nextSibling);
+				} else if (document.body) {
+					document.body.insertBefore(el, document.body.firstChild);
+				}
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', ensureMain);
+			} else {
+				ensureMain();
+			}
+		})();
+		</script>
+
+		<!-- DBIM 3.0 §7.6.1 - Cookie consent banner (bottom of page; accept / reject / customise) -->
+		<div id="cookieConsent" class="cookie-consent" role="region" aria-label="Cookie consent" hidden>
+			<div class="cookie-inner">
+				<div class="cookie-text">
+					<strong>We use cookies</strong> to improve your experience and to personalise content. You may accept all cookies, reject non-essential cookies, or customise your preferences. Read our <a th:href="@{/Preview?page_id=36}">Website Policies</a>.
+				</div>
+				<div class="cookie-actions">
+					<button type="button" class="btn btn-primary" data-cookie-action="accept">Accept all</button>
+					<button type="button" class="btn btn-outline-primary" data-cookie-action="reject">Reject non-essential</button>
+					<button type="button" class="btn btn-outline-primary" data-cookie-action="customise" aria-expanded="false" aria-controls="cookiePrefs">Customise</button>
+				</div>
+				<div class="cookie-prefs" id="cookiePrefs">
+					<label><input type="checkbox" id="cookiePrefEssential" checked disabled> Essential (always on)</label>
+					<label><input type="checkbox" id="cookiePrefAnalytics" checked> Analytics</label>
+					<label><input type="checkbox" id="cookiePrefPersonalisation" checked> Personalisation</label>
+					<button type="button" class="btn btn-primary" data-cookie-action="save">Save preferences</button>
+				</div>
 			</div>
 		</div>
 		<script>
-			function langSelected(el, page_id) {
-				var language = el;
-				if (language == 'E') {
-					language = 'H';
-				} else {
-					language = 'E';
+		(function(){
+			var KEY = 'svpnpa_cookie_consent';
+			function readConsent(){
+				try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e){ return null; }
+			}
+			function writeConsent(obj){
+				try { localStorage.setItem(KEY, JSON.stringify(obj)); } catch(e) {}
+				try { document.cookie = 'cookieConsent=' + encodeURIComponent(obj.status) + ';path=/;max-age=31536000;SameSite=Lax'; } catch(e) {}
+			}
+			function bannerEl(){ return document.getElementById('cookieConsent'); }
+			function hide(){ var b = bannerEl(); if (b) { b.hidden = true; } }
+			function show(){ var b = bannerEl(); if (b) { b.hidden = false; } }
+
+			window.svpnpaCookieConsent = readConsent;
+			window.openCookieConsent = function(){
+				var saved = readConsent();
+				var prefs = document.getElementById('cookiePrefs');
+				if (saved) {
+					var a = document.getElementById('cookiePrefAnalytics');
+					var p = document.getElementById('cookiePrefPersonalisation');
+					if (a && typeof saved.analytics === 'boolean') a.checked = saved.analytics;
+					if (p && typeof saved.personalisation === 'boolean') p.checked = saved.personalisation;
 				}
-				$.ajax({
-					type : "GET",
-					url : "/updateCookie?langSelected=" + language,
-					dataType : 'text',
-					contentType : "application/json",
-					success : function(data) {
-						var newUrl = 'http://localhost:8089/Preview?page_id='
-								+ page_id;
-						//var newUrl = 'https://www.svpnpa.gov.in/Preview?page_id='+page_id;
-						window.location.href = newUrl;
-						return false;
-						location.reload();
-						//window.location = "//";
+				if (prefs) prefs.classList.add('open');
+				show();
+			};
+
+			function init(){
+				var banner = bannerEl();
+				if (!banner) return;
+				if (!readConsent()) show();
+				banner.addEventListener('click', function(ev){
+					var btn = ev.target.closest('[data-cookie-action]');
+					if (!btn) return;
+					var action = btn.getAttribute('data-cookie-action');
+					var prefs = document.getElementById('cookiePrefs');
+					if (action === 'accept') {
+						writeConsent({status:'accepted', analytics:true, personalisation:true, date:new Date().toISOString()});
+						hide();
+					} else if (action === 'reject') {
+						writeConsent({status:'rejected', analytics:false, personalisation:false, date:new Date().toISOString()});
+						hide();
+					} else if (action === 'customise') {
+						if (prefs) prefs.classList.toggle('open');
+						btn.setAttribute('aria-expanded', prefs && prefs.classList.contains('open') ? 'true' : 'false');
+					} else if (action === 'save') {
+						var a = document.getElementById('cookiePrefAnalytics');
+						var p = document.getElementById('cookiePrefPersonalisation');
+						writeConsent({status:'customised', analytics: !!(a && a.checked), personalisation: !!(p && p.checked), date:new Date().toISOString()});
+						hide();
 					}
 				});
 			}
-		</script>
-		<script>
-			function chooseStyle(styletitle, days) { //Interface function to switch style sheets plus save "title" attr of selected stylesheet to cookie
-				alert(styletitle);
-				if (document.getElementById) {
-					setStylesheet(styletitle)
-					setCookie("mysheet", styletitle, days)
-				}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', init);
+			} else {
+				init();
 			}
-		</script>
-		<script>
-			$('#layoutSwitch').change(function() {
-				$('#fontSize').toggleClass("bodyLayout");
-			});
-			localStorage.layoutSwitch === 'true' ? $('#layoutSwitch').prop(
-					'checked', true).trigger("change") : '';
+		})();
 		</script>
 	</header>
 

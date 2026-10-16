@@ -1,14 +1,20 @@
 @charset "ISO-8859-1";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
 
 *,
+*::before,
+*::after,
 html,
 body,
 input,
 button,
 select,
 textarea,
-optgroup {
-	font-family: 'Noto Sans' !important;
+optgroup,
+p, h1, h2, h3, h4, h5, h6,
+span, a, div, table, th, td, li, ul, ol,
+form, label, legend, caption {
+	font-family: 'Noto Sans', sans-serif !important;
 }
 
 /* Explicitly restore Font Awesome and Bootstrap Icons */
@@ -101,24 +107,20 @@ optgroup {
 	text-align: center;
 }
 
-@
-keyframes slideInFromLeft { 0% {
+/* SlideInFromLeft animation removed to keep header stable without animation */
+/*
+@keyframes slideInFromLeft { 0% {
 	transform: translateX(-100%);
 }
 
-100
-%
-{
-transform
-:
-translateX(
-0
-);
+	100%{
+		transform:translateX(0);
+	}
 }
-}
-header {
-	animation: 1s ease-out 0s 1 slideInFromLeft;
-	padding-bottom: 30px;
+*/
+header, #header {
+	animation: none !important;
+	transform: none !important;
 }
 
 .fadein {
@@ -213,27 +215,268 @@ to {
 	top: -2.5vmin;
 }
 
-.carousel-inner>.carousel-item>img {
-	max-width: 80%;
-	height: 350px;
-	display: block;
-	margin: 0 auto;
-}
-/* Custom styles for carousel control buttons */
-/* .frame .carousel-control-prev, .frame .carousel-control-next {
-	width: 40px;
-	height: 100%;
-	font-size: 24px;
-	background-color: #333;
-	border: none;
-	color: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background-color 0.3s ease;
+/* ==========================================================================
+   MHA Government Portal Carousel Styles (SVPNPA_mha.htm)
+   ========================================================================== */
+@import url('carousel.css');
+
+.carousel {
+	position: relative;
+	background: var(--sttl-theme-150202, #150202);
+	border-radius: 4px;
+	overflow: hidden;
 }
 
-.frame.carousel-control-prev:hover, .frame .carousel-control-next:hover
-	{
-	background-color: #555;
-} */
+.carousel-inner {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	padding: 0 !important;
+}
+
+.carousel-inner > .carousel-item,
+.carousel .carousel-item {
+	text-align: center;
+	height: auto !important;
+	min-height: 280px;
+}
+
+.carousel-inner > .carousel-item > img,
+.carousel .carousel-item img {
+	width: 100% !important;
+	max-width: 100% !important;
+	height: auto !important;
+	max-height: 520px !important;
+	min-height: 280px !important;
+	object-fit: cover !important;
+	display: block !important;
+	margin: 0 auto !important;
+	border-radius: 4px;
+}
+
+/* MHA Styled Navigation Controls */
+.carousel-control-prev,
+.carousel-control-next {
+	width: 48px !important;
+	height: 48px !important;
+	top: 50% !important;
+	transform: translateY(-50%) !important;
+	bottom: auto !important;
+	background: transparent !important;
+	border: none !important;
+	opacity: 1 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	z-index: 10 !important;
+	cursor: pointer !important;
+	padding: 0 !important;
+}
+
+.carousel-control-prev {
+	left: 25px !important;
+}
+
+.carousel-control-next {
+	right: 25px !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon,
+.carousel-dark .carousel-control-prev-icon,
+.carousel-dark .carousel-control-next-icon {
+	width: 38px !important;
+	height: 38px !important;
+	background-color: var(--sttl-theme-black, #000000) !important;
+	border-radius: 4px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45) !important;
+	transition: background-color 0.3s ease, transform 0.2s ease !important;
+	filter: none !important;
+	background-size: 55% 55% !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-dark .carousel-control-prev-icon {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3E%3Cpath fill-rule='evenodd' d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E") !important;
+}
+
+.carousel-control-next-icon,
+.carousel-dark .carousel-control-next-icon {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon,
+.carousel-dark .carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-dark .carousel-control-next:hover .carousel-control-next-icon {
+	background-color: var(--sttl-theme-blue, #162f6a) !important;
+	transform: scale(1.08) !important;
+}
+
+/* Indicators Harmonization */
+.carousel-indicators {
+	position: absolute !important;
+	right: 170px !important;
+	left: auto !important;
+	bottom: 18px !important;
+	margin: 0 !important;
+	background: var(--sttl-theme-lblue, #d2dfff) !important;
+	border-radius: 8px !important;
+	padding: 4px 8px !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 6px !important;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) !important;
+	z-index: 9 !important;
+}
+
+.carousel-indicators [data-bs-target],
+.carousel-indicators button,
+.carousel-indicators li {
+	box-sizing: content-box !important;
+	width: 10px !important;
+	height: 10px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border-radius: 50% !important;
+	background-color: var(--sttl-theme-5279d7, #5279d7) !important;
+	border: none !important;
+	opacity: 0.85 !important;
+	transition: all 0.3s ease !important;
+	cursor: pointer !important;
+	text-indent: -9999px !important;
+}
+
+.carousel-indicators .active,
+.carousel-indicators button.active,
+.carousel-indicators li.active {
+	width: 16px !important;
+	height: 10px !important;
+	border-radius: 3px !important;
+	background-color: var(--sttl-theme-blue, #162f6a) !important;
+	opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+	.carousel-inner > .carousel-item > img,
+	.carousel .carousel-item img {
+		max-height: 260px !important;
+		min-height: 180px !important;
+	}
+	.carousel-control-prev {
+		left: 8px !important;
+	}
+	.carousel-control-next {
+		right: 8px !important;
+	}
+	.carousel-control-prev,
+	.carousel-control-next {
+		width: 36px !important;
+		height: 36px !important;
+	}
+	.carousel-control-prev-icon,
+	.carousel-control-next-icon {
+		width: 30px !important;
+		height: 30px !important;
+	}
+	.carousel-indicators {
+		right: 15px !important;
+		bottom: 12px !important;
+	}
+}
+
+/* ==========================================================================
+   Header Logo & Emblem Protection (Strictly Preserve 75px x 100px)
+   ========================================================================== */
+#header .logo,
+#header .logoMain {
+	display: inline-flex !important;
+	align-items: center !important;
+}
+
+#header .logo img,
+#header .logo .national_emblem,
+#header .logo .academy_logo,
+#header .national_emblem,
+#header .academy_logo {
+	width: 75px !important;
+	height: 100px !important;
+	max-width: 75px !important;
+	max-height: 100px !important;
+	min-width: 75px !important;
+	min-height: 100px !important;
+	flex-shrink: 0 !important;
+	object-fit: contain !important;
+	display: inline-block !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* ==========================================================================
+   Paragraph & Content Responsive Images (Fit Container & Prevent Overflow)
+   ========================================================================== */
+
+/* CKEditor 5 Content & Paragraph Wrappers */
+.ck-content img,
+.paragraph-content-wrapper img,
+.templateBox img,
+.tab-pane img,
+.card-body img,
+.col-12:not(#header *) img,
+.col-md-12:not(#header *) img,
+.col-lg-12:not(#header *) img,
+.col-6:not(#header *) img,
+.col-md-6:not(#header *) img,
+.col-4:not(#header *) img,
+.col-md-4:not(#header *) img,
+.col-8:not(#header *) img,
+.col-md-8:not(#header *) img,
+.col-3:not(#header *) img,
+.col-9:not(#header *) img,
+.fadein [class*="col-"] img {
+	max-width: 100% !important;
+	height: auto !important;
+	object-fit: contain;
+}
+
+/* Prevent CKEditor figure wrappers and resized images from overflowing */
+.ck-content figure,
+.ck-content .image,
+.ck-content figure.image,
+.ck-content figure.image_resized,
+.paragraph-content-wrapper figure,
+.templateBox figure {
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+.ck-content figure img,
+.ck-content .image img,
+.paragraph-content-wrapper figure img,
+.templateBox figure img {
+	max-width: 100% !important;
+	height: auto !important;
+	display: block;
+	box-sizing: border-box !important;
+}
+
+/* Override fixed inline width styles that could cause container overflow */
+.templateBox figure[style*="width"],
+.templateBox img[style*="width"],
+.card-body figure[style*="width"],
+.card-body img[style*="width"],
+.paragraph-content-wrapper figure[style*="width"],
+.paragraph-content-wrapper img[style*="width"] {
+	max-width: 100% !important;
+}
+
+.templateBox,
+.paragraph-content-wrapper {
+	overflow-wrap: break-word;
+	word-break: normal;
+}

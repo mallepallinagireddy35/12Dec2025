@@ -92,6 +92,16 @@ public class SVPNPAService {
 	@Autowired
 	private JdbcTemplate JdbcRead;
 
+	@jakarta.annotation.PostConstruct
+	public void initObjectCategories() {
+		try {
+			dbutils.insertOrUpdate("INSERT INTO object_categories (category_id, category_name) SELECT 11, 'Cards' WHERE NOT EXISTS (SELECT 1 FROM object_categories WHERE category_id = 11)", null);
+			dbutils.insertOrUpdate("INSERT INTO object_categories (category_id, category_name) SELECT 12, 'NavTabs' WHERE NOT EXISTS (SELECT 1 FROM object_categories WHERE category_id = 12)", null);
+		} catch (Exception e) {
+			logger.warn("Could not verify object_categories: " + e.getMessage());
+		}
+	}
+
 	public String LoginValidation(String username, String password, HttpServletResponse response) {
 		System.out.println("LoginValidation====");
 		if (username.equals("NPA") && password.equals("Test@123")) {
@@ -338,6 +348,10 @@ public class SVPNPAService {
 			model.addAttribute("marquee", String.valueOf(object.get(0).get("properties")));
 			model.addAttribute("styles", String.valueOf(object.get(0).get("styles")));
 			model.addAttribute("classes", String.valueOf(object.get(0).get("classes")));
+			model.addAttribute("object_meta", String.valueOf(object.get(0).get("object_meta")));
+			if (object.size() > 1 && object.get(1) != null) {
+				model.addAttribute("object_meta_hi", String.valueOf(object.get(1).get("object_meta")));
+			}
 			this.page_id = object_id;	
 			String template_name = String.valueOf(object.get(0).get("object_category"));	
 			
@@ -436,72 +450,56 @@ public class SVPNPAService {
 				data = data.replaceAll("mvnr", "'");
 				String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 				String[] tempArray, expArray = null;
-				String links = String.valueOf(object.get(0).get("hyperlinks"));
-				String exp = String.valueOf(object.get(0).get("expiration"));
+				String links = (object.get(0).get("hyperlinks") != null) ? String.valueOf(object.get(0).get("hyperlinks")) : null;
+				String exp = (object.get(0).get("expiration") != null) ? String.valueOf(object.get(0).get("expiration")) : null;
 				String[] userArrayLinks = null;
-				if (links != null)
-					userArrayLinks = gson.fromJson(links.substring(1, links.length() - 1), String[].class);
-				if (exp != null)
-					expArray = gson.fromJson(exp.substring(1, exp.length() - 1), String[].class);				
-				String[] tempArrayLinks = new String[userArray.length];
-//				String[] tempExpLinks = new String[expArray.length];
-				String[] tempExpLinks = new String[userArray.length];
-				if (newRow != null) {
-					tempArray = new String[Integer.parseInt(newRow)];
-					tempArrayLinks = new String[Integer.parseInt(newRow)];
-					tempExpLinks = new String[Integer.parseInt(newRow)];
-					for (int i = 0; i < userArray.length; i++) {
+				if (links != null && !links.equals("null") && links.trim().startsWith("[")) {
+					try {
+						userArrayLinks = gson.fromJson(links.substring(1, links.length() - 1), String[].class);
+					} catch (Exception e) {}
+				}
+				if (exp != null && !exp.equals("null") && exp.trim().startsWith("[")) {
+					try {
+						expArray = gson.fromJson(exp.substring(1, exp.length() - 1), String[].class);
+					} catch (Exception e) {}
+				}
+
+				int targetLen = (newRow != null) ? Integer.parseInt(newRow) : userArray.length;
+				tempArray = new String[targetLen];
+				String[] tempArrayLinks = new String[targetLen];
+				String[] tempExpLinks = new String[targetLen];
+
+				for (int i = 0; i < targetLen; i++) {
+					tempArray[i] = "";
+					if (i < userArray.length && userArray[i] != null) {
 						try {
-						tempArray[i] = new String(URLDecoder.decode(userArray[i], StandardCharsets.UTF_8.name()));
-						}catch(Exception e) {
-						tempArray[i] = "";	
-						}
-						try {
-						if (links != null) {
-							tempArrayLinks[i] = new String(
-									URLDecoder.decode(userArrayLinks[i], StandardCharsets.UTF_8.name()));
-								}
-						}catch(Exception e) {
-							tempArrayLinks[i] = null;
-						}
-						try {
-						if (exp != null) {
-							tempExpLinks[i] = new String(URLDecoder.decode(expArray[i], StandardCharsets.UTF_8.name()));
-						}
-						}catch(Exception e) {
-							tempExpLinks[i] = null;
+							tempArray[i] = URLDecoder.decode(userArray[i], StandardCharsets.UTF_8.name());
+						} catch (Exception e) {
+							tempArray[i] = userArray[i];
 						}
 					}
-				} else {
-					tempArray = new String[userArray.length];
-					if (links != null)
-						tempArrayLinks = new String[userArrayLinks.length];
-					for (int i = 0; i < userArray.length; i++) {
+					tempArrayLinks[i] = "#";
+					if (userArrayLinks != null && i < userArrayLinks.length && userArrayLinks[i] != null && !userArrayLinks[i].trim().isEmpty()) {
 						try {
-						tempArray[i] = new String(URLDecoder.decode(userArray[i], StandardCharsets.UTF_8.name()));
-						}catch(Exception e) {							
-							tempArray[i] = "";	
+							tempArrayLinks[i] = URLDecoder.decode(userArrayLinks[i], StandardCharsets.UTF_8.name());
+						} catch (Exception e) {
+							tempArrayLinks[i] = userArrayLinks[i];
 						}
-						try {
-						if (links != null) {
-							tempArrayLinks[i] = new String(
-									URLDecoder.decode(userArrayLinks[i], StandardCharsets.UTF_8.name()));							
-						}
-					}catch(Exception e) {
-						tempArrayLinks[i] = null;
 					}
+					tempExpLinks[i] = "";
+					if (expArray != null && i < expArray.length && expArray[i] != null && !expArray[i].trim().isEmpty()) {
 						try {
-						if (exp != null && expArray[i] != null) {								
-							tempExpLinks[i] = new String(URLDecoder.decode(expArray[i], StandardCharsets.UTF_8.name()));							
-						}
-						}catch(Exception e) {
-							tempExpLinks[i] = null;
+							tempExpLinks[i] = URLDecoder.decode(expArray[i], StandardCharsets.UTF_8.name());
+						} catch (Exception e) {
+							tempExpLinks[i] = expArray[i];
 						}
 					}
 				}
+
 				model.addAttribute("link_items", tempArrayLinks);
 				model.addAttribute("list_items", tempArray);
 				model.addAttribute("exp_items", tempExpLinks);
+				model.addAttribute("rowCount", targetLen);
 				model.addAttribute("object_id", object_id);
 				model.addAttribute("type", template_name);
 				model.addAttribute("object_title", (String) object.get(0).get("object_title"));
@@ -509,38 +507,49 @@ public class SVPNPAService {
 				model.addAttribute("alternate_text", (String) object.get(0).get("alt_text"));
 				model.addAttribute("description", (String) object.get(0).get("description"));
 				model.addAttribute("help_text", (String) object.get(0).get("help_text"));
-				if (object.get(1) != null) {
-					data = String.valueOf(object.get(1).get("data"));
-					data = data.replaceAll("mvnr", "'");
+
+				String[] tempArray_hi = new String[targetLen];
+				Arrays.fill(tempArray_hi, "");
+				String titleHi = "";
+				String keywordsHi = "";
+				String altTextHi = "";
+				String descHi = "";
+				String helpTextHi = "";
+
+				if (object.size() > 1 && object.get(1) != null) {
+					String data_hi = String.valueOf(object.get(1).get("data"));
 					this.page_id = object_id;
-					try {
-					userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
-					}catch(Exception e) {
-					}
-					System.out.println("userArray===="+userArray.toString());
-
-					String[] tempArray_hi = new String[userArray.length];
-					System.out.println("tempArray_hi===="+tempArray_hi.toString());
-
-					for (int i = 0; i < userArray.length; i++) {
-						if (userArray[i] != null) {
-							try {
-							tempArray_hi[i] = new String(URLDecoder.decode(userArray[i], StandardCharsets.UTF_8.name()));
-							System.out.println("tempArray_hi==="+i+"===="+tempArray_hi[i]);
-							}catch(Exception e) {
-								//tempArray_hi[i] = "";	
+					if (data_hi != null && !data_hi.equals("null") && data_hi.trim().startsWith("[")) {
+						data_hi = data_hi.replaceAll("mvnr", "'");
+						String[] userArray_hi = null;
+						try {
+							userArray_hi = gson.fromJson(data_hi.substring(1, data_hi.length() - 1), String[].class);
+						} catch (Exception e) {}
+						if (userArray_hi != null) {
+							for (int i = 0; i < targetLen; i++) {
+								if (i < userArray_hi.length && userArray_hi[i] != null && !userArray_hi[i].trim().isEmpty()) {
+									try {
+										tempArray_hi[i] = URLDecoder.decode(userArray_hi[i], StandardCharsets.UTF_8.name());
+									} catch (Exception e) {
+										tempArray_hi[i] = userArray_hi[i];
+									}
+								}
 							}
-						}else {
-							tempArray_hi[i] = "";
-					    }
+						}
 					}
-					model.addAttribute("list_items_hi", tempArray_hi);
-					model.addAttribute("object_title_hi", (String) object.get(1).get("object_title"));
-					model.addAttribute("keywords_hi", (String) object.get(1).get("keywords"));
-					model.addAttribute("alternate_text_hi", (String) object.get(1).get("alt_text"));
-					model.addAttribute("description_hi", (String) object.get(1).get("description"));
-					model.addAttribute("help_text_hi", (String) object.get(1).get("help_text"));
+					titleHi = object.get(1).get("object_title") != null ? String.valueOf(object.get(1).get("object_title")) : "";
+					keywordsHi = object.get(1).get("keywords") != null ? String.valueOf(object.get(1).get("keywords")) : "";
+					altTextHi = object.get(1).get("alt_text") != null ? String.valueOf(object.get(1).get("alt_text")) : "";
+					descHi = object.get(1).get("description") != null ? String.valueOf(object.get(1).get("description")) : "";
+					helpTextHi = object.get(1).get("help_text") != null ? String.valueOf(object.get(1).get("help_text")) : "";
 				}
+				model.addAttribute("list_items_hi", tempArray_hi);
+				model.addAttribute("object_title_hi", titleHi);
+				model.addAttribute("keywords_hi", keywordsHi);
+				model.addAttribute("alternate_text_hi", altTextHi);
+				model.addAttribute("description_hi", descHi);
+				model.addAttribute("help_text_hi", helpTextHi);
+
 				logger.info("ListDesigner page=====3=============");
 				return "ListDesigner";
 			} else if (template_name.equals("6")) {
@@ -626,6 +635,57 @@ public class SVPNPAService {
 				model.addAttribute("object_title", (String) object.get(0).get("object_title"));
 				logger.info("GalleryDesigner page=====7=====Vedio========");
 				return "GalleryDesigner";
+			} else if (template_name.equals("11")) {
+				data = data.replaceAll("mvnr", "'");
+				model.addAttribute("object_id", object_id);
+				model.addAttribute("type", template_name);
+				model.addAttribute("object_title", (String) object.get(0).get("object_title"));
+				model.addAttribute("keywords", (String) object.get(0).get("keywords"));
+				model.addAttribute("alternate_text", (String) object.get(0).get("alt_text"));
+				model.addAttribute("description", (String) object.get(0).get("description"));
+				model.addAttribute("help_text", (String) object.get(0).get("help_text"));
+				model.addAttribute("styles", (String) object.get(0).get("styles"));
+				model.addAttribute("classes", (String) object.get(0).get("classes"));
+				model.addAttribute("cards_json_en", data);
+
+				if (object.size() > 1 && object.get(1) != null) {
+					String data_hi = String.valueOf(object.get(1).get("data"));
+					data_hi = data_hi.replaceAll("mvnr", "'");
+					model.addAttribute("object_title_hi", (String) object.get(1).get("object_title"));
+					model.addAttribute("keywords_hi", (String) object.get(1).get("keywords"));
+					model.addAttribute("alternate_text_hi", (String) object.get(1).get("alt_text"));
+					model.addAttribute("description_hi", (String) object.get(1).get("description"));
+					model.addAttribute("help_text_hi", (String) object.get(1).get("help_text"));
+					model.addAttribute("cards_json_hi", data_hi);
+				}
+				logger.info("CardsDesigner page=====11=====Cards========");
+				return "CardsDesigner";
+			} else if (template_name.equals("12")) {
+				data = String.valueOf(object.get(0).get("data"));
+				data = data.replaceAll("mvnr", "'");
+				model.addAttribute("object_id", object_id);
+				model.addAttribute("type", template_name);
+				model.addAttribute("object_title", (String) object.get(0).get("object_title"));
+				model.addAttribute("keywords", (String) object.get(0).get("keywords"));
+				model.addAttribute("alternate_text", (String) object.get(0).get("alt_text"));
+				model.addAttribute("description", (String) object.get(0).get("description"));
+				model.addAttribute("help_text", (String) object.get(0).get("help_text"));
+				model.addAttribute("styles", (String) object.get(0).get("styles"));
+				model.addAttribute("classes", (String) object.get(0).get("classes"));
+				model.addAttribute("navtabs_json_en", data);
+
+				if (object.size() > 1 && object.get(1) != null) {
+					String data_hi = String.valueOf(object.get(1).get("data"));
+					data_hi = data_hi.replaceAll("mvnr", "'");
+					model.addAttribute("object_title_hi", (String) object.get(1).get("object_title"));
+					model.addAttribute("keywords_hi", (String) object.get(1).get("keywords"));
+					model.addAttribute("alternate_text_hi", (String) object.get(1).get("alt_text"));
+					model.addAttribute("description_hi", (String) object.get(1).get("description"));
+					model.addAttribute("help_text_hi", (String) object.get(1).get("help_text"));
+					model.addAttribute("navtabs_json_hi", data_hi);
+				}
+				logger.info("NavTabsDesigner page=====12=====NavTabs========");
+				return "NavTabsDesigner";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -643,7 +703,7 @@ public class SVPNPAService {
 					new Object[] { typeMap.get("value"), typeMap.get("page_id"),
 							((String) typeMap.get("id")).substring(1) });
 			ArrayList<HashMap<String, Object>> objects = dbutils.getListMap(
-					"select object_category,data,properties,object_title,hyperlinks,expiration,styles,classes from objects where object_id=?",
+					"select object_category,data,properties,object_title,hyperlinks,expiration,styles,classes,object_meta from objects where object_id=?",
 					new Object[] { Integer.parseInt((String) typeMap.get("value")) });
 			Gson gson = new Gson();
 			int i = 0;
@@ -671,31 +731,26 @@ public class SVPNPAService {
 						expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 					}
 					String property[] = (String.valueOf(object.get("properties")).toString().split(","));
-					if (property.length > 1) {
-						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
-									+ (String) object.get("object_title")
-									+ "</h5>                  <div class=\"card-body border border-2 border-success rounded-5 important_links\">\r\n"
-									+ "<marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>"
-									+ parseListData(userArray, linksArray, expArray, property[0],
-											String.valueOf(object.get("styles")),
-											String.valueOf(object.get("classes")) + "</marquee>\r\n" + "</div>"));
-						else
-							marquee = new StringBuilder(new StringBuffer(
-									"<h5  class='text-primary fw-bold text-center'>")
-									.append((String) object.get("object_title"))
-									.append("</h5>                  <div class=\"card-body border border-2 border-success rounded-5 important_links\">\r\n"
-											+ ""))
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											(String) object.get("styles"), (String) object.get("classes"))
-											.append("\r\n" + "                  </div>"));
-					} else
+					if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 						marquee = new StringBuilder(
-								"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										String.valueOf(object.get("styles")), String.valueOf(object.get("classes"))))
-								.append("\r\n" + "                  </div>");
+								"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+								+ "                     <div class=\"latest-update\">"
+								+ String.valueOf(object.get("object_title")) + "</div>\r\n"
+								+ "                     <div class=\"mt-news newsof-widht\">"
+								+ parseListData(userArray, linksArray, expArray, property[0],
+										String.valueOf(object.get("styles")),
+										String.valueOf(object.get("classes")))
+								+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+								+ "                     <div class=\"mt-controls\">\r\n"
+								+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+								+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+								+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+								+ "                     </div>");
+					} else {
+						marquee = renderModernListCard(object, userArray, linksArray, expArray,
+								(property.length > 0 ? property[0] : "ul"), String.valueOf(object.get("styles")),
+								String.valueOf(object.get("classes")), lang);
+					}
 					output[i] = marquee;
 				} else if (type.equals("6") || type.equals("10")) {
 					String data;
@@ -730,6 +785,10 @@ public class SVPNPAService {
 					data = data.replace("mvnr", "'");
 					String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 					output[i] = parseDocs(userArray, i);
+				} else if (type.equals("11")) {
+					output[i] = parseCardsData(object);
+				} else if (type.equals("12")) {
+					output[i] = parseNavTabsData(object);
 				}
 				i++;
 				viewObject = output[i];
@@ -775,7 +834,7 @@ public class SVPNPAService {
 			StringBuilder viewObject = new StringBuilder(template_data);
 			output = new StringBuilder[count];
 			ArrayList<HashMap<String, Object>> objects = dbutils.getListMap(
-					"select object_category,data,o.properties,o.object_title,o.hyperlinks,o.expiration,o.styles,o.classes from pages p,objects o where p.object_id=o.object_id and p.page_id=? and o.lang=? order by order_no",
+					"select object_category,data,o.properties,o.object_title,o.hyperlinks,o.expiration,o.styles,o.classes,o.object_meta from pages p,objects o where p.object_id=o.object_id and p.page_id=? and o.lang=? order by order_no",
 					new Object[] { page_id, lang });
 			Gson gson = new Gson();
 			int i = 0;
@@ -803,37 +862,26 @@ public class SVPNPAService {
 						expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 					}
 					String property[] = ((String) map.get("properties")).toString().split(",");
-					if (property.length > 1) {
-						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
-									+ (String) map.get("object_title")
-									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
-											(String) map.get("styles"), (String) map.get("classes"))
-									+ "</marquee>");
-						else if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
-									+ (String) map.get("object_title")
-									+ "</h5><div class=\"card-body border border-2 border-success rounded-5 important_links\"><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>"
-									+ parseListData(userArray, linksArray, expArray, property[0],
-											(String) map.get("styles"), (String) map.get("classes"))
-									+ "</marquee>").append("" + "                  </div>");
-						else
-							marquee = new StringBuilder(new StringBuffer(
-									"<h5  class='text-primary fw-bold text-center'>")
-									.append((String) map.get("object_title"))
-									.append("</h5><div class=\"card-body border border-2 border-success rounded-5 important_links\">"))
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											(String) map.get("styles"), (String) map.get("classes")))
-									.append("\r\n" + "                  </div>");
-						;
-					} else
+					if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 						marquee = new StringBuilder(
-								"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))))
-								.append("\r\n" + "                  </div>");
+								"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+								+ "                     <div class=\"latest-update\">"
+								+ String.valueOf(map.get("object_title")) + "</div>\r\n"
+								+ "                     <div class=\"mt-news newsof-widht\">"
+								+ parseListData(userArray, linksArray, expArray, property[0],
+										String.valueOf(map.get("styles")),
+										String.valueOf(map.get("classes")))
+								+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+								+ "                     <div class=\"mt-controls\">\r\n"
+								+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+								+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+								+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+								+ "                     </div>");
+					} else {
+						marquee = renderModernListCard(map, userArray, linksArray, expArray,
+								(property.length > 0 ? property[0] : "ul"), String.valueOf(map.get("styles")),
+								String.valueOf(map.get("classes")), lang);
+					}
 					output[i] = marquee;
 				} else if (type.equals("6") || type.equals("10")) {
 					String data;
@@ -868,6 +916,10 @@ public class SVPNPAService {
 					data = data.replace("mvnr", "'");
 					String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 					output[i] = parseDocs(userArray, i);
+				} else if (type.equals("11")) {
+					output[i] = parseCardsData(map);
+				} else if (type.equals("12")) {
+					output[i] = parseNavTabsData(map);
 				}
 				int index = viewObject.indexOf("@object");
 				viewObject = new StringBuilder(viewObject.substring(0, index) + output[i]
@@ -913,32 +965,26 @@ public class SVPNPAService {
 					expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 				}
 				String property[] = ((String) map.get("properties")).toString().split(",");
-				if (property.length > 1) {
-					if (property[1].equals("marquee"))
-						marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
-								+ (String) map.get("object_title")
-								+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-								+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
-										(String) map.get("styles"), (String) map.get("classes"))
-								+ "</marquee>");
-					else if (property[1].equals("marquee"))
-						marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
-								+ (String) map.get("object_title")
-								+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-								+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
-										(String) map.get("styles"), (String) map.get("classes"))
-								+ "</marquee>");
-					else
-						marquee = new StringBuilder(new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
-								.append((String) map.get("object_title")).append("</h5>"))
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										(String) map.get("styles"), (String) map.get("classes")));
-				} else
+				if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 					marquee = new StringBuilder(
-							"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-							.append(parseListData(userArray, linksArray, expArray, property[0],
-									String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))))
-							.append("\r\n" + "                  </div>");
+							"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+							+ "                     <div class=\"latest-update\">"
+							+ String.valueOf(map.get("object_title")) + "</div>\r\n"
+							+ "                     <div class=\"mt-news newsof-widht\">"
+							+ parseListData(userArray, linksArray, expArray, property[0],
+									String.valueOf(map.get("styles")),
+									String.valueOf(map.get("classes")))
+							+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+							+ "                     <div class=\"mt-controls\">\r\n"
+							+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+							+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+							+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+							+ "                     </div>");
+				} else {
+					marquee = renderModernListCard(map, userArray, linksArray, expArray,
+							(property.length > 0 ? property[0] : "ul"), String.valueOf(map.get("styles")),
+							String.valueOf(map.get("classes")), lang);
+				}
 				return marquee;
 			} else if (type.equals("6") || type.equals("10")) {
 				String data;
@@ -973,6 +1019,10 @@ public class SVPNPAService {
 				data = data.replace("mvnr", "'");
 				String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 				return parseDocs(userArray, 0);
+			} else if (type.equals("11")) {
+				return parseCardsData(map);
+			} else if (type.equals("12")) {
+				return parseNavTabsData(map);
 			}
 		} catch (Exception e) {
 			logger.error("Exception in SVPNPAService::object_retrieval::" + e.getMessage());
@@ -1021,34 +1071,26 @@ public class SVPNPAService {
 						expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 					}
 					String property[] = (String.valueOf(map.get("properties"))).toString().split(",");
-					if (property.length > 1) {
-						if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
-									+ String.valueOf(map.get("object_title"))
-									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>"
-									+ parseListData(userArray, linksArray, expArray, property[0],
-											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
-									+ "</marquee>");
-						else if (property[1].equals("marquee"))
-							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
-									+ String.valueOf(map.get("object_title"))
-									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>"
-									+ parseListData(userArray, linksArray, expArray, property[0],
-											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
-									+ "</marquee>");
-						else
-							marquee = new StringBuilder(new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
-									.append(String.valueOf(map.get("object_title"))).append("</h5>"))
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))));
-					} else
+					if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 						marquee = new StringBuilder(
-								"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))))
-								.append("\r\n" + "                  </div>");
+								"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+								+ "                     <div class=\"latest-update\">"
+								+ String.valueOf(map.get("object_title")) + "</div>\r\n"
+								+ "                     <div class=\"mt-news newsof-widht\">"
+								+ parseListData(userArray, linksArray, expArray, property[0],
+										String.valueOf(map.get("styles")),
+										String.valueOf(map.get("classes")))
+								+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+								+ "                     <div class=\"mt-controls\">\r\n"
+								+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+								+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+								+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+								+ "                     </div>");
+					} else {
+						marquee = renderModernListCard(map, userArray, linksArray, expArray,
+								(property.length > 0 ? property[0] : "ul"), String.valueOf(map.get("styles")),
+								String.valueOf(map.get("classes")), lang);
+					}
 					output[i] = marquee;
 				} else if (type.equals("6") || type.equals("10")) {
 					String data;
@@ -1083,6 +1125,10 @@ public class SVPNPAService {
 					data = data.replace("mvnr", "'");
 					String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 					output[i] = parseDocs(userArray, i);
+				} else if (type.equals("11")) {
+					output[i] = parseCardsData(map);
+				} else if (type.equals("12")) {
+					output[i] = parseNavTabsData(map);
 				}
 
 				int index = viewObject.indexOf("@object");
@@ -1093,7 +1139,7 @@ public class SVPNPAService {
 			}
 			String tempObject = viewObject.toString();
 			tempObject = tempObject.replaceAll("@object",
-					"<img src=\"add_obj_page.png\" data-bs-target=\"#selectionPopup\" onclick=\"getid(this);\" data-bs-toggle=\"modal\" width=\"100px\" height=\"70px\" style=\"cursor:pointer;\" >");
+					"<img src=\"static/add_obj_page.png\" data-bs-target=\"#selectionPopup\" onclick=\"getid(this);\" data-bs-toggle=\"modal\" width=\"100px\" height=\"70px\" style=\"cursor:pointer;\" >");
 			viewObject = new StringBuilder(tempObject);
 			this.viewObject = viewObject;
 			this.page_id = page_id;
@@ -1190,27 +1236,26 @@ public class SVPNPAService {
 						expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 					}
 					String property[] = ((String) item.get("properties")).toString().split(",");
-					if (property.length > 1) {
-						if (property[1].equals("marquee"))
-					
-							marquee = new StringBuilder("<h5  class='text-primary fw-bold text-center'>"
-									+ (String) item.get("object_title")
-									+ "</h5><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-									+ property[2] + "'>" + parseListData(userArray, linksArray, expArray, property[0],
-											(String) item.get("styles"), (String) item.get("classes"))
-									+ "</marquee>");
-						else
-							marquee = new StringBuilder(
-									new StringBuffer("<h5  class='text-primary fw-bold text-center'>")
-											.append((String) item.get("object_title")).append("</h5>"))
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											(String) item.get("styles"), (String) item.get("classes")));
-					} else
+					if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 						marquee = new StringBuilder(
-								"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										String.valueOf(item.get("styles")), String.valueOf(item.get("classes"))))
-								.append("\r\n" + "                  </div>");
+								"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+								+ "                     <div class=\"latest-update\">"
+								+ String.valueOf(item.get("object_title")) + "</div>\r\n"
+								+ "                     <div class=\"mt-news newsof-widht\">"
+								+ parseListData(userArray, linksArray, expArray, property[0],
+										String.valueOf(item.get("styles")),
+										String.valueOf(item.get("classes")))
+								+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+								+ "                     <div class=\"mt-controls\">\r\n"
+								+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+								+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+								+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+								+ "                     </div>");
+					} else {
+						marquee = renderModernListCard(item, userArray, linksArray, expArray,
+								(property.length > 0 ? property[0] : "ul"), String.valueOf(item.get("styles")),
+								String.valueOf(item.get("classes")), lang);
+					}
 					output[i] = marquee;
 				} else if (type.equals("6") || type.equals("10")) {
 					String data;
@@ -1246,21 +1291,27 @@ public class SVPNPAService {
 					data = data.replaceAll("mvnr", "'");
 					String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 					output[i] = parseDocs(userArray, i);
+				} else if (type.equals("11")) {
+					output[i] = parseCardsData(item);
+				} else if (type.equals("12")) {
+					output[i] = parseNavTabsData(item);
 				}
-				item.put("card_data", "<div class=\"card border-danger border border-1\">\r\n" + "	<div\r\n"
-						+ "class=\"card-header\">\r\n" + "	<div class=\"d-flex justify-content-between\"><div>"
+				int objId = (int) item.get("object_id");
+				item.put("card_data", "<div class=\"card border-danger border border-1\" id=\"object-card-wrapper-" + objId + "\">\r\n" + "	<div\r\n"
+						+ "class=\"card-header\">\r\n" + "	<div class=\"d-flex justify-content-between align-items-center\"><div>"
 						+ " <a class=\"dropdown dropdown-hover\">\r\n"
 						+ "<a class=\"\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\"\r\n"
 						+ "aria-expanded=\"false\"> <i class=\"fas fa-bars p-1 border fa-fw fa-2xs rounded text-white bg-info\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\"\r\n"
 						+ "title=\"Options\"></i>\r\n" + "</a>\r\n"
 						+ "<ul class=\"dropdown-menu dropdown-menu-end dropdown-menu-theme pr-0\">\r\n"
 						+ "	<li><a class=\"dropdown-item\" href=\"fetch?object_id="
-						+ (int) item.get("object_id") + "\"><i\r\n" + "class=\"fas fa-edit\"></i>Edit</a></li>\r\n"
-						+ "<li><a class=\"dropdown-item\"  onClick=\"deleteObject(" + (int) item.get("object_id")
-						+ ",this);\"><i\r\n" + "class=\"fas fa-trash\"></i>Delete</a></li>\r\n"
+						+ objId + "\"><i\r\n" + "class=\"fas fa-edit me-1\"></i>Edit</a></li>\r\n"
+						+ "<li><a class=\"dropdown-item\"  onClick=\"deleteObject(" + objId
+						+ ",this);\"><i\r\n" + "class=\"fas fa-trash me-1\"></i>Delete</a></li>\r\n"
 						+ "	<li><a class=\"dropdown-item\" href=\"approveObject?object_id="
-						+ (int) item.get("object_id") + "\"><i\r\n" + "class=\"fas fa-check\"></i>Approve</a></li>\r\n"
-						+ "</ul>\r\n" + "</a> \r\n" + "\r\n" + "<i\r\n"
+						+ objId + "\"><i\r\n" + "class=\"fas fa-check me-1\"></i>Approve</a></li>\r\n"
+						+ "</ul>\r\n" + "</a> \r\n" + "\r\n"
+						+ "<i\r\n"
 						+ "class=\"fas fa-t p-1 border fa-fw fa-2xs rounded text-white bg-primary\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\" title="
 						+ (String) item.get("lang") + "></i>\r\n"
 						+ "<i class=\"fas fa-d p-1 border fa-fw fa-2xs rounded bg-success\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\"  title="
@@ -1274,7 +1325,7 @@ public class SVPNPAService {
 						+ "data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\"\r\n"
 						+ "title=\"Hindi available\"></i></div>\r\n"
 						+ "<div><i class=\"fa fa-remove\" onClick=\"removeObj(this);\"></i></div>" + "</div></div>"
-						+ "<div class=\"card-body\">" + output[i].toString() + "</div></div>\r\n");
+						+ "<div class=\"card-body\" id=\"object-card-body-" + objId + "\">" + output[i].toString() + "</div></div>\r\n");
 
 			}
 		} catch (Exception e) {
@@ -1314,7 +1365,7 @@ public class SVPNPAService {
 			output = new StringBuilder[count];
 			System.out.println("page_id===="+page_id+"====lang==="+lang);				
 			ArrayList<HashMap<String, Object>> objects = dbutils.getListMap(
-					"select o.object_id,object_category,data,o.properties,o.object_title,o.hyperlinks,o.expiration,o.styles,o.classes from pages p,objects o where p.object_id=o.object_id  and p.page_id=? and o.lang=? order by order_no",
+					"select o.object_id,object_category,data,o.properties,o.object_title,o.hyperlinks,o.expiration,o.styles,o.classes,o.object_meta from pages p,objects o where p.object_id=o.object_id  and p.page_id=? and o.lang=? order by order_no",
 					new Object[] { page_id, lang });
 			Gson gson = new Gson();
 			int i = 0;			
@@ -1454,29 +1505,13 @@ System.out.println("objects===="+objects);
 				expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 			}
 			String property[] = String.valueOf(map.get("properties")).toString().split(",");
-			String view_more = "";
-			String list_class = "";
-			if (String.valueOf(map.get("classes")).contains("view-more")) {
-				view_more = "<a href=\"/Preview?page_id=196\" style=\"bottom:10px;left:10px;position:absolute;\" title=\"View all\" onClick=\"marqueePopup(this);\" class=\"btn btn-primary\" target=\"_blank\" onClick=\"marqueePopup(this);\" style=\"margin-top: 10px;\">View more</a>";
-				list_class = " border border-2 border-success rounded-5 ";
-			}
-	if (property.length > 1) {
-		if (property[1].equals("marquee"))
-			if (property[2].equals("up"))
-				marquee = new StringBuilder("<h5 class='text-primary fw-bold text-center'>"
-						+ String.valueOf(map.get("object_title")) + "</h5><div class=\"card-body "
-						+ list_class
-						+ " important_links\"><marquee scrollamount=3 onmouseover='this.stop();' onmouseout='this.start();' direction='"
-						+ property[2] + "'>"
-						+ parseListData(userArray, linksArray, expArray, property[0],String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
-						+ "</marquee>" + view_more + "   </div>               ");
-			else if (property[2].equals("left"))
+			if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 				marquee = new StringBuilder(
 						"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
 						+ "                     <div class=\"latest-update\">"
 						+ String.valueOf(map.get("object_title")) + "</div>\r\n"
 						+ "                     <div class=\"mt-news newsof-widht\">"
-	
+
 						+ parseListData(userArray, linksArray, expArray, property[0],
 								String.valueOf(map.get("styles")),
 								String.valueOf(map.get("classes")))
@@ -1486,24 +1521,12 @@ System.out.println("objects===="+objects);
 						+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
 						+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
 						+ "                     </div>");
-			else
-				marquee = new StringBuilder(
-						new StringBuffer("<h5 class='text-primary fw-bold text-center'>")
-								.append(String.valueOf(map.get("object_title")))
-								.append("</h5>                  <div class=\"card-body " + list_class
-										+ " important_links\">\r\n" + ""))
-						.append(parseListData(userArray, linksArray, expArray, property[0],
-								String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
-								.append(view_more + "                  </div>"));
-						} else {
-							marquee = new StringBuilder(
-									"<h5 class='text-primary fw-bold text-center'>" + String.valueOf(map.get("object_title"))
-											+ "</h5><div class=\"card-body " + list_class + " important_links\">")
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											String.valueOf(map.get("styles")), String.valueOf(map.get("classes")))
-											.append(view_more + "                  </div>"));
-						}
-						output[i] = marquee;
+			} else {
+				marquee = renderModernListCard(map, userArray, linksArray, expArray,
+						(property.length > 0 ? property[0] : "ul"), String.valueOf(map.get("styles")),
+						String.valueOf(map.get("classes")), lang);
+			}
+			output[i] = marquee;
 						
 						String object_id = String.valueOf(map.get("object_id"));
 						/*
@@ -1549,6 +1572,10 @@ System.out.println("objects===="+objects);
 				data = data.replaceAll("mvnr", "'");
 				String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 				output[i] = parseDocs(userArray, i);
+			} else if (type.equals("11")) {
+				output[i] = parseCardsData(map);
+			} else if (type.equals("12")) {
+				output[i] = parseNavTabsData(map);
 			}
 			int index = viewObject.indexOf("@object");
 			viewObject = new StringBuilder(viewObject.substring(0, index) + output[i]
@@ -1569,7 +1596,19 @@ System.out.println("objects===="+objects);
 	return "Preview";
 	}
 
-	
+	private String getMediaUrl(String folder, String filename) {
+		String base = (galleryPath != null && !galleryPath.trim().isEmpty())
+				? galleryPath.trim().replace('\\', '/')
+				: "/static/gallery";
+		if (!base.startsWith("/")) {
+			base = "/" + base;
+		}
+		while (base.endsWith("/")) {
+			base = base.substring(0, base.length() - 1);
+		}
+		return base + "/" + folder + "/" + filename;
+	}
+
 	private StringBuilder parseImageCarousel(String[] array, int i, String random) {
 		StringBuilder temp = null;
 		String str = "";
@@ -1585,32 +1624,25 @@ System.out.println("objects===="+objects);
 							+ "\" data-bs-slide-to=\"" + j + "\" aria-label=\"Slide" + j + "\"></button>");
 			}
 			sliders.append("</div>");
-//			temp = new StringBuilder("<div id=\"carouselExample" + i
-//					+ "\" class=\"carousel carousel-dark slide\" data-bs-ride=\"carousel\"\r\n" + ">\r\n" + sliders
-//					+ "  <div class=\"carousel-inner\" style=\" width:auto; height: auto !important; overflow:hidden;\">");
-			if(random.equalsIgnoreCase("") || random.equalsIgnoreCase("false")) {
-			str = "<div id=\"carouselExample" + i
-					+ "\" class=\"carousel carousel-dark slide\" data-bs-ride=\"carousel\"\r\n" + ">\r\n" + sliders
-					+ "  <div class=\"carousel-inner\" style=\" width:auto; height: auto !important; overflow:hidden;\">";
-			}else {
+			if (random == null || random.equalsIgnoreCase("") || random.equalsIgnoreCase("false")) {
 				str = "<div id=\"carouselExample" + i
-						+ "\" class=\"carousel carousel-dark slide\" data-bs-ride=\"carousel\"\r\n" + ">\r\n" + sliders
+						+ "\" class=\"carousel carousel-dark slide homebanner\" data-bs-ride=\"carousel\"\r\n" + ">\r\n" + sliders
+						+ "  <div class=\"carousel-inner\" style=\" width:auto; height: auto !important; overflow:hidden;\">";
+			} else {
+				str = "<div id=\"carouselExample" + i
+						+ "\" class=\"carousel carousel-dark slide homebanner\" data-bs-ride=\"carousel\"\r\n" + ">\r\n" + sliders
 						+ "  <div class=\"carousel-inner random-slides\" style=\" width:auto; height: auto !important; overflow:hidden;\">";
 			}
 			temp = new StringBuilder(str);
 			for (int j = 0; j < array.length; j++) {
+				String imgUrl = getMediaUrl("image", array[j]);
 				if (j == 0)
 					temp.append(					
-							"<div class=\"carousel-item active\">\r\n" + "      <img src=\"" + galleryPath + "\\image\\"
-									+ array[j] + "\" class=\"d-block  img-fluid \"  alt=\"...\">\r\n" + "    </div>");
-//					temp.append(
-//							"<div class=\"carousel-item active\">\r\n" + "   <img src=\"/getImg/" 
-//									+ array[j] + "\"  class=\"d-block  img-fluid \"  alt=\"...\">\r\n" + "    </div>");
+							"<div class=\"carousel-item active\">\r\n" + "      <img src=\"" + imgUrl
+									+ "\" class=\"d-block  img-fluid \"  alt=\"Slide " + (j + 1) + "\">\r\n" + "    </div>");
 				else
-					temp.append("<div class=\"carousel-item\">\r\n" + "      <img src=\"" + galleryPath + "\\image\\"
-							+ array[j] + "\" class=\"d-block img-fluid\"  alt=\"...\">\r\n" + "    </div>");
-//					temp.append("<div class=\"carousel-item\">\r\n" + "  <img src=\"/getImg/" 
-//							+ array[j] + "\" class=\"d-block img-fluid\"  alt=\"...\">\r\n" + "    </div>");
+					temp.append("<div class=\"carousel-item\">\r\n" + "      <img src=\"" + imgUrl
+							+ "\" class=\"d-block img-fluid\"  alt=\"Slide " + (j + 1) + "\">\r\n" + "    </div>");
 			}
 			
 			temp.append("</div>\r\n"
@@ -1627,7 +1659,7 @@ System.out.println("objects===="+objects);
 			logger.error("Exception in SVPNPAService::parseImageCarousel::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::parseImageCarousel::" + e.getCause());
 			logger.error("Exception in SVPNPAService::parseImageCarousel::" + e.getClass() + "::" + e.getLocalizedMessage());
-			}
+		}
 		return temp;
 	}
 
@@ -1642,9 +1674,10 @@ System.out.println("objects===="+objects);
 					Map<String, Object> imageDesc = dbutils.getMap(
 							"select upper(properties->>'description') as description,coalesce(properties->>'title',properties->>'description')  as title from gallery where file_name=?",
 							new Object[] { array[j] });
+					String imgUrl = getMediaUrl("image", array[j]);
 					temp.append("<li class=\"ImgGallery\"><img data-original=\""
-							+ "" + galleryPath + "\\image\\" + array[j] + "\" width=\"145\" height=\"300\"  class=\" p-3\" id=\"img-" + j
-							+ "\" src=\"" + galleryPath + "\\image\\" + array[j] + "\"  alt=\"" + imageDesc.get("title")
+							+ imgUrl + "\" width=\"145\" height=\"300\"  class=\" p-3\" id=\"img-" + j
+							+ "\" src=\"" + imgUrl + "\"  alt=\"" + imageDesc.get("title")
 							+ "\" title=\"" + imageDesc.get("title")
 							+ "\" onClick=\"titleSelected(this);\"><p class=\"mx-auto text-center fw-bold\">"
 							+ imageDesc.get("description") + "</p></li>");
@@ -1656,20 +1689,18 @@ System.out.println("objects===="+objects);
 					String imageDesc = String.valueOf(
 							dbutils.getDBValue("select properties->>'description' from gallery where file_name=?",
 									new Object[] { array[j] }));
-					temp.append("<img class=\"img-fluid mb-3 fadein\" id=\"img-" + j + "\" src=\"" + galleryPath
-//------------Newly-Added------------------------------------------							
-							+ "\\image\\"
-//------------End------------------------------------------							
-							+ array[j] + "\" style=\"width:" + width + "\" alt=\"SVPNPA\" title=\""
+					String imgUrl = getMediaUrl("image", array[j]);
+					temp.append("<img class=\"img-fluid mb-3 fadein\" id=\"img-" + j + "\" src=\"" + imgUrl
+							+ "\" style=\"width:" + width + "\" alt=\"SVPNPA\" title=\""
 							+ imageDesc + "\">");
 				} 
-		}
+			}
 
 		} catch (Exception e) {
 			logger.error("Exception in SVPNPAService::parseImages::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::parseImages::" + e.getCause());
 			logger.error("Exception in SVPNPAService::parseImages::" + e.getClass() + "::" + e.getLocalizedMessage());
-			}
+		}
 		return temp;
 	}
 
@@ -1678,16 +1709,16 @@ System.out.println("objects===="+objects);
 		try {
 			temp = new StringBuilder();
 			for (int j = 0; j < array.length; j++) {
+				String videoUrl = getMediaUrl("video", array[j]);
 				temp.append("<video id=\"video-" + j
 						+ "\" controls=\"\" width=\"100%\" height=\"100%\" class=\"embed-responsive-item\"> <source src=\""
-						+ galleryPath + "\\video\\" + array[j] + "\" type=\"video/mp4\"></video>");
-//						+ "/getVedio/" + array[j] + "\" type=\"video/mp4\"></video>");
+						+ videoUrl + "\" type=\"video/mp4\"></video>");
 			}
 		} catch (Exception e) {
 			logger.error("Exception in SVPNPAService::parseVideos::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::parseVideos::" + e.getCause());
 			logger.error("Exception in SVPNPAService::parseVideos::" + e.getClass() + "::" + e.getLocalizedMessage());
-			}
+		}
 		return temp;
 	}
 
@@ -1696,16 +1727,16 @@ System.out.println("objects===="+objects);
 		try {
 			temp = new StringBuilder();
 			for (int j = 0; j < array.length; j++) {
+				String audioUrl = getMediaUrl("audio", array[j]);
 				temp.append("<audio id=\"audio-" + j
 						+ "\" controls=\"\" width=\"100%\" height=\"100%\" class=\"embed-responsive-item\"> <source src=\""
-						+ galleryPath + "\\audio\\" + array[j] + "\" type=\"audio/mp3\"></audio>");
-//						+ "/getAudio/" + array[j] + "\"  type=\"audio/mp3\"></audio>");
+						+ audioUrl + "\" type=\"audio/mp3\"></audio>");
 			}
 		} catch (Exception e) {
 			logger.error("Exception in SVPNPAService::parseAudios::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::parseAudios::" + e.getCause());
 			logger.error("Exception in SVPNPAService::parseAudios::" + e.getClass() + "::" + e.getLocalizedMessage());
-			}
+		}
 		return temp;
 	}
 
@@ -1714,22 +1745,15 @@ System.out.println("objects===="+objects);
 		try {
 			temp = new StringBuilder();
 			for (int j = 0; j < array.length; j++) {
-//				temp.append("<a href=\"" + galleryPath + "\\docs\\" + array[j]+ "\" target=\"_blank\" ><i class=\"far fa-2xl fa-file-pdf\"></i></a>");
-				// temp.append("<iframe src=\"" + galleryPath + "\\docs\\" + array[j]+ "\"
-				// width=\"100%\" height=\"100%\"></iframe>");
+				String docUrl = getMediaUrl("docs", array[j]);
 				temp.append(
-						"<embed src=\"" + galleryPath + "\\docs\\" + array[j] + "\" width=\"100%\" height=\"1000px\">");											
-//						"<embed src=\"" + "/getDoc/" + array[j] + "\"  type=\"application/pdf\" width=\"100%\" height=\"1000px\">");
-				/*
-				 * <embed src="http://example.com/the.pdf" width="500" height="375"
-				 * type="application/pdf">
-				 */
+						"<embed src=\"" + docUrl + "\" width=\"100%\" height=\"1000px\">");
 			}
 		} catch (Exception e) {
 			logger.error("Exception in SVPNPAService::parseDocs::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::parseDocs::" + e.getCause());
 			logger.error("Exception in SVPNPAService::parseDocs::" + e.getClass() + "::" + e.getLocalizedMessage());
-			}
+		}
 		return temp;
 	}
 
@@ -1746,6 +1770,544 @@ System.out.println("objects===="+objects);
 			logger.error("Exception in SVPNPAService::parseHTML::" + e.getClass() + "::" + e.getLocalizedMessage());
 			}
 		return temp;
+	}
+
+	private String buildCardBorderStyle(Map<String, String> card) {
+		String enabled = card.get("borderEnabled");
+		String style = card.get("borderStyle");
+		String color = card.get("borderColor");
+		String top = card.get("borderTop");
+		String right = card.get("borderRight");
+		String bottom = card.get("borderBottom");
+		String left = card.get("borderLeft");
+		String radius = card.get("borderRadius");
+
+		// No border config saved -> keep default appearance
+		if (enabled == null && style == null) {
+			return "border: 1px solid #1a3b5c; border-radius: 4px;";
+		}
+
+		String radiusVal = (radius == null || radius.trim().isEmpty() || radius.equals("null")) ? "4" : radius.trim();
+		boolean isEnabled = "true".equalsIgnoreCase(enabled) && style != null
+				&& !style.equalsIgnoreCase("none") && !style.equalsIgnoreCase("null") && !style.trim().isEmpty();
+
+		if (!isEnabled) {
+			return "border: none; border-radius: " + radiusVal + "px;";
+		}
+
+		String colorVal = (color == null || color.trim().isEmpty() || color.equals("null")) ? "#1a3b5c" : color.trim();
+		String topVal = (top == null || top.trim().isEmpty() || top.equals("null")) ? "1" : top.trim();
+		String rightVal = (right == null || right.trim().isEmpty() || right.equals("null")) ? "1" : right.trim();
+		String bottomVal = (bottom == null || bottom.trim().isEmpty() || bottom.equals("null")) ? "1" : bottom.trim();
+		String leftVal = (left == null || left.trim().isEmpty() || left.equals("null")) ? "1" : left.trim();
+
+		return "border-style: " + style.trim()
+				+ "; border-color: " + colorVal
+				+ "; border-top-width: " + topVal + "px"
+				+ "; border-right-width: " + rightVal + "px"
+				+ "; border-bottom-width: " + bottomVal + "px"
+				+ "; border-left-width: " + leftVal + "px"
+				+ "; border-radius: " + radiusVal + "px;";
+	}
+
+	private boolean cardColorsEnabled(Map<String, String> card) {
+		return "true".equalsIgnoreCase(card.get("colorEnabled"));
+	}
+
+	private String buildCardColorsStyle(Map<String, String> card) {
+		if (!cardColorsEnabled(card)) {
+			return "background-color: #ffffff;";
+		}
+		String bg = card.get("bgColor");
+		String text = card.get("textColor");
+		String bgVal = (bg == null || bg.trim().isEmpty() || bg.equals("null")) ? "#ffffff" : bg.trim();
+		String textVal = (text == null || text.trim().isEmpty() || text.equals("null")) ? "#334155" : text.trim();
+		return "background-color: " + bgVal + "; color: " + textVal + ";";
+	}
+
+	private String getCardTextColor(Map<String, String> card, String defaultColor) {
+		if (!cardColorsEnabled(card)) {
+			return defaultColor;
+		}
+		String text = card.get("textColor");
+		return (text == null || text.trim().isEmpty() || text.equals("null")) ? defaultColor : text.trim();
+	}
+
+	private String getSectionTextColor(String styles) {
+		if (styles == null || styles.trim().isEmpty()) {
+			return "#0f2c59";
+		}
+		String text = styles.trim();
+		// undo HTML-entity-escaped colons/semicolons if any
+		java.util.regex.Matcher m = java.util.regex.Pattern
+				.compile("(?:^|;)\\s*color\\s*:\\s*([^;]+)", java.util.regex.Pattern.CASE_INSENSITIVE)
+				.matcher(text);
+		if (m.find()) {
+			String c = m.group(1).trim();
+			if (!c.isEmpty()) {
+				return c;
+			}
+		}
+		return "#0f2c59";
+	}
+
+	private int getCardsRowsFromClasses(String classes) {
+		if (classes == null) {
+			return 0;
+		}
+		try {
+			java.util.regex.Matcher m = java.util.regex.Pattern.compile("cards-rows-(\\d+)").matcher(classes);
+			if (m.find()) {
+				int r = Integer.parseInt(m.group(1));
+				if (r >= 1 && r <= 6) {
+					return r;
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		return 0;
+	}
+
+	public StringBuilder parseCardsData(Map map) {
+		StringBuilder temp = new StringBuilder();
+		try {
+			String objectTitle = map.get("object_title") != null ? String.valueOf(map.get("object_title")) : "";
+			String data = map.get("data") != null ? String.valueOf(map.get("data")) : "";
+			data = data.replace("mvnr", "'");
+
+			String styles = map.get("styles") != null ? String.valueOf(map.get("styles")) : "";
+			String classes = map.get("classes") != null ? String.valueOf(map.get("classes")) : "";
+
+			if (data == null || data.trim().isEmpty() || data.equals("null")) {
+				return temp;
+			}
+
+			// In case the JSON string is wrapped with outer JSON quotes e.g. "\"[...]\""
+			if (data.startsWith("\"") && data.endsWith("\"") && data.length() > 2) {
+				data = data.substring(1, data.length() - 1);
+				data = data.replace("\\\"", "\"").replace("\\\\", "\\");
+			}
+
+			Gson gson = new Gson();
+			Type listType = new TypeToken<List<Map<String, String>>>() {}.getType();
+			List<Map<String, String>> cardList = null;
+			try {
+				cardList = gson.fromJson(data, listType);
+			} catch (Exception ex) {
+				logger.error("Error parsing cards JSON in parseCardsData: " + ex.getMessage());
+			}
+
+			temp.append("<div class=\"cards-container-section my-4 ").append(classes).append("\" style=\"font-family: 'Noto Sans', sans-serif; ").append(styles).append("\">\n");
+
+			if (objectTitle != null && !objectTitle.trim().isEmpty() && !objectTitle.equals("null")) {
+				temp.append("  <h4 class=\"cards-main-heading fw-bold mb-3\" style=\"color: ").append(getSectionTextColor(styles)).append("; font-family: 'Noto Sans', sans-serif; font-size: 1.4rem;\">")
+					.append(objectTitle)
+					.append("</h4>\n");
+			}
+
+			List<String> cardBlocks = new ArrayList<>();
+
+			if (cardList != null) {
+				for (Map<String, String> card : cardList) {
+					String cardTitle = card.get("title");
+					if (cardTitle == null || cardTitle.equals("null")) cardTitle = "";
+					try {
+						cardTitle = URLDecoder.decode(cardTitle, StandardCharsets.UTF_8.name());
+					} catch (Exception ignored) {}
+
+					String cardDesc = card.get("description");
+					if (cardDesc == null || cardDesc.equals("null")) cardDesc = "";
+					try {
+						cardDesc = URLDecoder.decode(cardDesc, StandardCharsets.UTF_8.name());
+					} catch (Exception ignored) {}
+
+					String cardLink = card.get("link");
+					if (cardLink == null || cardLink.equals("null")) cardLink = "";
+					try {
+						cardLink = URLDecoder.decode(cardLink, StandardCharsets.UTF_8.name());
+					} catch (Exception ignored) {}
+
+					String cardImage = card.get("image");
+					if (cardImage == null || cardImage.equals("null")) cardImage = "";
+
+					String cardBorderStyle = buildCardBorderStyle(card);
+					String cardColorsStyle = buildCardColorsStyle(card);
+					String cardTitleColor = getCardTextColor(card, "#0f2c59");
+					String cardDescColor = getCardTextColor(card, "#334155");
+					String cardLinkColor = getCardTextColor(card, "#1a3b5c");
+
+					int cardStartIdx = temp.length();
+					temp.append("    <div class=\"col\">\n");
+					temp.append("      <div class=\"card h-100 card-item-view\" style=\"").append(cardBorderStyle).append(cardColorsStyle).append(" padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); transition: transform 0.15s ease, box-shadow 0.15s ease;\">\n");
+					boolean hasImage = !cardImage.trim().isEmpty();
+					String imgSrc = cardImage;
+					if (hasImage && !imgSrc.startsWith("http://") && !imgSrc.startsWith("https://") && !imgSrc.startsWith("/") && !imgSrc.startsWith("static/")) {
+						imgSrc = "static/gallery/image/" + cardImage;
+					}
+
+					if (hasImage) {
+						// Image present: row with col-4 image + col-8 title, then next row for description
+						temp.append("        <div class=\"card-body p-0\">\n");
+						temp.append("          <div class=\"row g-3 align-items-start\">\n");
+						temp.append("            <div class=\"col-4\">\n");
+						temp.append("              <img src=\"").append(imgSrc).append("\" class=\"img-fluid rounded\" style=\"width: 100%; height: 100%; object-fit: cover;\" alt=\"").append(cardTitle).append("\">\n");
+						temp.append("            </div>\n");
+						temp.append("            <div class=\"col-8\">\n");
+
+						// Title
+						if (!cardTitle.isEmpty()) {
+							temp.append("              <h5 class=\"card-title fw-bold mb-2\" style=\"font-size: 1.05rem; font-family: 'Noto Sans', sans-serif;\">\n");
+							if (!cardLink.trim().isEmpty() && !cardLink.equals("#")) {
+								temp.append("                <a href=\"").append(cardLink).append("\" class=\"text-decoration-none\" style=\"color: " + cardTitleColor + ";\">")
+									.append(cardTitle)
+									.append("</a>\n");
+							} else {
+								temp.append("                <span style=\"color: " + cardTitleColor + ";\">").append(cardTitle).append("</span>\n");
+							}
+							temp.append("              </h5>\n");
+						}
+
+						// Read More Link if link provided
+						if (!cardLink.trim().isEmpty() && !cardLink.equals("#")) {
+							temp.append("              <div class=\"mt-2 pt-1\">\n");
+							temp.append("                <a href=\"").append(cardLink).append("\" class=\"text-decoration-none fw-semibold\" style=\"color: " + cardLinkColor + "; font-size: 0.88rem;\">")
+								.append("Read more <i class=\"fa-solid fa-arrow-right ms-1\" style=\"font-size: 0.75rem;\"></i>")
+								.append("</a>\n");
+							temp.append("              </div>\n");
+						}
+
+						temp.append("            </div>\n"); // col-8
+						temp.append("          </div>\n"); // row
+
+						// Description in next row
+						if (!cardDesc.isEmpty()) {
+							temp.append("          <div class=\"row\">\n");
+							temp.append("            <div class=\"col-12\">\n");
+							temp.append("              <p class=\"card-text mb-0\" style=\"color: " + cardDescColor + "; font-size: 0.92rem; line-height: 1.55; font-family: 'Noto Sans', sans-serif;\">");
+							if (!cardLink.trim().isEmpty() && !cardLink.equals("#") && cardTitle.isEmpty()) {
+								temp.append("<a href=\"").append(cardLink).append("\" style=\"color: " + cardDescColor + "; text-decoration: underline;\">")
+									.append(cardDesc)
+									.append("</a>");
+							} else {
+								temp.append(cardDesc);
+							}
+							temp.append("</p>\n");
+							temp.append("            </div>\n");
+							temp.append("          </div>\n");
+						}
+						temp.append("        </div>\n"); // card-body
+					} else {
+						// No image: stacked layout
+						temp.append("        <div class=\"card-body p-0 d-flex flex-column\">\n");
+
+						// Title
+						if (!cardTitle.isEmpty()) {
+							temp.append("          <h5 class=\"card-title fw-bold mb-2\" style=\"font-size: 1.05rem; font-family: 'Noto Sans', sans-serif;\">\n");
+							if (!cardLink.trim().isEmpty() && !cardLink.equals("#")) {
+								temp.append("            <a href=\"").append(cardLink).append("\" class=\"text-decoration-none\" style=\"color: " + cardTitleColor + ";\">")
+									.append(cardTitle)
+									.append("</a>\n");
+							} else {
+								temp.append("            <span style=\"color: " + cardTitleColor + ";\">").append(cardTitle).append("</span>\n");
+							}
+							temp.append("          </h5>\n");
+						}
+
+						// Description
+						if (!cardDesc.isEmpty()) {
+							temp.append("          <p class=\"card-text flex-grow-1 mb-0\" style=\"color: " + cardDescColor + "; font-size: 0.92rem; line-height: 1.55; font-family: 'Noto Sans', sans-serif;\">");
+							if (!cardLink.trim().isEmpty() && !cardLink.equals("#") && cardTitle.isEmpty()) {
+								temp.append("<a href=\"").append(cardLink).append("\" style=\"color: " + cardDescColor + "; text-decoration: underline;\">")
+									.append(cardDesc)
+									.append("</a>");
+							} else {
+								temp.append(cardDesc);
+							}
+							temp.append("</p>\n");
+						}
+
+						// Read More Link if link provided
+						if (!cardLink.trim().isEmpty() && !cardLink.equals("#")) {
+							temp.append("          <div class=\"mt-2 pt-1\">\n");
+							temp.append("            <a href=\"").append(cardLink).append("\" class=\"text-decoration-none fw-semibold\" style=\"color: " + cardLinkColor + "; font-size: 0.88rem;\">")
+								.append("Read more <i class=\"fa-solid fa-arrow-right ms-1\" style=\"font-size: 0.75rem;\"></i>")
+								.append("</a>\n");
+							temp.append("          </div>\n");
+						}
+
+						temp.append("        </div>\n"); // card-body
+					}
+					temp.append("      </div>\n"); // card
+					temp.append("    </div>\n"); // col
+					cardBlocks.add(temp.substring(cardStartIdx));
+					temp.setLength(cardStartIdx);
+				}
+			}
+
+			int rows = getCardsRowsFromClasses(classes);
+			if (rows == 1 && !cardBlocks.isEmpty()) {
+				temp.append("  <div class=\"cards-carousel-wrap\">\n");
+				temp.append("    <button type=\"button\" class=\"cards-carousel-nav cards-carousel-prev\" aria-label=\"Previous\" onclick=\"scrollCardsCarousel(this,-1)\"><i class=\"fa-solid fa-chevron-left\"></i></button>\n");
+				temp.append("    <div class=\"cards-carousel-track\">\n");
+				for (String block : cardBlocks) {
+					temp.append(block.replace("class=\"col\"", "class=\"col cards-carousel-item\""));
+				}
+				temp.append("    </div>\n");
+				temp.append("    <button type=\"button\" class=\"cards-carousel-nav cards-carousel-next\" aria-label=\"Next\" onclick=\"scrollCardsCarousel(this,1)\"><i class=\"fa-solid fa-chevron-right\"></i></button>\n");
+				temp.append("  </div>\n");
+			} else if (rows > 1 && !cardBlocks.isEmpty()) {
+				int n = cardBlocks.size();
+				int base = n / rows;
+				int rem = n % rows;
+				int idx = 0;
+				for (int r = 0; r < rows && idx < n; r++) {
+					int cnt = base + (r < rem ? 1 : 0);
+					if (cnt <= 0) {
+						continue;
+					}
+					temp.append("  <div class=\"row row-cols-1 row-cols-sm-2 row-cols-lg-").append(Math.min(cnt, 6)).append(" g-3\">\n");
+					for (int c = 0; c < cnt && idx < n; c++) {
+						temp.append(cardBlocks.get(idx++));
+					}
+					temp.append("  </div>\n");
+				}
+			} else {
+				temp.append("  <div class=\"row row-cols-1 row-cols-md-2 g-3\">\n");
+				for (String block : cardBlocks) {
+					temp.append(block);
+				}
+				temp.append("  </div>\n");
+			}
+
+			temp.append("</div>\n"); // cards-container-section
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAService::parseCardsData::" + e.getMessage(), e);
+		}
+		return temp;
+	}
+
+	public StringBuilder parseNavTabsData(Map map) {
+		String lang = "E";
+		if (map.get("lang") != null && !String.valueOf(map.get("lang")).trim().isEmpty()) {
+			lang = String.valueOf(map.get("lang")).trim();
+		}
+		return parseNavTabsData(map, lang);
+	}
+
+	public StringBuilder parseNavTabsData(Map map, String lang) {
+		StringBuilder temp = new StringBuilder();
+		try {
+			String data = String.valueOf(map.get("data"));
+			String objectTitle = map.get("object_title") != null ? String.valueOf(map.get("object_title")) : "";
+			String styles = map.get("styles") != null ? String.valueOf(map.get("styles")) : "";
+			String classes = map.get("classes") != null ? String.valueOf(map.get("classes")) : "";
+			int objectId = 0;
+			try {
+				if (map.get("object_id") != null) {
+					objectId = Integer.parseInt(String.valueOf(map.get("object_id")));
+				}
+			} catch (Exception ignored) {}
+
+			if (data == null || data.trim().isEmpty() || data.equals("null")) {
+				return temp;
+			}
+
+			if (data.startsWith("\"") && data.endsWith("\"") && data.length() > 2) {
+				data = data.substring(1, data.length() - 1);
+				data = data.replace("\\\"", "\"").replace("\\\\", "\\");
+			}
+
+			Gson gson = new Gson();
+			Type listType = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
+			List<Map<String, Object>> tabList = new ArrayList<>();
+			try {
+				tabList = gson.fromJson(data, listType);
+			} catch (Exception ex) {
+				logger.error("Error parsing navtabs JSON in parseNavTabsData: " + ex.getMessage());
+			}
+
+			if (tabList == null || tabList.isEmpty()) {
+				return temp;
+			}
+
+			String navId = "navtab_" + (objectId > 0 ? objectId : UUID.randomUUID().toString().replace("-", "").substring(0, 8));
+
+			temp.append("<div class=\"navtabs-wrapper my-4 ").append(classes).append("\" style=\"").append(styles).append("\">\n");
+
+			if (objectTitle != null && !objectTitle.trim().isEmpty() && !objectTitle.equals("null")) {
+				temp.append("  <h4 class=\"navtabs-main-heading fw-bold mb-3\" style=\"color: #0f2c59; font-family: 'Noto Sans', sans-serif; font-size: 1.4rem;\">")
+					.append(objectTitle)
+					.append("</h4>\n");
+			}
+
+			// Navigation Tab Headers
+			temp.append("  <ul class=\"nav nav-tabs border-bottom border-2 custom-nav-tabs\" id=\"").append(navId).append("-ul\" role=\"tablist\" style=\"border-bottom: 2px solid #0f2c59 !important; gap: 4px;\">\n");
+
+			for (int i = 0; i < tabList.size(); i++) {
+				Map<String, Object> tab = tabList.get(i);
+				String title = tab.get("title") != null ? String.valueOf(tab.get("title")) : "Tab " + (i + 1);
+				try {
+					title = URLDecoder.decode(title, StandardCharsets.UTF_8.name());
+				} catch (Exception ignored) {}
+
+				boolean isActive = (i == 0);
+				String tabBtnId = navId + "-tab-" + i;
+				String tabPaneId = navId + "-pane-" + i;
+
+				temp.append("    <li class=\"nav-item\" role=\"presentation\">\n")
+					.append("      <button class=\"nav-link ").append(isActive ? "active" : "").append("\" id=\"").append(tabBtnId).append("\" ")
+					.append("data-bs-toggle=\"tab\" data-bs-target=\"#").append(tabPaneId).append("\" ")
+					.append("data-toggle=\"tab\" data-target=\"#").append(tabPaneId).append("\" ")
+					.append("type=\"button\" role=\"tab\" aria-controls=\"").append(tabPaneId).append("\" ")
+					.append("aria-selected=\"").append(isActive ? "true" : "false").append("\" ")
+					.append("style=\"font-weight: 600; font-size: 0.95rem; padding: 10px 22px; border-radius: 4px 4px 0 0; transition: all 0.2s;\">\n")
+					.append("        ").append(title).append("\n")
+					.append("      </button>\n")
+					.append("    </li>\n");
+			}
+			temp.append("  </ul>\n");
+
+			// Tab Contents Container
+			temp.append("  <div class=\"tab-content custom-tab-content bg-white border border-top-0 p-4 shadow-sm\" id=\"").append(navId).append("-content\" style=\"border-color: #dee2e6 !important; border-radius: 0 0 6px 6px; min-height: 200px;\">\n");
+
+			for (int i = 0; i < tabList.size(); i++) {
+				Map<String, Object> tab = tabList.get(i);
+				boolean isActive = (i == 0);
+				String tabPaneId = navId + "-pane-" + i;
+				String tabBtnId = navId + "-tab-" + i;
+
+				temp.append("    <div class=\"tab-pane fade ").append(isActive ? "show active" : "").append("\" id=\"").append(tabPaneId).append("\" role=\"tabpanel\" aria-labelledby=\"").append(tabBtnId).append("\">\n");
+
+				// Child Object Content
+				Object childObjIdVal = tab.get("objectId");
+				if (childObjIdVal != null && !String.valueOf(childObjIdVal).trim().isEmpty()) {
+					try {
+						int childId = Double.valueOf(String.valueOf(childObjIdVal)).intValue();
+						String childHtml = renderSingleObjectHtml(childId, lang);
+						temp.append("      <div class=\"navtab-child-object mb-3\">\n")
+							.append(childHtml)
+							.append("      </div>\n");
+					} catch (Exception e) {
+						logger.error("Error embedding child object in navtabs: " + e.getMessage());
+					}
+				}
+
+				// Optional View More Button
+				String viewMoreLink = tab.get("viewMoreLink") != null ? String.valueOf(tab.get("viewMoreLink")).trim() : "";
+				String viewMoreText = tab.get("viewMoreText") != null ? String.valueOf(tab.get("viewMoreText")).trim() : "";
+				if (viewMoreText.isEmpty() || viewMoreText.equals("null")) {
+					viewMoreText = "VIEW MORE";
+				}
+				if (!viewMoreLink.isEmpty() && !viewMoreLink.equals("null") && !viewMoreLink.equals("#")) {
+					temp.append("      <div class=\"text-end pt-3 mt-3 border-top\">\n")
+						.append("        <a href=\"").append(viewMoreLink).append("\" class=\"btn btn-outline-primary btn-sm px-3 py-1 fw-bold text-uppercase\" style=\"font-size: 0.8rem; letter-spacing: 0.5px;\">")
+						.append(viewMoreText)
+						.append(" <i class=\"fas fa-chevron-right ms-1\"></i></a>\n")
+						.append("      </div>\n");
+				}
+
+				temp.append("    </div>\n");
+			}
+
+			temp.append("  </div>\n");
+			temp.append("</div>\n");
+
+			// Embedded custom CSS for active tab navy #0f2c59 and child object title suppression
+			temp.append("<style>\n")
+				.append("#").append(navId).append("-ul .nav-link {\n")
+				.append("  color: #334155;\n")
+				.append("  background-color: #f8fafc;\n")
+				.append("  border: 1px solid #e2e8f0;\n")
+				.append("  border-bottom: none;\n")
+				.append("}\n")
+				.append("#").append(navId).append("-ul .nav-link:hover {\n")
+				.append("  color: #0f2c59;\n")
+				.append("  background-color: #edf2f7;\n")
+				.append("}\n")
+				.append("#").append(navId).append("-ul .nav-link.active {\n")
+				.append("  color: #ffffff !important;\n")
+				.append("  background-color: #0f2c59 !important;\n")
+				.append("  border-color: #0f2c59 #0f2c59 transparent !important;\n")
+				.append("}\n")
+				.append(".navtab-child-object > h4,\n")
+				.append(".navtab-child-object > h5,\n")
+				.append(".navtab-child-object .cards-main-heading,\n")
+				.append(".navtab-child-object .modern-list-card-header,\n")
+				.append(".navtab-child-object .customTable-title {\n")
+				.append("  display: none !important;\n")
+				.append("}\n")
+				.append("</style>\n");
+
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAService::parseNavTabsData::" + e.getMessage(), e);
+		}
+		return temp;
+	}
+
+	public String renderSingleObjectHtml(int objectId, String lang) {
+		try {
+			ArrayList<HashMap<String, Object>> list = dbutils.getListMap(
+					"SELECT object_id, object_category, data, properties, object_title, hyperlinks, expiration, styles, classes, object_meta, lang FROM objects WHERE object_id = ? AND lang = ?",
+					new Object[] { objectId, (lang != null && !lang.isEmpty()) ? lang : "E" });
+			if (list == null || list.isEmpty()) {
+				list = dbutils.getListMap(
+						"SELECT object_id, object_category, data, properties, object_title, hyperlinks, expiration, styles, classes, object_meta, lang FROM objects WHERE object_id = ?",
+						new Object[] { objectId });
+			}
+			if (list != null && !list.isEmpty()) {
+				Map<String, Object> childMap = list.get(0);
+				int category = (int) childMap.get("object_category");
+				if (category == 12) {
+					return "<div class='text-muted small'>[Nested NavTabs not supported]</div>";
+				}
+				// If any object is assigned to navtabs, do not show object title as it is already present in the nav tab
+				childMap.put("object_title", "");
+				childMap.put("title", "");
+				childMap.put("is_navtab_child", true);
+
+				StringBuilder sb = object_retrieval(childMap);
+				return sb != null ? sb.toString() : "";
+			}
+		} catch (Exception e) {
+			logger.error("Error in renderSingleObjectHtml for objectId=" + objectId + ": " + e.getMessage());
+		}
+		return "<div class='alert alert-light border text-muted small p-2 mb-0'><i class='fas fa-info-circle me-1'></i> Object #" + objectId + " content not found</div>";
+	}
+
+	public Map<String, Object> getChildObjectPreview(Map<String, Object> payload) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			if (payload != null && payload.get("object_id") != null) {
+				int objectId = Integer.parseInt(String.valueOf(payload.get("object_id")));
+				String lang = payload.get("lang") != null ? String.valueOf(payload.get("lang")) : "E";
+				String html = renderSingleObjectHtml(objectId, lang);
+				result.put("status", "success");
+				result.put("html", html);
+				return result;
+			}
+			result.put("status", "error");
+			result.put("message", "No object_id provided");
+		} catch (Exception e) {
+			result.put("status", "error");
+			result.put("message", e.getMessage());
+		}
+		return result;
+	}
+
+	public ArrayList<HashMap<String, Object>> getNavTabEligibleObjects() {
+		ArrayList<HashMap<String, Object>> list = null;
+		try {
+			list = dbutils.getListMap(
+					"SELECT o.object_id, o.object_category, oc.category_name, o.object_title " +
+					"FROM objects o " +
+					"LEFT JOIN object_categories oc ON o.object_category = oc.category_id " +
+					"WHERE o.lang = 'E' AND o.object_category != 12 " +
+					"ORDER BY oc.category_name, o.object_title",
+					null);
+		} catch (Exception e) {
+			logger.error("Exception in SVPNPAService::getNavTabEligibleObjects::" + e.getMessage());
+		}
+		return list;
 	}
 
 	public int saveTableData(String object_id, String imgType, String jsonString, String type, String marquee,
@@ -1768,8 +2330,17 @@ System.out.println("objects===="+objects);
 			object_id_from_db = countLong.toString();
 			boolean check = false;
 			if (object_id != null && !object_id.equals("")) {
-				check = (boolean) dbutils.getDBValue("SELECT true FROM objects where  object_id=?",
+				Object checkVal = dbutils.getDBValue("SELECT count(*) FROM objects where object_id=?",
 						new Object[] { Integer.parseInt(object_id) });
+				int countVal = (checkVal instanceof Number) ? ((Number) checkVal).intValue() : 0;
+				check = (countVal > 0);
+			}
+			boolean check_hi = false;
+			if (check && object_id != null && !object_id.equals("")) {
+				Object checkHiVal = dbutils.getDBValue("SELECT count(*) FROM objects where object_id=? and lang='H'",
+						new Object[] { Integer.parseInt(object_id) });
+				int countHiVal = (checkHiVal instanceof Number) ? ((Number) checkHiVal).intValue() : 0;
+				check_hi = (countHiVal > 0);
 			}
 			if (newJson == null || newJson.length() == 0) {
 				Map propertiesJson = new HashMap<String, String>();
@@ -1836,10 +2407,20 @@ System.out.println("objects===="+objects);
 						"update objects set data=?::json,object_title=?,properties=?,hyperlinks='"+linksString+"'::json,expiration='"+expString+"'::json,object_meta=?::json,styles=?,classes=? where object_id=? and lang='E'",						
 						new Object[] { jsonString, object_title, list_type + "," + marquee,
 								newJson, styles, classes, Integer.parseInt(object_id) });
-				count_hi = dbutils.insertOrUpdate(
-						"update objects set data=?::json,object_title=?,properties=?,hyperlinks='"+linksString+"'::json,expiration='"+expString+"'::json,object_meta=?::json,styles=?,classes=? where object_id=? and lang='H'",
-						new Object[] { jsonString_hi, object_title_hi, list_type + "," + marquee,
-								 meta_hi, styles, classes, Integer.parseInt(object_id) });
+				if (jsonString_hi != null && jsonString_hi.length() > 0) {
+					if (check_hi) {
+						count_hi = dbutils.insertOrUpdate(
+								"update objects set data=?::json,object_title=?,properties=?,hyperlinks='"+linksString+"'::json,expiration='"+expString+"'::json,object_meta=?::json,styles=?,classes=? where object_id=? and lang='H'",
+								new Object[] { jsonString_hi, object_title_hi, list_type + "," + marquee,
+										 meta_hi, styles, classes, Integer.parseInt(object_id) });
+					} else {
+						count_hi = dbutils.insertOrUpdate(
+								"INSERT INTO objects(object_id,object_category,data,object_title,properties,hyperlinks,expiration,object_meta,lang,styles,classes) VALUES(?,?,?::json,?,?,?::json,?::json,?::json,?,?,?)",
+								new Object[] { Integer.parseInt(object_id), Integer.parseInt(type), jsonString_hi,
+										object_title_hi, list_type + "," + marquee, linksString, expString, meta_hi, 'H',
+										styles, classes });
+					}
+				}
 				if(Integer.parseInt(object_id)== 217) {
 					int count1 = dbutils.insertOrUpdate(
 							"update objects set data=?::json,object_title=?,properties=?,hyperlinks='"+linksString+"'::json,expiration='"+expString+"'::json,object_meta=?::json,styles=?,classes=? where object_id='218' and lang='E'",						
@@ -1873,14 +2454,18 @@ System.out.println("objects===="+objects);
 		int k = 0;
 		try {
 			int page_id = 0;
-			if (page_id_given != null && page_id_given.length() != 0)
-				page_id = Integer.parseInt(page_id_given);
+			if (page_id_given != null && page_id_given.trim().length() != 0)
+				page_id = Integer.parseInt(page_id_given.trim());
 			Gson gson = new Gson();
-			String[] userArray = gson.fromJson(jsonString.substring(1, jsonString.length() - 1), String[].class);
+			String jsonClean = jsonString.trim();
+			if (jsonClean.startsWith("\"") && jsonClean.endsWith("\"")) {
+				jsonClean = jsonClean.substring(1, jsonClean.length() - 1);
+			}
+			String[] userArray = gson.fromJson(jsonClean, String[].class);
 			int i = 1;
 			int page_id_max = Integer.valueOf(
 					String.valueOf(dbutils.getDBValue("SELECT coalesce(max(page_id),0)+1 FROM pages_names", null)));
-			if (page_id_given == null)
+			if (page_id_given == null || page_id_given.trim().isEmpty())
 				page_id = page_id_max;
 //			System.out.println("page_id===="+page_id);
 			boolean check2 = Boolean.valueOf(String.valueOf(
@@ -1902,15 +2487,20 @@ System.out.println("objects===="+objects);
 			if (page_id == 0)
 				page_id = page_id_max;
 			for (String val : userArray) {
+				if (val == null || val.trim().isEmpty() || val.trim().equals("-1")) {
+					i++;
+					continue;
+				}
+				int objId = Integer.parseInt(val.trim());
 				boolean check = Boolean.valueOf(String.valueOf(dbutils.getDBValue(
 						"SELECT true FROM pages where page_id=? and order_no=?", new Object[] { page_id, i })));
 				if (!check) {
 					k = dbutils.insertOrUpdate("INSERT INTO pages VALUES(?,?,?);",
-							new Object[] { page_id, Integer.parseInt(val), i });
+							new Object[] { page_id, objId, i });
 //					System.out.println("k==Loop==if=="+k);
 				} else {
 					k = dbutils.insertOrUpdate("update pages set object_id=? where page_id=? and order_no=?",
-							new Object[] { Integer.parseInt(val), page_id, i });
+							new Object[] { objId, page_id, i });
 //					System.out.println("k=Loop=else=="+k);
 				}
 				i++;
@@ -1929,8 +2519,12 @@ System.out.println("objects===="+objects);
 	public StringBuilder parseTableData(String tableTitle, String[][] array, String styles, String classes) {
 		StringBuilder temp = null;
 		try {
-			temp = new StringBuilder("<h5>" + tableTitle + "</h5><table styles='" + styles
-					+ "'  class=\"w-100 h-100 customTable border border-2 " + classes + " \">");
+			temp = new StringBuilder();
+			if (tableTitle != null && !tableTitle.trim().isEmpty() && !tableTitle.equalsIgnoreCase("null")) {
+				temp.append("<h5>").append(tableTitle).append("</h5>");
+			}
+			temp.append("<table styles='").append(styles)
+					.append("'  class=\"w-100 h-100 customTable border border-2 ").append(classes).append(" \">");
 			for (int i = 0; i < array.length; i++) {
 				if (i == 0)
 					temp.append("<thead>");
@@ -1977,7 +2571,7 @@ System.out.println("objects===="+objects);
 					if (expArray[i].equals("")) {
 						try {
 						temp.append(
-								"<li>" + new StringBuilder(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
+								"<li>" + formatListItemText(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
 									+ "</li>");
 						}catch(Exception e) {}
 					}else if (expArray == null || expArray[i] == null || expArray[i].equals("")
@@ -1985,7 +2579,7 @@ System.out.println("objects===="+objects);
 							.before(sdf.parse(sdf.format(new java.util.Date())))) {
 						try {
 						temp.append(
-								"<li>" + new StringBuilder(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
+								"<li>" + formatListItemText(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
 									+ "</li>");
 						}catch(Exception e) {}
 					}
@@ -2001,7 +2595,7 @@ System.out.println("objects===="+objects);
 							temp.append("<li><a href="
 									+ new StringBuilder(URLDecoder.decode(linksArray[i], StandardCharsets.UTF_8.name()))
 									+ ">"
-									+ new StringBuilder(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
+									+ formatListItemText(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
 									+ "</a></li>");
 						}catch(Exception e) {}
 					}else if (expArray == null || expArray[i] == null
@@ -2011,7 +2605,7 @@ System.out.println("objects===="+objects);
 						temp.append("<li><a href="
 							+ new StringBuilder(URLDecoder.decode(linksArray[i], StandardCharsets.UTF_8.name()))
 							+ ">"
-							+ new StringBuilder(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
+							+ formatListItemText(URLDecoder.decode(array[i], StandardCharsets.UTF_8.name()))
 							+ "</a></li>");
 						}catch(Exception e) {}
 						
@@ -2028,6 +2622,219 @@ System.out.println("objects===="+objects);
 		}
 		System.out.println("temp===="+temp.toString());
 		return temp;
+	}
+
+	public static boolean isImageIconPath(String icon) {
+		if (icon == null) {
+			return false;
+		}
+		String v = icon.trim().toLowerCase();
+		if (v.isEmpty() || v.equals("null")) {
+			return false;
+		}
+		int q = v.indexOf('?');
+		if (q >= 0) {
+			v = v.substring(0, q);
+		}
+		int h = v.indexOf('#');
+		if (h >= 0) {
+			v = v.substring(0, h);
+		}
+		return v.endsWith(".png") || v.endsWith(".svg") || v.endsWith(".jpg") || v.endsWith(".jpeg")
+				|| v.endsWith(".gif") || v.endsWith(".webp") || v.endsWith(".bmp") || v.endsWith(".ico");
+	}
+
+	public StringBuilder renderModernListCard(Map map, String[] userArray, String[] linksArray,
+			String[] expArray, String listType, String styles, String classes, String lang) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			String title = String.valueOf(map.get("object_title"));
+			if (title == null || title.equals("null")) {
+				title = "";
+			}
+			
+			String theme = "navy"; // default theme matching Image 1
+			String headerIcon = "";
+			String viewMoreUrl = "";
+			
+			if (classes != null) {
+				if (classes.contains("list-card-light")) {
+					theme = "light";
+				} else if (classes.contains("list-card-navy")) {
+					theme = "navy";
+				} else if (classes.contains("list-card-custom")) {
+					theme = "custom";
+				}
+			}
+			
+			Map<String, Object> metaMap = null;
+			if (map.get("object_meta") != null) {
+				try {
+					String metaStr = String.valueOf(map.get("object_meta"));
+					if (metaStr != null && metaStr.trim().startsWith("{")) {
+						Gson gson = new Gson();
+						metaMap = gson.fromJson(metaStr, Map.class);
+						if (metaMap != null) {
+							if (metaMap.get("theme") != null && !String.valueOf(metaMap.get("theme")).trim().isEmpty()) {
+								theme = String.valueOf(metaMap.get("theme"));
+							}
+							if (metaMap.get("header_icon") != null && !String.valueOf(metaMap.get("header_icon")).trim().isEmpty()) {
+								headerIcon = String.valueOf(metaMap.get("header_icon"));
+							}
+							if (metaMap.get("view_more_url") != null && !String.valueOf(metaMap.get("view_more_url")).trim().isEmpty()) {
+								viewMoreUrl = String.valueOf(metaMap.get("view_more_url")).trim();
+								if (viewMoreUrl.matches("\\d+")) {
+									viewMoreUrl = "/Preview?page_id=" + viewMoreUrl;
+								}
+							}
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error parsing object_meta in renderModernListCard: " + e.getMessage());
+				}
+			}
+
+			// If light theme and no icon configured, default to search icon as in Image 2
+			if ((headerIcon == null || headerIcon.trim().isEmpty() || headerIcon.equals("null")) && "light".equalsIgnoreCase(theme)) {
+				headerIcon = "fas fa-search-plus";
+			}
+			if (headerIcon != null && headerIcon.equals("null")) {
+				headerIcon = "";
+			}
+			if (viewMoreUrl != null && viewMoreUrl.equals("null")) {
+				viewMoreUrl = "";
+			}
+			
+			String themeClass = "list-card-" + theme;
+			String customStyleAttr = (styles != null && !styles.trim().isEmpty() && !styles.equals("null"))
+					? "style=\"" + styles.replace("\"", "&quot;") + "\""
+					: "";
+
+			sb.append("<div class=\"modern-list-card-wrapper\">");
+			sb.append("<div class=\"modern-list-card ").append(themeClass).append("\" ").append(customStyleAttr).append(">");
+			
+			// Card Header (Suppressed when embedded inside NavTabs, as the tab title already represents it)
+			boolean isNavTabChild = map.get("is_navtab_child") != null && Boolean.TRUE.equals(map.get("is_navtab_child"));
+			if (!isNavTabChild && ((title != null && !title.trim().isEmpty()) || (headerIcon != null && !headerIcon.trim().isEmpty()))) {
+				sb.append("<div class=\"modern-list-card-header\">");
+				if (headerIcon != null && !headerIcon.trim().isEmpty()) {
+					if (isImageIconPath(headerIcon)) {
+						sb.append("<img class=\"header-icon\" src=\"").append(headerIcon.trim()).append("\" alt=\"\" />");
+					} else {
+						sb.append("<i class=\"").append(headerIcon).append(" header-icon\"></i>");
+					}
+				}
+				if (title != null && !title.trim().isEmpty()) {
+					sb.append("<h4 class=\"header-title\">").append(title).append("</h4>");
+				}
+				sb.append("</div>");
+			}
+			
+			// Card Body: Scrollable container for ~10 items
+			sb.append("<div class=\"modern-list-card-body\">");
+			sb.append("<ul class=\"modern-list-items\">");
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+			Date now = new Date();
+			int validCount = 0;
+			
+			if (userArray != null && userArray.length > 0) {
+				for (int i = 0; i < userArray.length; i++) {
+					if (userArray[i] == null || userArray[i].trim().isEmpty()) {
+						continue;
+					}
+					
+					// Expiration check
+					boolean isExpired = false;
+					if (expArray != null && i < expArray.length && expArray[i] != null && !expArray[i].trim().isEmpty()) {
+						try {
+							String expDecoded = URLDecoder.decode(expArray[i], StandardCharsets.UTF_8.name());
+							Date expDate = sdf.parse(expDecoded);
+							if (expDate.before(now)) {
+								isExpired = true;
+							}
+						} catch (Exception e) {}
+					}
+					if (isExpired) {
+						continue;
+					}
+					
+					validCount++;
+					String itemText = "";
+					try {
+						itemText = URLDecoder.decode(userArray[i], StandardCharsets.UTF_8.name());
+					} catch (Exception e) {
+						itemText = userArray[i];
+					}
+					itemText = formatListItemText(itemText);
+					
+					String linkUrl = "#";
+					if (linksArray != null && i < linksArray.length && linksArray[i] != null && !linksArray[i].trim().isEmpty()) {
+						try {
+							linkUrl = URLDecoder.decode(linksArray[i], StandardCharsets.UTF_8.name());
+						} catch (Exception e) {
+							linkUrl = linksArray[i];
+						}
+					}
+					
+					String targetAttr = "";
+					if (linkUrl != null && (linkUrl.startsWith("http") || linkUrl.toLowerCase().endsWith(".pdf"))) {
+						targetAttr = " target=\"_blank\" rel=\"noopener noreferrer\"";
+					}
+					
+					sb.append("<li class=\"modern-list-item\">");
+					sb.append("<a href=\"").append(linkUrl != null ? linkUrl : "#").append("\" class=\"modern-list-item-link\"").append(targetAttr).append(">");
+					sb.append("<span class=\"modern-list-item-text\">").append(itemText).append("</span>");
+					sb.append("<i class=\"fas fa-chevron-right modern-list-item-chevron\"></i>");
+					sb.append("</a>");
+					sb.append("</li>");
+				}
+			}
+			
+			sb.append("</ul>");
+			sb.append("</div>"); // .modern-list-card-body
+			sb.append("</div>"); // .modern-list-card
+			
+			// Navigation Button ("VIEW MORE >")
+			// User decides whether to include the button or not. Item count does NOT force button.
+			boolean showViewMore = false;
+			if (metaMap != null && metaMap.containsKey("show_view_more")) {
+				showViewMore = Boolean.parseBoolean(String.valueOf(metaMap.get("show_view_more")));
+			} else {
+				// Backwards compatibility for existing objects created before the explicit toggle:
+				showViewMore = (viewMoreUrl != null && !viewMoreUrl.trim().isEmpty() && !viewMoreUrl.equals("#"));
+			}
+			if (showViewMore) {
+				String targetUrl = (viewMoreUrl != null && !viewMoreUrl.trim().isEmpty()) ? viewMoreUrl : "/Preview?page_id=196";
+				String buttonLabel = (lang != null && lang.equalsIgnoreCase("H")) ? "और देखें" : "VIEW MORE";
+				sb.append("<div class=\"modern-list-footer\">");
+				sb.append("<a href=\"").append(targetUrl).append("\" class=\"btn-list-view-more\">")
+				  .append(buttonLabel).append(" <i class=\"fas fa-chevron-right\"></i></a>");
+				sb.append("</div>");
+			}
+			
+			sb.append("</div>"); // .modern-list-card-wrapper
+		} catch (Exception e) {
+			logger.error("Exception in renderModernListCard: " + e.getMessage(), e);
+		}
+		return sb;
+	}
+
+	public static String formatListItemText(String text) {
+		if (text == null || text.trim().isEmpty()) {
+			return "";
+		}
+		String badgeHtml = "<span class=\"badge rounded-pill text-warning border border-warning modern-list-badge-new\">New</span>";
+		boolean hasNew = text.matches("(?is).*?(?:\\[new\\]|<span[^>]*modern-list-badge-new[^>]*>|<img[^>]*(?:3640b7b6868946348904a3be1d3d8cd4|new_icon|new-icon|icon_new)).*");
+		String clean = text
+				.replaceAll("(?i)<img[^>]*(?:3640b7b6868946348904a3be1d3d8cd4|new_icon|new-icon|icon_new)[^>]*>", "")
+				.replaceAll("(?i)\\[new\\]", "")
+				.replaceAll("(?i)<span[^>]*modern-list-badge-new[^>]*>.*?</span>", "")
+				.trim();
+		if (hasNew) {
+			return clean + " " + badgeHtml;
+		}
+		return clean;
 	}
 
 	public String getImage(Model model) {
@@ -2064,8 +2871,6 @@ System.out.println("objects===="+objects);
 		String user_identity = "usr", original_filename = "";		
 		try {
 			StringBuilder fileNames = new StringBuilder();
-			int length = file.length;
-			JSONObject reqJson = new JSONObject();
 			for (int i = 0; i < file.length; i++) {
 				original_filename = file[i].getOriginalFilename();
 				String fileExtension = getFileExtension(original_filename); // Get the file extension
@@ -2081,7 +2886,10 @@ System.out.println("objects===="+objects);
 				Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, newFileName);
 //				System.out.println(fileNameAndPath + "--" + newFileName + "Path");
 
-				fileNames.append(file[i].getOriginalFilename());
+				if (fileNames.length() > 0) {
+					fileNames.append(", ");
+				}
+				fileNames.append(original_filename);
 				Files.write(fileNameAndPath, file[i].getBytes());
 //				File inputFile = new File(UPLOAD_DIRECTORY + "/" + newFileName); // Replace with the path to your input
 				File inputFile = new File(UPLOAD_DIRECTORY + File.separator + newFileName); // image
@@ -2099,30 +2907,31 @@ System.out.println("objects===="+objects);
 //				File outputFile = new File(UPLOAD_DIRECTORY + "/" + thumbnail_fname);
 				File outputFile = new File(UPLOAD_DIRECTORY + File.separator + thumbnail_fname);
 				ImageIO.write(bufferedThumbnail, "PNG", outputFile);
-//				reqJson.put("description", file_desc.get(i));
-//				String rq2 = reqJson.toString();	
-//------------Newly-Added-Code------------------------------------------				
-				String fdc = "",rq2 = "";
-				String[] mnr;				
-				try {
-					fdc = file_desc.get(i);
-					fdc = fdc.replace("\\", "");
-					mnr = fdc.split("&");
-					reqJson.put("description", mnr[0]);
-					reqJson.put("title", mnr[1]);					
-					
-					ObjectNode newJsonObject = null;
-					ObjectMapper objectMapper = new ObjectMapper();
-					
-					newJsonObject = (ObjectNode) objectMapper.readTree(reqJson.toString());
-		            rq2 = newJsonObject.toString();
-					
-				}catch(Exception e) {	
-					e.printStackTrace();
-				 reqJson.put("description", file_desc.get(i));
-				 rq2 = reqJson.toString();
-				}										 
-//-----------------------------------------------------------				
+
+				JSONObject reqJson = new JSONObject();
+				String description = "";
+				String title = "";
+				if (file_desc != null && i < file_desc.size() && file_desc.get(i) != null) {
+					String fdc = file_desc.get(i).replace("\\", "").trim();
+					if (fdc.contains("&")) {
+						String[] mnr = fdc.split("&", 2);
+						description = mnr[0].trim();
+						title = (mnr.length > 1 && !mnr[1].trim().isEmpty()) ? mnr[1].trim() : description;
+					} else {
+						description = fdc;
+						title = fdc;
+					}
+				}
+				if (title.isEmpty()) {
+					title = (original_filename != null && !original_filename.isEmpty()) ? original_filename : "";
+				}
+				if (description.isEmpty()) {
+					description = title;
+				}
+				reqJson.put("description", description);
+				reqJson.put("title", title);
+				String rq2 = reqJson.toString();
+
 				int k = dbutils.insertOrUpdate(
 						"INSERT INTO gallery(media_type,file_name,path,thumbnail_filename,group_id,user_identity,original_filename,properties) values(?,?,?,?,?,?,?,to_json(?::json));",
 						new Object[] { 2, newFileName, UPLOAD_DIRECTORY, thumbnail_fname, group_id, user_identity,original_filename, rq2 });
@@ -2482,33 +3291,26 @@ System.out.println("objects===="+objects);
 						expArray = gson.fromJson(expData.substring(1, expData.length() - 1), String[].class);
 					}
 					String property[] = ((String) map.get("properties")).toString().split(",");
-					if (property.length > 1) {
-						if (property[1].equals("marquee"))
-							marquee = new StringBuilder(
-									"<h5 class='text-primary fw-bold text-center'>" + (String) map.get("object_title")
-											+ "</h5><marquee direction='" + property[2] + "'>"
-											+ parseListData(userArray, linksArray, expArray, property[0],
-													(String) map.get("styles"), (String) map.get("classes"))
-											+ "</marquee>");
-						else if (property[1].equals("marquee"))
-							marquee = new StringBuilder(
-									"<h5  class='text-primary fw-bold text-center'>" + (String) map.get("object_title")
-											+ "</h5><marquee direction='" + property[2] + "'>"
-											+ parseListData(userArray, linksArray, expArray, property[0],
-													(String) map.get("styles"), (String) map.get("classes"))
-											+ "</marquee>");
-						else
-							marquee = new StringBuilder(
-									new StringBuffer("<h5  class='text-primary fw-bold text-center'>")
-											.append((String) map.get("object_title")).append("</h5>"))
-									.append(parseListData(userArray, linksArray, expArray, property[0],
-											(String) map.get("styles"), (String) map.get("classes")));
-					} else
+					if (property.length > 2 && property[1].equals("marquee") && property[2].equals("left")) {
 						marquee = new StringBuilder(
-								"<div class=\"card-body border border-2 border-success rounded-5 important_links\">")
-								.append(parseListData(userArray, linksArray, expArray, property[0],
-										String.valueOf(map.get("styles")), String.valueOf(map.get("classes"))))
-								.append("" + "                  </div>");
+								"<div class=\"ticker1 modern-ticker mt-round mt-scroll border border-1\">\r\n"
+								+ "                     <div class=\"latest-update\">"
+								+ String.valueOf(map.get("object_title")) + "</div>\r\n"
+								+ "                     <div class=\"mt-news newsof-widht\">"
+								+ parseListData(userArray, linksArray, expArray, property[0],
+										String.valueOf(map.get("styles")),
+										String.valueOf(map.get("classes")))
+								+ "<a href=\"/Preview?page_id=196\" class=\"mt-external-link\" target=\"_blank\" title=\"View all\" onClick=\"marqueePopup(this);\"><i class=\"fa-solid fa-up-right-from-square\"></i></a></div>\r\n"
+								+ "                     <div class=\"mt-controls\">\r\n"
+								+ "                        <a href=\"#mt-prev\" class=\"mt-prev\" title=\"prev\"><span class=\"hidethis\">Previous</span></a>\r\n"
+								+ "                        <a href=\"#mt-pause\" class=\"mt-play mt-pause\" title=\"Pause\"><span class=\"hidethis\">Pause</span></a>\r\n"
+								+ "                        <a href=\"#mt-next\" class=\"mt-next\" title=\"next\"><span class=\"hidethis\">Next</span></a>\r\n"
+								+ "                     </div>");
+					} else {
+						marquee = renderModernListCard(map, userArray, linksArray, expArray,
+								(property.length > 0 ? property[0] : "ul"), String.valueOf(map.get("styles")),
+								String.valueOf(map.get("classes")), lang);
+					}
 					output[i] = marquee;
 				} else if (type.equals("6") || type.equals("10")) {
 					String data;
@@ -2543,6 +3345,10 @@ System.out.println("objects===="+objects);
 					data = data.replaceAll("mvnr", "'");
 					String[] userArray = gson.fromJson(data.substring(1, data.length() - 1), String[].class);
 					output[i] = parseDocs(userArray, i);
+				} else if (type.equals("11")) {
+					output[i] = parseCardsData(map);
+				} else if (type.equals("12")) {
+					output[i] = parseNavTabsData(map);
 				}
 				items[i][1] = Integer.toString((int) map.get("object_id"));
 				items[i][0] = output[i].toString();
@@ -2554,6 +3360,157 @@ System.out.println("objects===="+objects);
 			logger.error("Exception in SVPNPAService::getindividualobject::" + e.getClass() + "::"+ e.getLocalizedMessage());
 			}
 		return items;
+	}
+
+	public Map<String, Object> getObjectAppearance(int object_id) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			ArrayList<HashMap<String, Object>> rows = dbutils.getListMap(
+					"SELECT * FROM objects WHERE object_id = ? AND lang = ?",
+					new Object[] { object_id, (lang != null && !lang.isEmpty()) ? lang : "E" });
+			if (rows == null || rows.isEmpty()) {
+				rows = dbutils.getListMap("SELECT * FROM objects WHERE object_id = ? LIMIT 1",
+						new Object[] { object_id });
+			}
+			if (rows != null && !rows.isEmpty()) {
+				Map<String, Object> row = rows.get(0);
+				result.put("status", "success");
+				result.put("object_id", object_id);
+				result.put("object_title", row.get("object_title"));
+				result.put("object_category", row.get("object_category"));
+				result.put("classes", row.get("classes") != null ? String.valueOf(row.get("classes")) : "");
+				result.put("styles", row.get("styles") != null ? String.valueOf(row.get("styles")) : "");
+
+				String metaStr = row.get("object_meta") != null ? String.valueOf(row.get("object_meta")) : "{}";
+				Gson gson = new Gson();
+				Map<String, Object> metaMap = new HashMap<>();
+				try {
+					metaMap = gson.fromJson(metaStr, Map.class);
+				} catch (Exception ignored) {
+				}
+				if (metaMap == null) metaMap = new HashMap<>();
+
+				String theme = metaMap.get("theme") != null ? String.valueOf(metaMap.get("theme")) : "";
+				if (theme.isEmpty() || theme.equals("null")) {
+					String cls = String.valueOf(row.get("classes"));
+					if (cls.contains("list-card-navy") || cls.contains("navy")) {
+						theme = "navy";
+					} else if (cls.contains("list-card-light") || cls.contains("light")) {
+						theme = "light";
+					} else if (cls.contains("custom")) {
+						theme = "custom";
+					} else {
+						theme = "navy";
+					}
+				}
+				boolean showViewMore = false;
+				if (metaMap.containsKey("show_view_more")) {
+					showViewMore = Boolean.parseBoolean(String.valueOf(metaMap.get("show_view_more")));
+				} else if (metaMap.get("view_more_url") != null && !String.valueOf(metaMap.get("view_more_url")).trim().isEmpty()) {
+					showViewMore = true;
+				}
+				result.put("show_view_more", showViewMore);
+				result.put("theme", theme);
+				result.put("header_icon", metaMap.get("header_icon") != null ? String.valueOf(metaMap.get("header_icon")) : "");
+				result.put("view_more_url", metaMap.get("view_more_url") != null ? String.valueOf(metaMap.get("view_more_url")) : "");
+				result.put("object_meta", metaMap);
+
+				Map<String, Object> typeMap = new HashMap<>();
+				typeMap.put("objectid", String.valueOf(object_id));
+				String[][] indiv = getindividualobject(typeMap);
+				if (indiv != null && indiv.length > 0 && indiv[0] != null) {
+					result.put("renderedHtml", indiv[0][0]);
+				} else {
+					result.put("renderedHtml", "");
+				}
+			} else {
+				result.put("status", "not_found");
+				result.put("message", "Object not found");
+			}
+		} catch (Exception ex) {
+			logger.error("Exception in SVPNPAService::getObjectAppearance::" + ex.getMessage(), ex);
+			result.put("status", "error");
+			result.put("message", ex.getMessage());
+		}
+		return result;
+	}
+
+	public Map<String, Object> updateObjectAppearance(Map<String, Object> payload) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			int objectId = Integer.parseInt(String.valueOf(payload.get("object_id")));
+			String theme = payload.get("theme") != null ? String.valueOf(payload.get("theme")) : "navy";
+			String headerIcon = payload.get("header_icon") != null ? String.valueOf(payload.get("header_icon")) : "";
+			boolean showViewMore = true;
+			if (payload.containsKey("show_view_more")) {
+				showViewMore = Boolean.parseBoolean(String.valueOf(payload.get("show_view_more")));
+			}
+			String viewMoreUrl = payload.get("view_more_url") != null ? String.valueOf(payload.get("view_more_url")).trim() : "";
+			if (!viewMoreUrl.isEmpty()) {
+				if (viewMoreUrl.matches("\\d+")) {
+					viewMoreUrl = "/Preview?page_id=" + viewMoreUrl;
+				}
+			}
+			String classes = payload.get("classes") != null ? String.valueOf(payload.get("classes")) : "";
+			String styles = payload.get("styles") != null ? String.valueOf(payload.get("styles")) : "";
+
+			ArrayList<HashMap<String, Object>> rows = dbutils.getListMap(
+					"SELECT * FROM objects WHERE object_id = ?",
+					new Object[] { objectId });
+
+			Gson gson = new Gson();
+			if (rows != null && !rows.isEmpty()) {
+				for (Map<String, Object> row : rows) {
+					String rowLang = String.valueOf(row.get("lang"));
+					String metaStr = row.get("object_meta") != null ? String.valueOf(row.get("object_meta")) : "{}";
+					Map<String, Object> metaMap = new HashMap<>();
+					try {
+						metaMap = gson.fromJson(metaStr, Map.class);
+					} catch (Exception ignored) {
+					}
+					if (metaMap == null) metaMap = new HashMap<>();
+
+					metaMap.put("theme", theme);
+					metaMap.put("header_icon", headerIcon);
+					metaMap.put("show_view_more", showViewMore);
+					if (showViewMore && !viewMoreUrl.isEmpty()) {
+						metaMap.put("view_more_url", viewMoreUrl);
+					} else if (!showViewMore) {
+						metaMap.remove("view_more_url");
+					}
+
+					String rowClasses = row.get("classes") != null ? String.valueOf(row.get("classes")) : "";
+					rowClasses = rowClasses.replaceAll("list-card-[a-zA-Z0-9_-]+", "").trim();
+					rowClasses = ("list-card-" + theme + " " + rowClasses).trim();
+
+					String newMetaJson = gson.toJson(metaMap);
+
+					dbutils.insertOrUpdate(
+							"UPDATE objects SET object_meta = ?::json, classes = ?, styles = ? WHERE object_id = ? AND lang = ?",
+							new Object[] { newMetaJson, rowClasses, styles, objectId, rowLang });
+				}
+			}
+
+			result.put("status", "success");
+			result.put("message", "Appearance updated successfully");
+			result.put("object_id", objectId);
+			result.put("theme", theme);
+			result.put("show_view_more", showViewMore);
+			result.put("classes", "list-card-" + theme);
+			result.put("styles", styles);
+
+			Map<String, Object> typeMap = new HashMap<>();
+			typeMap.put("objectid", String.valueOf(objectId));
+			String[][] indiv = getindividualobject(typeMap);
+			if (indiv != null && indiv.length > 0 && indiv[0] != null) {
+				result.put("renderedHtml", indiv[0][0]);
+			}
+		} catch (Exception ex) {
+			logger.error("Exception in SVPNPAService::updateObjectAppearance::" + ex.getMessage(), ex);
+			result.put("status", "error");
+			result.put("message", ex.getMessage());
+		}
+		return result;
 	}
 
 	public ArrayList<HashMap<String, Object>> getListPages() {
@@ -2718,9 +3675,9 @@ System.out.println("objects===="+objects);
 					try {
 						fdc = desc[j];
 						fdc = fdc.replace("\\", "");
-						mnr = fdc.split("&");
-						reqJson.put("description", mnr[0]);
-						reqJson.put("title", mnr[1]);					
+						mnr = fdc.split("&", 2);
+						reqJson.put("description", mnr[0].trim());
+						reqJson.put("title", (mnr.length > 1 && !mnr[1].trim().isEmpty()) ? mnr[1].trim() : mnr[0].trim());					
 						
 						ObjectNode newJsonObject = null;
 						ObjectMapper objectMapper = new ObjectMapper();

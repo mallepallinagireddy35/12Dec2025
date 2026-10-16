@@ -5,10 +5,8 @@ For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 
 body
 {
-	/* Font */
-	/* Emoji fonts are added to visualise them nicely in Internet Explorer. */
-	font-family: sans-serif, Arial, Verdana, "Trebuchet MS", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-	font-size: 12px;
+	font-family: 'Noto Sans', sans-serif !important;
+	font-size: 14px;
 
 	/* Text color */
 	color: #333;
@@ -31,7 +29,7 @@ body
 blockquote
 {
 	font-style: italic;
-	font-family: Georgia, Times, "Times New Roman", serif;
+	font-family: 'Noto Sans', sans-serif !important;
 	padding: 2px 0;
 	border-style: solid;
 	border-color: #ccc;

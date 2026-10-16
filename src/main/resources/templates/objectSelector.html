@@ -3,314 +3,287 @@
 
 <head>
 <meta charset="UTF-8">
-<!-- <style>
+<style>
+/* ==========================================================================
+   Object Selector Modern Styles
+   ========================================================================== */
 
-
-
-/* Object container styles */
-/* Scrollbar */
+/* Scrollbar Styling */
 .scroll-container {
 	overflow-x: hidden;
-}
-
-.scroll-container:hover {
-	overflow-x: scroll;
 	scrollbar-width: thin;
+	scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
 .scroll-container::-webkit-scrollbar {
-	width: 6px; /* Set the width of the scrollbar */
+	width: 6px;
 	height: 6px;
-	cursor: pointer;
-	opacity: 0.5;
-}
-
-.scroll-container::-webkit-scrollbar-thumb {
-	background-color: orange;
-	border-radius: 3px;
-	cursor: pointer;
-	opacity: 0.5;
-}
-
-.scroll-container::-webkit-scrollbar-thumb:hover {
-	background-color: #ff8c00;
-	cursor: pointer;
-	opacity: 0.3;
 }
 
 .scroll-container::-webkit-scrollbar-track {
-	background-color: #f1f1f1;
+	background: #f1f5f9;
+	border-radius: 4px;
 }
 
-.card-buttons .btn {
-	position: relative;
-	overflow: hidden;
-	padding: 1;
-	margin-right: 5px;
+.scroll-container::-webkit-scrollbar-thumb {
+	background-color: #cbd5e1;
+	border-radius: 4px;
 }
 
-.card-buttons .btn .button-content {
-	position: relative;
-	z-index: 1;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding-left: 5px;
-	text-align: center;
-	color: black;
+.scroll-container::-webkit-scrollbar-thumb:hover {
+	background-color: #94a3b8;
 }
 
-.card-buttons .btn:before {
-	content: "";
+/* Category Items Container (.objContainer) */
+.objContainer {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 8px !important;
+	padding: 12px 10px !important;
+	background: #f8fafc !important;
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 12px !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+	margin-bottom: 12px !important;
+}
+
+/* All .objItems MUST be identical in size */
+.objItems {
+	width: 95px !important;
+	min-width: 95px !important;
+	max-width: 95px !important;
+	height: 95px !important;
+	min-height: 95px !important;
+	max-height: 95px !important;
+	flex: 0 0 95px !important;
+	margin: 0 !important;
+	box-sizing: border-box !important;
+	position: relative !important;
+}
+
+.objItems .btn-check {
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	margin-right: 0px;
-	background-repeat: no-repeat;
-	background-position: left;
-	background-size: 50px 50px; /* Adjust the size as needed */
-	z-index: 0;
+	clip: rect(0, 0, 0, 0);
+	pointer-events: none;
 }
 
-.table-button:before {
-	background-image: url('table.png');
-	/* Replace with the path to your table icon */
+.objItems label.btn {
+	width: 100% !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: center !important;
+	align-items: center !important;
+	padding: 6px 3px !important;
+	border-radius: 10px !important;
+	border: 1.5px solid #cbd5e1 !important;
+	background-color: #ffffff !important;
+	color: #475569 !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+	box-sizing: border-box !important;
+	cursor: pointer !important;
+	text-align: center !important;
+	overflow: hidden !important;
 }
 
-.para-button:before {
-	background-image: url('table.png');
-	/* Replace with the path to your paragraph icon */
+.objItems label.btn i {
+	font-size: 1.5rem !important;
+	margin-bottom: 4px !important;
+	line-height: 1 !important;
+	display: block !important;
+	transition: transform 0.2s ease !important;
 }
 
-.ulist-button:before {
-	background-image: url('table.png');
-	/* Replace with the path to your paragraph icon */
+.objItems label.btn .obj-title,
+.objItems label.btn span.fw-bold {
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	line-height: 1.2 !important;
+	margin-bottom: 2px !important;
+	max-width: 100% !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	white-space: nowrap !important;
+	display: block !important;
 }
 
-.olist-button:before {
-	background-image: url('table.png');
-	/* Replace with the path to your paragraph icon */
+.objItems label.btn .selectText {
+	font-size: 9px !important;
+	line-height: 1 !important;
+	opacity: 0.75 !important;
+	letter-spacing: 0.3px !important;
+	text-transform: uppercase !important;
+	font-weight: 600 !important;
+	display: block !important;
 }
 
-.picture-button:before {
-	background-image: url('table.png');
-	/* Replace with the path to your ordered list icon */
-}
-/* Add similar styles for other buttons */
-.opase {
-	opacity: 0.8;
-	background-color: rgba(250, 250, 250, 0.4);
+/* Hover effect */
+.objItems:hover label.btn {
+	transform: translateY(-2px) !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
-.list-group-horizontal {
-	padding-top: 15px;
-	display: flex;
-	flex-direction: row;
-	background-image: url('card_bg.png');
-	/*opacity:0.9;*/
+.objItems:hover label.btn i {
+	transform: scale(1.1) !important;
 }
 
-.button-caption {
-	font-weight: bold;
-	padding-left: 30px;
-	margin-bottom: 4px;
+/* Individual Icon Accent Colors */
+.objItems label[for="item1"] i { color: #10b981 !important; }
+.objItems label[for="item2"] i { color: #ef4444 !important; }
+.objItems label[for="item3"] i { color: #0284c7 !important; }
+.objItems label[for="item4"] i { color: #f59e0b !important; }
+.objItems label[for="item5"] i { color: #0d9488 !important; }
+.objItems label[for="item6"] i { color: #64748b !important; }
+.objItems label[for="item7"] i { color: #dc2626 !important; }
+.objItems label[for="item8"] i { color: #ea580c !important; }
+.objItems label[for="item9"] i { color: #334155 !important; }
+.objItems label[for="item10"] i { color: #2563eb !important; }
+.objItems label[for="item11"] i { color: #7c3aed !important; }
+
+/* Active / Checked State */
+.objItems .btn-check:checked + label.btn {
+	background: #0d6efd !important;
+	border-color: #0d6efd !important;
+	color: #ffffff !important;
+	box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35) !important;
+	transform: translateY(-2px) !important;
 }
 
-.button-description {
-	padding-left: 25px;
-	font-size: 10px;
+.objItems .btn-check:checked + label.btn i,
+.objItems .btn-check:checked + label.btn .obj-title,
+.objItems .btn-check:checked + label.btn span.fw-bold,
+.objItems .btn-check:checked + label.btn .selectText {
+	color: #ffffff !important;
 }
 
-.filter-control {
-	display: flex;
-	flex: 1;
-	flex-direction: row;
-	align-items: right;
-	margin-left: auto;
-	padding: 5px;
-	height: 25px;
-	vertical-align: middle;
-	border: 1px solid #ccc; /* Light border color */
-	border-radius: 4px; /* Optional: Add rounded corners */
-}
-
-.card-title {
-	flex: 1;
-	align-items: left;
-}
-
-/* Add this CSS code to style the toggle switch */
-.switch {
-	position: relative;
-	display: inline-block;
-	width: 40px;
-	height: 20px;
-}
-
-.switch input {
-	opacity: 0;
-	width: 0;
-	height: 0;
-}
-
-.slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #ccc;
-	-webkit-transition: .4s;
-	transition: .4s;
-}
-
-.slider:before {
-	position: absolute;
-	content: "";
-	height: 16px;
-	width: 16px;
-	left: 2px;
-	bottom: 2px;
-	background-color: white;
-	-webkit-transition: .4s;
-	transition: .4s;
-}
-
-input:checked+.slider {
-	background-color: #2196F3;
-}
-
-input:focus+.slider {
-	box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked+.slider:before {
-	-webkit-transform: translateX(20px);
-	-ms-transform: translateX(20px);
-	transform: translateX(20px);
-}
-
-.slider.round {
-	border-radius: 34px;
-}
-
-.slider.round:before {
-	border-radius: 50%;
-}
-
+/* Main Cards Container */
 .cardC {
-	/* display: flex; */
-	overflow-x: auto;
+	overflow-x: hidden;
 	overflow-y: auto;
-	max-height: calc(70vh - 10px); /* Set the desired maximum height */
-	border-style: inset;
-	border-width: 1px;
-	border-radius: 3px;
-	border-color: red;
+	max-height: calc(75vh - 20px);
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	background: #ffffff;
+	padding: 14px;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.item {
-	display: flex;
-	flex-direction: column;
-	align-items: left;
-	width: 150px !important;
-	margin: 10px;
-	border: 1px solid #ccc; /* Add border style */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow style */
-	padding: 10px; /* Add padding for spacing */
-	padding-right: 10px ! important;
-	transition: box-shadow 0.1s ease;
-	/* Add transition for smooth effect */
-	cursor: pointer;
-	border-radius: 5px;
-}
-
-.item.selected {
-	border-style: dotted;
-	border-color: green;
-	background-color: #f3f0f0; /* Add selected background color */
-}
-
-.item:hover {
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-	/* Change box shadow on hover */
-}
-
-.item-icon {
-	font-size: 40px;
-	margin-bottom: 0px;
-}
-
-.item-title {
-	font-size: 16px;
-	font-weight: bold;
-	text-align: center;
-	color: green;
-	border-bottom: 1px solid #f00;
-}
-
-.item-description {
-	font-size: 14px;
-	color: #888;
-}
-
-.card-container>.card {
-	display: none;
-	border: none;
-	/* 
-	flex: 0 0 auto;
-	margin-right: 5px;
-	width: 60vh !important;
-	height: 60vh !important; */
-}
-
-.card-body {
-	margin-top: 5px;
-	/*height: 90%; /* Adjust the height based on your requirements */
-	/* 	display: flex; */
-	/* 	justify-content: space-between; */
-	/* 	flex-direction: row; */
-	/* 	justify-content: center; */
-}
-/* End of Object container styles */
-</style> -->
-<style>
-/* on hover card-header, card-footer display none */
-#viewItems .card {
-	max-height: 300px;
-}
-
-#viewItems .card:hover {
-	max-height: 300px;
-}
-
-#viewItems .card-header {
-	background: #c76957;
-}
-
-#viewItems .card-body {
-	overflow: hidden;
-}
-
-#viewItems .card-body:hover {
-	overflow: auto;
+/* #viewItems Cards Grid Layout */
+#viewItems .row {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	margin: -6px !important;
 }
 
 #viewItems .col {
-	min-width: calc(33.33% - 10px);
-	margin-bottom: 20px;
+	flex: 0 0 calc(33.333% - 12px) !important;
+	max-width: calc(33.333% - 12px) !important;
+	min-width: calc(33.333% - 12px) !important;
+	margin: 6px !important;
+	box-sizing: border-box !important;
 }
 
-#viewItems .row {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
+@media (max-width: 992px) {
+	#viewItems .col {
+		flex: 0 0 calc(50% - 12px) !important;
+		max-width: calc(50% - 12px) !important;
+		min-width: calc(50% - 12px) !important;
+	}
 }
 
+@media (max-width: 576px) {
+	#viewItems .col {
+		flex: 0 0 calc(100% - 12px) !important;
+		max-width: calc(100% - 12px) !important;
+		min-width: calc(100% - 12px) !important;
+	}
+}
+
+#viewItems .col > .card {
+	border: 1.5px solid #cbd5e1 !important;
+	border-radius: 10px !important;
+	background: #ffffff !important;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+	cursor: pointer !important;
+	overflow: hidden !important;
+	height: 290px !important;
+	max-height: 290px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	transition: all 0.2s ease-in-out !important;
+	position: relative !important;
+}
+
+#viewItems .col > .card:hover {
+	border-color: #0d6efd !important;
+	box-shadow: 0 6px 16px rgba(13, 110, 253, 0.16) !important;
+	transform: translateY(-2px) !important;
+}
+
+#viewItems .card .card {
+	border: none !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	box-shadow: none !important;
+}
+
+#viewItems .card-header {
+	background: #f1f5f9 !important;
+	border-bottom: 1px solid #e2e8f0 !important;
+	padding: 6px 10px !important;
+	color: #1e293b !important;
+}
+
+#viewItems .card-body {
+	flex: 1 1 auto !important;
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
+	padding: 10px !important;
+	max-height: 235px !important;
+	font-size: 13px !important;
+	text-align: left !important;
+	background: #ffffff !important;
+}
+
+/* ==========================================================================
+   Hide Appearance in Dropdown and Settings Icon in Card-Header (#viewItems)
+   ========================================================================== */
+#viewItems .fa-cog,
+#viewItems button[title*="Appearance"],
+#viewItems a[onclick*="openAppearanceSettingsModal"],
+#viewItems .dropdown-item:has(.fa-palette),
+#viewItems .dropdown-divider:has(+ li a[onclick*="openAppearanceSettingsModal"]),
+#viewItems .card-header button.btn-light {
+	display: none !important;
+}
+
+/* Dropdown Menu Enhancements */
+.dropdown-item .fa-edit,
+.dropdown-item .fa-pen-to-square {
+	color: #0d6efd;
+	margin-right: 5px;
+}
+
+.dropdown-item .fa-trash {
+	color: #dc3545;
+	margin-right: 5px;
+}
+
+.dropdown-item .fa-check {
+	color: #198754;
+	margin-right: 5px;
+}
+
+.dropdown-hover:hover .dropdown-menu {
+	display: block;
+}
+
+/* Language Badges */
 .langIconBg {
 	border-radius: 3px;
 	background: #54081e;
@@ -347,262 +320,194 @@ input:checked+.slider:before {
 	background-repeat: no-repeat;
 	border-radius: 0 3px 3px 0;
 }
-
-.objContainer {
-	overflow: hidden;
-	flex-direction: row;
-	display: flex;
-	/* justify-content: center; */
-	align-items: center;
-}
-
-.objContainer label {
-	text-align: center;
-}
-
-.objItems {
-	margin: 5px;
-	opacity: 0.8;
-	background-color: rgba(250, 250, 250, 0.4);
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	transition: box-shadow 0.3s ease-in-out;
-}
-
-.objItems:hover {
-	background-color: #f2f2f2;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-.dropdown-item .fa-edit {
-	color: blue;
-	margin-right: 5px;
-}
-.dropdown-item .fa-pen-to-square {
-	color: blue;
-	margin-right: 5px;
-}
-.dropdown-item .fa-trash {
-	color: red;
-	margin-right: 5px;
-}
-.dropdown-item .fa-check {
-	color: green;
-	margin-right: 5px;
-}
-.dropdown-hover:hover .dropdown-menu {
-	display: block;
-}
 </style>
 </head>
 
 <body>
-	<!-- Navigation buttons -->
-	<!-- <div
-		class="container pb-3 border border-2 scroll-container list-group-horizontal"
-		id="navigationButtons">
-		<div class="card-buttons">
-			<a class="btn btn-primary table-button opase" data-card="card1"
-				onclick="selectItem('1',this);"> <span class="button-content">
-					<span class="button-caption">Tables</span> <span
-					class="button-description">Select tables</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-success table-button opase" data-card="card1"
-				onclick="selectItem('3',this);"> <span class="button-content">
-					<span class="button-caption">OList</span> <span
-					class="button-description">Select O List</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-info table-button opase" data-card="card1"
-				onclick="selectItem('6',this);"> <span class="button-content">
-					<span class="button-caption">Paragraph</span> <span
-					class="button-description">Select Videos</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-danger table-button opase" data-card="card1"
-				onclick="selectItem('2',this);"> <span class="button-content">
-					<span class="button-caption">Pictures</span> <span
-					class="button-description">Select picture</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-danger table-button opase" data-card="card1"
-				onclick="selectItem('5',this);"> <span class="button-content">
-					<span class="button-caption">Carousals</span> <span
-					class="button-description">Select Carousals</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-info table-button opase" data-card="card1"
-				onclick="selectItem('7',this);"> <span class="button-content">
-					<span class="button-caption">Videos</span> <span
-					class="button-description">Select Video</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-danger table-button opase" data-card="card1"
-				onclick="selectItem('8',this);"> <span class="button-content">
-					<span class="button-caption">Audio</span> <span
-					class="button-description">Select Audio</span>
-			</span>
-			</a>
-		</div>
-		<div class="card-buttons">
-			<a class="btn btn-success table-button opase" data-card="card1"
-				onclick="selectItem('9',this);"> <span class="button-content">
-					<span class="button-caption">Documents</span> <span
-					class="button-description">Select Documents</span>
-			</span>
-			</a>
-		</div>
-	</div> -->
-	<div class="container objContainer p-3 text-center">
+	<!-- Category Buttons Container (All .objItems are exactly the same size) -->
+	<div class="container-fluid objContainer text-center">
+		<!-- Table -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				id="item1" autocomplete="off" onclick="selectItem('1',this);">
-			<label class="btn btn-outline-success" for="item1"> <i
-				class="fas fa-table fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Table</span><br> <span
-				class="text-center selectText">View Items</span>
+			<label class="btn btn-outline-success" for="item1">
+				<i class="fas fa-table"></i>
+				<span class="fw-bold text-center obj-title">Table</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Paragraph -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('6',this);" id="item2" autocomplete="off">
-			<label class="btn btn-outline-danger" for="item2"> <i
-				class="fas fa-paragraph fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Paragraph</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-danger" for="item2">
+				<i class="fas fa-paragraph"></i>
+				<span class="fw-bold text-center obj-title">Paragraph</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- List -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('3',this);" id="item3" autocomplete="off">
-			<label class="btn btn-outline-primary" for="item3"> <i
-				class="fas fa-list fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">List</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-primary" for="item3">
+				<i class="fas fa-list"></i>
+				<span class="fw-bold text-center obj-title">List</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Carousel -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('5',this);" id="item4" autocomplete="off">
-			<label class="btn btn-outline-warning" for="item4"> <i
-				class="fas fa-panorama fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Carousel</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-warning" for="item4">
+				<i class="fas fa-panorama"></i>
+				<span class="fw-bold text-center obj-title">Carousel</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Picture -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('2',this);" id="item5" autocomplete="off">
-			<label class="btn btn-outline-info" for="item5"> <i
-				class="fas fa-images fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Picture</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-info" for="item5">
+				<i class="fas fa-images"></i>
+				<span class="fw-bold text-center obj-title">Picture</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Video -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('7',this);" id="item6" autocomplete="off">
-			<label class="btn btn-outline-secondary" for="item6"> <i
-				class="fas fa-video fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Video</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-secondary" for="item6">
+				<i class="fas fa-video"></i>
+				<span class="fw-bold text-center obj-title">Video</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Audio -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('8',this);" id="item7" autocomplete="off">
-			<label class="btn btn-outline-danger" for="item7"> <i
-				class="fas fa-microphone fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Audio</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-danger" for="item7">
+				<i class="fas fa-microphone"></i>
+				<span class="fw-bold text-center obj-title">Audio</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Document -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('9',this);" id="item8" autocomplete="off">
-			<label class="btn btn-outline-warning" for="item8"> <i
-				class="fas fa-file-pdf fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Document</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-warning" for="item8">
+				<i class="fas fa-file-pdf"></i>
+				<span class="fw-bold text-center obj-title">Document</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
+
+		<!-- Custom HTML -->
 		<div class="objItems">
 			<input type="radio" class="btn-check" name="options-outlined"
 				onclick="selectItem('10',this);" id="item9" autocomplete="off">
-			<label class="btn btn-outline-secondary" for="item9"> <i
-				class="fas fa-code fa-3x ml-0"></i><br> <span
-				class="fw-bold text-center">Custom HTML</span><br> <span
-				class="text-center selectText">View items</span>
+			<label class="btn btn-outline-dark" for="item9">
+				<i class="fas fa-code"></i>
+				<span class="fw-bold text-center obj-title">Custom HTML</span>
+				<span class="text-center selectText">View Items</span>
+			</label>
+		</div>
+
+		<!-- Cards -->
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('11',this);" id="item10" autocomplete="off">
+			<label class="btn btn-outline-primary" for="item10">
+				<i class="fas fa-id-card"></i>
+				<span class="fw-bold text-center obj-title">Cards</span>
+				<span class="text-center selectText">View Items</span>
+			</label>
+		</div>
+
+		<!-- NavTabs -->
+		<div class="objItems">
+			<input type="radio" class="btn-check" name="options-outlined"
+				onclick="selectItem('12',this);" id="item11" autocomplete="off">
+			<label class="btn btn-outline-primary" for="item11">
+				<i class="fas fa-folder-tree"></i>
+				<span class="fw-bold text-center obj-title">NavTabs</span>
+				<span class="text-center selectText">View Items</span>
 			</label>
 		</div>
 	</div>
+
 	<!-- Selection cards -->
 	<div class="card-container cardC">
-		<div class=" selectObj" id="card1">
+		<div class="selectObj" id="card1">
 			<div class="container border border-2 parent d-none" id="addDiv">
 				<span class="fa-layers fa-fw fa-5x m-3" onClick="location.href=''"
-					id="addNewItem"> <i class="fas fa-circle"
-					style="color: black"></i> <i class="fas fa-circle"
-					data-fa-transform="shrink-3" style="color: Tomato"></i> <i
-					class="fa-inverse fas fa-plus" data-fa-transform="shrink-6"></i>
+					id="addNewItem">
+					<i class="fas fa-circle" style="color: black"></i>
+					<i class="fas fa-circle" data-fa-transform="shrink-3" style="color: Tomato"></i>
+					<i class="fa-inverse fas fa-plus" data-fa-transform="shrink-6"></i>
 				</span>
 			</div>
-			<div class="d-flex flex-row justify-content-end">
-				<div class="float-end my-2">
-					<div class="input-group">
-						<input type="text" placeholder="Search" id="searchBarInput"
-							class="form-control border border-success-subtle rounded-start-pill"
-							onkeyup="searchBar()" aria-label="Search"
-							aria-describedby="searchHere"> <span
-							class="input-group-text border border-success-subtle rounded-end-pill"
-							id="searchHere"><i class="fas fa-search"></i></span>
+			<div class="d-flex flex-row justify-content-between align-items-center mb-3">
+				<div class="text-muted small fw-semibold" id="itemsCountDisplay">
+					<i class="fas fa-hand-pointer me-1 text-primary"></i>Click an object card below to select it
+				</div>
+				<div class="my-1" style="min-width: 250px; max-width: 320px;">
+					<div class="input-group input-group-sm">
+						<span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
+							<i class="fas fa-search"></i>
+						</span>
+						<input type="text" placeholder="Search objects..." id="searchBarInput"
+							class="form-control border-start-0 rounded-end-pill shadow-none"
+							onkeyup="searchBar()" aria-label="Search">
 					</div>
 				</div>
 			</div>
-			<div class=" scroll-container">
+			<div class="scroll-container">
 				<div id="viewItems"></div>
 			</div>
 		</div>
 	</div>
-	<script>		
-		function searchBar() {
-			debugger;
-			const searchBar = document.getElementById("searchBarInput");
-			const searchQuery = searchBar.value.toLowerCase();
-			const divs = document.querySelectorAll('.col'); // Replace '.item' with the actual class/attribute of your divs
 
-			divs.forEach(div => {
-				const content = div.textContent.toLowerCase();
+	<script>
+		function searchBar() {
+			const searchBar = document.getElementById("searchBarInput");
+			if (!searchBar) return;
+			const searchQuery = searchBar.value.toLowerCase().trim();
+			const cols = document.querySelectorAll('#viewItems .col');
+
+			cols.forEach(col => {
+				const content = col.textContent.toLowerCase();
 				if (content.includes(searchQuery)) {
-					div.style.display = 'block';
+					col.style.display = '';
 				} else {
-					div.style.display = 'none';
+					col.style.display = 'none';
 				}
 			});
 		}
 	</script>
-	<script> 
-        $(document).ready(function () { 
-            $('.dropdown-hover').hover(function () { 
-                $(this).addClass('show'); 
-                $(this).find('.dropdown-menu').addClass('show'); 
-            }, function () { 
-                $(this).removeClass('show'); 
-                $(this).find('.dropdown-menu').removeClass('show'); 
-            }); 
-        }); 
-    </script>
+	<script>
+		$(document).ready(function () {
+			$('.dropdown-hover').hover(function () {
+				$(this).addClass('show');
+				$(this).find('.dropdown-menu').addClass('show');
+			}, function () {
+				$(this).removeClass('show');
+				$(this).find('.dropdown-menu').removeClass('show');
+			});
+		});
+	</script>
 </body>
 
 </html>

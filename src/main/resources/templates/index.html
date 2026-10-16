@@ -31,7 +31,6 @@ tr:hover .deleteStyle {
 	$(function () {		
 		//$("#includeHeader").load("header.html");
 		$("#includeMsgBox").load("static/msgBox.html");
-		$("#includeFooter").load("static/footer.html");
 	});
 </script>
 
@@ -1166,6 +1165,7 @@ tr:hover .deleteStyle {
 	    });
 	});
 </script>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 
 

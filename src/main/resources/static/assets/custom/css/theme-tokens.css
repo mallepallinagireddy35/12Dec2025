@@ -1,0 +1,528 @@
+/**
+ * ==============================================================================
+ * DBIM 3.0 (Digital Brand Identity Manual) & GIGW 3.0 Compliance Tokens
+ * Sardar Vallabhbhai Patel National Police Academy (SVPNPA)
+ * Ministry of Home Affairs, Government of India
+ *
+ * Selected Primary Palette: Blue Group (Deep Blue)
+ * Primary Typeface: Noto Sans
+ * ==============================================================================
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap');
+
+:root {
+	/* --------------------------------------------------------------------------
+	 * 1. DBIM 3.0 PRIMARY PALETTE - BLUE GROUP (DBIM Figure 1 & User Preference)
+	 * -------------------------------------------------------------------------- */
+	--dbim-blue-shade-1: #162f6a; /* Key Colour / Darkest Shade */
+	--dbim-blue-shade-2: #214aab;
+	--dbim-blue-shade-3: #5279d7;
+	--dbim-blue-shade-4: #a3bbf3;
+	--dbim-blue-shade-5: #d2dfff; /* Lightest Tint */
+
+	/* Canonical Deep Blue Brand Identifiers */
+	--brand-key: #162f6a;
+	--brand-deep-blue: #162f6a; /* Gov.In Root Deep Blue */
+	--brand-primary: #162f6a;
+	--brand-accent: #214aab;
+	--brand-secondary: #5279d7;
+	--brand-light: #d2dfff;
+	--brand-lighter: #d2dfff;
+
+	/* --------------------------------------------------------------------------
+	 * 2. DBIM 3.0 FUNCTIONAL PALETTE (DBIM Table 1)
+	 * -------------------------------------------------------------------------- */
+	--dbim-inclusive-white: #ffffff;    /* Primary background, text on dark */
+	--dbim-linen: #ebeaea;              /* Quotes, card highlight, outlines */
+	--dbim-deep-earthy-brown: #150202;  /* Primary text over light background */
+	--dbim-black: #000000;              /* State Emblem on light background */
+	--dbim-gov-deep-blue: #162f6a;      /* Gov.in root identity */
+	--dbim-liberty-green: #198754;      /* Status Success */
+	--dbim-mustard-yellow: #ffc107;     /* Status Warning */
+	--dbim-coral-red: #dc3545;          /* Status Error */
+	--dbim-status-blue: #0d6efd;        /* Status Information & Hyperlinks */
+	--dbim-grey-01: #c6c6c6;            /* Functional Grey 1 / borders */
+	--dbim-grey-02: #8e8e8e;            /* Functional Grey 2 / secondary muted */
+	--dbim-grey-03: #606060;            /* Functional Grey 3 / body muted */
+
+	/* Bootstrap 5 / Application Harmonization */
+	--bs-primary: #162f6a;
+	--bs-primary-rgb: 22, 47, 106;
+	--bs-font-sans-serif: 'Noto Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	--bs-body-font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	--bs-body-color: #150202;
+	--bs-body-bg: #ffffff;
+
+	/* System-level Design Tokens */
+	--primary: #162f6a;
+	--accent: #214aab;
+	--topbar: #162f6a;
+	--bg: #ffffff;
+	--card: #ffffff;
+	--text: #150202;
+	--muted: #606060;
+	--line: #ebeaea;
+	--border-color: #c6c6c6;
+	--green: #198754;
+
+	/* --------------------------------------------------------------------------
+	 * 3. STTL THEME ALIASES (Preserving Legacy & Portal Selectors)
+	 * -------------------------------------------------------------------------- */
+	--sttl-theme-blue: #162f6a;
+	--sttl-theme-darkblue: #162f6a;
+	--sttl-theme-224aaa: #214aab;
+	--sttl-theme-5279d7: #5279d7;
+	--sttl-theme-a3bbf3: #a3bbf3;
+	--sttl-theme-lblue: #d2dfff;
+	--sttl-theme-white: #ffffff;
+	--sttl-theme-black: #000000;
+	--sttl-theme-150202: #150202;
+	--sttl-theme-gray: #ebeaea;
+	--sttl-theme-cccccc: #c6c6c6;
+	--sttl-theme-b1b1b1: #8e8e8e;
+	--sttl-theme-555555: #606060;
+	--sttl-theme-393939: #393939;
+	--sttl-theme-333: #333333;
+	--sttl-theme-23232a: #23232a;
+	--sttl-theme-222222: #222222;
+	--sttl-theme-dark: #282828;
+	--sttl-theme-lblack: #323232;
+	--sttl-theme-darkblack: #0b0c0e;
+	--sttl-theme-f1f1f1: #f1f1f1;
+	--sttl-theme-green: #198754;
+	--sttl-theme-yellow: #ffc107;
+	--Rounded-6: 6px;
+
+	/* --------------------------------------------------------------------------
+	 * 4. DBIM 3.0 TYPE SCALE FOR DESKTOP (Section 4.3.1 Table 3)
+	 * -------------------------------------------------------------------------- */
+	--dbim-type-h1: 36px;
+	--dbim-type-h2: 24px;
+	--dbim-type-h3: 20px;
+	--dbim-type-p1: 16px;
+	--dbim-type-p2: 14px;
+	--dbim-type-small: 12px;
+
+	--dbim-lh-h1: 1.25;
+	--dbim-lh-h2: 1.3;
+	--dbim-lh-h3: 1.35;
+	--dbim-lh-p1: 1.5;
+	--dbim-lh-p2: 1.5;
+	--dbim-lh-small: 1.5;
+
+	/* Scaled font variables */
+	--sttl-theme-font-10: 10px;
+	--sttl-theme-font-12: 12px;
+	--sttl-theme-font-13: 13px;
+	--sttl-theme-font-14: 14px;
+	--sttl-theme-font-15: 15px;
+	--sttl-theme-font-16: 16px;
+	--sttl-theme-font-18: 18px;
+	--sttl-theme-font-20: 20px;
+	--sttl-theme-font-22: 22px;
+	--sttl-theme-font-23: 23px;
+	--sttl-theme-font-24: 24px;
+	--sttl-theme-font-25: 25px;
+	--sttl-theme-font-26: 26px;
+	--sttl-theme-font-28: 28px;
+	--sttl-theme-font-30: 30px;
+	--sttl-theme-font-32: 32px;
+	--sttl-theme-font-36: 36px;
+	--sttl-theme-font-40: 40px;
+	--sttl-theme-font-65: 65px;
+}
+
+/* --------------------------------------------------------------------------
+ * 5. DBIM 3.0 TYPE SCALE FOR MOBILE (Section 4.3.2 Table 4)
+ * -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+	:root {
+		--dbim-type-h1: 24px;
+		--dbim-type-h2: 20px;
+		--dbim-type-h3: 16px;
+		--dbim-type-p1: 14px;
+		--dbim-type-p2: 12px;
+		--dbim-type-small: 10px;
+
+		--sttl-theme-font-36: 24px;
+		--sttl-theme-font-32: 22px;
+		--sttl-theme-font-30: 22px;
+		--sttl-theme-font-28: 20px;
+		--sttl-theme-font-26: 20px;
+		--sttl-theme-font-24: 20px;
+		--sttl-theme-font-20: 16px;
+		--sttl-theme-font-18: 15px;
+		--sttl-theme-font-16: 14px;
+		--sttl-theme-font-14: 12px;
+		--sttl-theme-font-12: 10px;
+	}
+}
+
+/* --------------------------------------------------------------------------
+ * 6. GLOBAL BASE STYLES & TYPOGRAPHY ENFORCEMENT
+ * -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after,
+html,
+body,
+input,
+button,
+select,
+textarea,
+optgroup,
+p, h1, h2, h3, h4, h5, h6,
+span, a, div, table, th, td, li, ul, ol,
+form, label, legend, caption {
+	font-family: 'Noto Sans', sans-serif !important;
+}
+
+/* Strictly preserve Icon Fonts */
+.fa,
+.fas,
+.fa-solid,
+.important_links ul li::before,
+.globalnews li::before,
+.links li::before,
+.modern-ticker ul li::before {
+	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
+	font-weight: 900 !important;
+}
+
+.fa::before,
+.fas::before,
+.fa-solid::before {
+	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
+	font-weight: 900 !important;
+}
+
+.far,
+.fa-regular {
+	font-family: "Font Awesome 6 Free", "FontAwesome" !important;
+	font-weight: 400 !important;
+}
+
+.far::before,
+.fa-regular::before {
+	font-family: "Font Awesome 6 Free" !important;
+	font-weight: 400 !important;
+}
+
+.fab,
+.fa-brands,
+[class*="fa-brands"] {
+	font-family: "Font Awesome 6 Brands" !important;
+	font-weight: 400 !important;
+}
+
+.fab::before,
+.fa-brands::before,
+[class*="fa-brands"]::before {
+	font-family: "Font Awesome 6 Brands" !important;
+	font-weight: 400 !important;
+}
+
+.bi,
+[class*="bi-"] {
+	font-family: "bootstrap-icons" !important;
+}
+
+.bi::before,
+[class*="bi-"]::before {
+	font-family: "bootstrap-icons" !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. DBIM 3.0 TYPOGRAPHY HIERARCHY (Section 4.1, 4.3, 4.4)
+ * -------------------------------------------------------------------------- */
+body {
+	font-family: 'Noto Sans', sans-serif !important;
+	color: var(--dbim-deep-earthy-brown, #150202);
+	background-color: var(--dbim-inclusive-white, #ffffff);
+	font-size: var(--dbim-type-p1, 16px);
+	line-height: var(--dbim-lh-p1, 1.5);
+	text-align: left;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Headings: Semi-bold / Bold / Medium (DBIM 4.3.1) */
+h1, .h1 {
+	font-size: var(--dbim-type-h1, 36px) !important;
+	line-height: var(--dbim-lh-h1, 1.25) !important;
+	font-weight: 700 !important;
+	color: var(--brand-key, #162f6a);
+	margin-top: 0;
+	margin-bottom: 0.6em;
+}
+
+h2, .h2 {
+	font-size: var(--dbim-type-h2, 24px) !important;
+	line-height: var(--dbim-lh-h2, 1.3) !important;
+	font-weight: 600 !important;
+	color: var(--brand-key, #162f6a);
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+
+h3, .h3, .subtitle {
+	font-size: var(--dbim-type-h3, 20px) !important;
+	line-height: var(--dbim-lh-h3, 1.35) !important;
+	font-weight: 600 !important;
+	color: var(--brand-key, #162f6a);
+	margin-top: 0;
+	margin-bottom: 0.4em;
+}
+
+h4, .h4 {
+	font-size: 18px !important;
+	line-height: 1.4 !important;
+	font-weight: 600 !important;
+	color: var(--brand-key, #162f6a);
+}
+
+h5, .h5 {
+	font-size: var(--dbim-type-p1, 16px) !important;
+	line-height: 1.45 !important;
+	font-weight: 600 !important;
+	color: var(--brand-key, #162f6a);
+}
+
+h6, .h6 {
+	font-size: var(--dbim-type-p2, 14px) !important;
+	line-height: 1.45 !important;
+	font-weight: 600 !important;
+	color: var(--brand-key, #162f6a);
+}
+
+/* Body text left-aligned, line-height 1.2 - 1.5 (DBIM 4.1.1.i, 4.5.iii) */
+p, .paragraph, .p1 {
+	font-size: var(--dbim-type-p1, 16px);
+	line-height: var(--dbim-lh-p1, 1.5);
+	text-align: left !important;
+	color: var(--dbim-deep-earthy-brown, #150202);
+	margin-bottom: 1rem;
+}
+
+p.p2, .p2, .text-secondary-body {
+	font-size: var(--dbim-type-p2, 14px);
+	line-height: var(--dbim-lh-p2, 1.5);
+	text-align: left !important;
+}
+
+small, .small-text, .text-small {
+	font-size: var(--dbim-type-small, 12px) !important;
+	line-height: var(--dbim-lh-small, 1.5);
+}
+
+/* Hyperlinks (DBIM 2.2 Table 1) */
+a {
+	color: var(--brand-key, #162f6a);
+	text-decoration: none;
+	transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+a:hover, a:focus {
+	color: var(--brand-accent, #214aab);
+	text-decoration: underline;
+}
+
+/* High Contrast Link Option */
+.content-area a, .maincontent a {
+	color: var(--dbim-status-blue, #0d6efd);
+	text-decoration: underline;
+}
+
+.content-area a:hover, .maincontent a:hover {
+	color: var(--brand-key, #162f6a);
+}
+
+/* --------------------------------------------------------------------------
+ * 8. DBIM 3.0 TABLE FORMATTING RULES (Section 4.1.1.i)
+ * Left-aligned text, right-aligned numbers, center-aligned column names
+ * -------------------------------------------------------------------------- */
+table, .table {
+	width: 100%;
+	border-collapse: collapse;
+	color: var(--dbim-deep-earthy-brown, #150202);
+	font-size: var(--dbim-type-p2, 14px);
+	line-height: 1.45;
+}
+
+table th, .table th, table thead th, .table thead th {
+	text-align: center !important;
+	font-weight: 600 !important;
+	background-color: var(--brand-key, #162f6a);
+	color: var(--dbim-inclusive-white, #ffffff) !important;
+	padding: 10px 14px;
+	border: 1px solid var(--dbim-blue-shade-2, #214aab);
+	vertical-align: middle;
+}
+
+table td, .table td, table tbody td, .table tbody td {
+	text-align: left;
+	padding: 8px 14px;
+	border: 1px solid var(--dbim-linen, #ebeaea);
+	vertical-align: middle;
+}
+
+/* Numbers in tables are strictly right-aligned (DBIM 4.1.1.i) */
+table td.num, table td.numeric, table td.number,
+table td.text-end, table td.text-right,
+table .text-numeric, .num-col,
+table td[data-type="number"], table td[data-type="numeric"] {
+	text-align: right !important;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Table zebra striping with DBIM tint */
+table tbody tr:nth-child(even), .table-striped tbody tr:nth-child(even) {
+	background-color: #f7f9fd;
+}
+
+table tbody tr:hover, .table-hover tbody tr:hover {
+	background-color: var(--dbim-blue-shade-5, #d2dfff) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 9. DBIM 3.0 CALL-TO-ACTION (CTA) BUTTONS (Section 4.5, Figure 18 & 19)
+ * Uniform padding, consistent sizing, max 3 words, distinct button states
+ * -------------------------------------------------------------------------- */
+.btn, button.button, input[type="submit"], input[type="button"], .button--primary {
+	font-family: 'Noto Sans', sans-serif !important;
+	font-weight: 600;
+	font-size: var(--dbim-type-p2, 14px);
+	padding: 10px 22px;
+	border-radius: var(--Rounded-6, 6px);
+	line-height: 1.3;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	cursor: pointer;
+	text-decoration: none !important;
+	transition: all 0.2s ease-in-out;
+	border: 1.5px solid transparent;
+	outline: none;
+}
+
+/* Enabled Primary CTA: Deep Blue */
+.btn-primary, .btn-custom-primary, .button--primary, button.button-primary {
+	background-color: var(--brand-key, #162f6a) !important;
+	color: var(--dbim-inclusive-white, #ffffff) !important;
+	border-color: var(--brand-key, #162f6a) !important;
+}
+
+/* Hover: Noticeable visual feedback (DBIM 4.5.iv) */
+.btn-primary:hover, .btn-custom-primary:hover, .button--primary:hover, button.button-primary:hover {
+	background-color: var(--brand-accent, #214aab) !important;
+	color: var(--dbim-inclusive-white, #ffffff) !important;
+	border-color: var(--brand-accent, #214aab) !important;
+	box-shadow: 0 4px 10px rgba(22, 47, 106, 0.25);
+}
+
+/* Focus: Distinct outline/focus ring for accessibility (DBIM 4.5 & WCAG 2.1) */
+.btn:focus, .btn-primary:focus, button:focus, input[type="submit"]:focus {
+	outline: 2px solid var(--brand-key, #162f6a) !important;
+	outline-offset: 2px !important;
+	box-shadow: 0 0 0 4px rgba(22, 47, 106, 0.2) !important;
+}
+
+/* Disabled: Distinct greyed-out non-interactive state (DBIM Figure 19) */
+.btn:disabled, .btn.disabled, button:disabled, input[type="submit"]:disabled {
+	background-color: var(--dbim-linen, #ebeaea) !important;
+	color: var(--dbim-grey-02, #8e8e8e) !important;
+	border-color: var(--dbim-grey-01, #c6c6c6) !important;
+	cursor: not-allowed !important;
+	box-shadow: none !important;
+	opacity: 0.65;
+}
+
+/* Outline CTA Button */
+.btn-outline-primary, .btn-list-view-more, .Button-Outline {
+	background-color: var(--dbim-inclusive-white, #ffffff) !important;
+	color: var(--brand-key, #162f6a) !important;
+	border: 1.5px solid var(--brand-key, #162f6a) !important;
+}
+
+.btn-outline-primary:hover, .btn-list-view-more:hover, .Button-Outline:hover {
+	background-color: var(--brand-key, #162f6a) !important;
+	color: var(--dbim-inclusive-white, #ffffff) !important;
+	border-color: var(--brand-key, #162f6a) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 10. FORMS & CONTROLS (Annexure B & Checklist F.2)
+ * Keyboard-friendly, clickable labels, clear mandatory indicator
+ * -------------------------------------------------------------------------- */
+.form-label, label {
+	font-weight: 600;
+	color: var(--brand-key, #162f6a);
+	margin-bottom: 6px;
+	font-size: var(--dbim-type-p2, 14px);
+	cursor: pointer;
+}
+
+.form-control, .form-select {
+	font-family: 'Noto Sans', sans-serif !important;
+	font-size: var(--dbim-type-p2, 14px);
+	color: var(--dbim-deep-earthy-brown, #150202);
+	background-color: var(--dbim-inclusive-white, #ffffff);
+	border: 1px solid var(--dbim-grey-01, #c6c6c6);
+	border-radius: var(--Rounded-6, 6px);
+	padding: 8px 12px;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+	border-color: var(--brand-key, #162f6a);
+	outline: 0;
+	box-shadow: 0 0 0 3px rgba(22, 47, 106, 0.2);
+}
+
+.required-asterisk, .form-required, .required {
+	color: var(--dbim-coral-red, #dc3545);
+	font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+ * 11. CARDS & CONTAINERS (DBIM Linen outlines & Deep Blue headers)
+ * -------------------------------------------------------------------------- */
+.card {
+	background-color: var(--dbim-inclusive-white, #ffffff);
+	border: 1px solid var(--dbim-linen, #ebeaea);
+	border-radius: var(--Rounded-6, 6px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+	box-shadow: 0 4px 12px rgba(22, 47, 106, 0.1);
+}
+
+.card-header {
+	background-color: #f7f9fd;
+	border-bottom: 1px solid var(--dbim-linen, #ebeaea);
+	color: var(--brand-key, #162f6a);
+	font-weight: 600;
+	padding: 12px 18px;
+}
+
+/* --------------------------------------------------------------------------
+ * 12. DBIM 3.0 LOGO & BRANDING ENFORCEMENT
+ * -------------------------------------------------------------------------- */
+#header .logo-academy-name,
+.logo-academy-name,
+.d-block.logo-academy-name,
+strong.logo-academy-name {
+	color: var(--brand-key, #162f6a) !important;
+	font-family: 'Noto Sans', sans-serif !important;
+}
+
+#header .logo-ministry,
+.logo-ministry,
+.d-block.logo-ministry {
+	color: var(--brand-accent, #214aab) !important;
+	font-family: 'Noto Sans', sans-serif !important;
+}
+

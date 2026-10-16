@@ -1,3 +1,5 @@
+@import url('carousel.css');
+
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
@@ -7,11 +9,11 @@ html {
   padding-bottom:160px;
 }
 body {
-	font-family: "Lato", "Noto Sans", Nunito, "Roboto", "Open Sans",
-		sans-serif;
-	color: #444444;
-	font-size: 14px;
-	line-height: 24px;
+	font-family: 'Noto Sans', sans-serif !important;
+	color: #150202;
+	background-color: #ffffff;
+	font-size: 16px;
+	line-height: 1.5;
 	margin-bottom: 160px;
 	min-height: 100vh;
 }
@@ -43,7 +45,7 @@ svg {
 }
 
 a {
-	color: #D82148;
+	color: #162f6a;
 	text-decoration: none;
 	
 }
@@ -53,8 +55,8 @@ li {
 }
 
 a:hover {
-	color: #e76668;
-	text-decoration: none;
+	color: #214aab;
+	text-decoration: underline;
 	cursor: pointer;
 }
 
@@ -63,13 +65,23 @@ i:hover {
 }
 
 p {
-	text-align: justify;
+	text-align: left;
+	line-height: 1.5;
+	color: #150202;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: "Domine", Gelasio, "Raleway", sans-serif;
+	font-family: 'Noto Sans', sans-serif !important;
 	font-weight: 700;
+	color: #162f6a;
 }
+
+h1 { font-size: 36px; line-height: 1.25; }
+h2 { font-size: 24px; line-height: 1.3; }
+h3 { font-size: 20px; line-height: 1.35; }
+h4 { font-size: 18px; line-height: 1.4; }
+h5 { font-size: 16px; line-height: 1.45; }
+h6 { font-size: 14px; line-height: 1.45; }
 
 @media ( min-width : 1200px) {
 	.container, .container-lg, .container-md, .container-sm, .container-xl {
@@ -78,15 +90,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 label {
-	font-family: "Domine", Gelasio, "Raleway", sans-serif;
+	font-family: 'Noto Sans', sans-serif !important;
 	font-weight: bold;
-	color: #0c3c97;
+	color: #162f6a;
 }
 .pageHeading {
-	border-bottom: 2px solid orangered;
+	border-bottom: 2px solid #162f6a;
 	padding-bottom: 5px;
 	margin-top: 5px;
 	margin-bottom: 15px;
+	color: #162f6a;
 }
 /*--------------------------------------------------------------
 # Back to top button
@@ -2089,4 +2102,310 @@ li {
 /* ---------------------------------- */
 .overflowCard{
 	overflow-x: auto;
+}
+
+/* NavTabs child object: suppress redundant object title since the tab heading already displays it */
+.navtab-child-object > h4,
+.navtab-child-object > h5,
+.navtab-child-object .cards-main-heading,
+.navtab-child-object .modern-list-card-header,
+.navtab-child-object .customTable-title {
+	display: none !important;
+}
+
+/* ==============================================================================
+ * In Social Media Section Styles (Matching MHA Government Portal & Screenshot)
+ * Supports both .media-sec (.media-head, .media_filed) and .social#media (.social-card, .social-box)
+ * ============================================================================== */
+
+/* Main Section Container */
+.media-sec,
+section.social#media,
+.social-media-section {
+	color: #ffffff !important;
+	background: #162f6a !important; /* MHA / DBIM Theme Navy Blue */
+	padding: 50px 0 45px;
+	width: 100%;
+	position: relative;
+	box-sizing: border-box;
+}
+
+/* Container horizontal padding */
+.media-sec .px-120,
+.social#media .px-120 {
+	padding-left: 120px;
+	padding-right: 120px;
+}
+
+.media-sec .wrap,
+.social#media .wrap {
+	max-width: 1320px;
+	margin: 0 auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+@media (max-width: 1536px) {
+	.media-sec .px-120,
+	.social#media .px-120 {
+		padding-left: 80px;
+		padding-right: 80px;
+	}
+}
+
+@media (max-width: 1200px) {
+	.media-sec .px-120,
+	.social#media .px-120 {
+		padding-left: 40px;
+		padding-right: 40px;
+	}
+}
+
+@media (max-width: 768px) {
+	.media-sec .px-120,
+	.social#media .px-120 {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+}
+
+/* Section Header & Title */
+.media-sec h2,
+.social#media h2,
+.media-sec h2.title_head,
+.social#media h2.title,
+.social#media h2.title_head {
+	gap: 15px;
+	color: #ffffff !important;
+	font-size: 26px;
+	font-weight: 700;
+	margin: 0 0 24px;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	font-style: normal;
+	line-height: 1.3;
+}
+
+.media-sec h2 .homeIcons,
+.social#media h2 .homeIcons,
+.homeIcons {
+	width: 48px;
+	height: 48px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.media-sec h2.title_head img,
+.social#media h2.title img,
+.homeIcons img {
+	width: 48px;
+	height: 48px;
+	object-fit: contain;
+	filter: inherit;
+}
+
+/* Grid Layout for .social-grid */
+.social#media .social-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+}
+
+@media (max-width: 1199px) {
+	.social#media .social-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 767px) {
+	.social#media .social-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Card Containers: .media-head and .social-card */
+.media-head,
+.social#media .social-card {
+	background: #ffffff;
+	border-radius: 6px;
+	overflow: hidden;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.media-head:hover,
+.social#media .social-card:hover {
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+/* Card Header Title */
+.media-head h3,
+.social#media .social-card h3,
+.social#media .social-card > .social-card-title {
+	margin: 0;
+	background: #ffffff;
+	padding: 12px 16px;
+	font-size: 20px;
+	font-weight: 600;
+	color: #162f6a !important;
+	border-bottom: 1px solid #f0f0f0;
+	letter-spacing: 0.2px;
+	display: flex;
+	align-items: center;
+}
+
+.social-header-link {
+	color: #162f6a;
+	opacity: 0.8;
+	font-size: 19px;
+	transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+}
+
+.social-header-link:hover {
+	opacity: 1;
+	transform: scale(1.15);
+	color: #224aaa;
+}
+
+/* Fallback for bare text inside .social-card before .social-box */
+.social#media .social-card {
+	color: #162f6a;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.social#media .social-card:not(:has(h3)) {
+	padding-top: 12px;
+	padding-left: 16px;
+}
+
+/* Content Container with Custom Scrollbar */
+.media_filed,
+.social#media .social-box {
+	background: #ffffff;
+	height: 380px;
+	width: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	position: relative;
+	padding: 15px;
+	box-sizing: border-box;
+	font-size: 14px;
+	font-weight: 400;
+	color: #333333;
+	scrollbar-width: thin;
+	scrollbar-color: #224aaa #f1f1f1;
+}
+
+/* Custom Branded Blue Scrollbar */
+.media_filed::-webkit-scrollbar,
+.social#media .social-box::-webkit-scrollbar {
+	width: 7px;
+	border-radius: 30px;
+}
+
+.media_filed::-webkit-scrollbar-track,
+.social#media .social-box::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border: 1px solid #224aaa;
+	border-radius: 30px;
+}
+
+.media_filed::-webkit-scrollbar-thumb,
+.social#media .social-box::-webkit-scrollbar-thumb {
+	background: #224aaa;
+	border-radius: 30px;
+}
+
+.media_filed::-webkit-scrollbar-thumb:hover,
+.social#media .social-box::-webkit-scrollbar-thumb:hover {
+	background: #162f6a;
+	border-radius: 30px;
+}
+
+/* Embedded Media Elements inside Cards */
+.media-head iframe,
+.media-head img,
+.media-head video,
+.social#media .social-box iframe,
+.social#media .social-box img,
+.social#media .social-box video {
+	width: 100%;
+	border: none;
+}
+
+/* YouTube embeds */
+.media_filed.youtub iframe,
+.social-box.youtub iframe,
+.media_filed iframe[src*="youtube.com"],
+.social-box iframe[src*="youtube.com"] {
+	width: 100%;
+	height: 175px;
+	margin-bottom: 12px;
+	border-radius: 4px;
+	border: none;
+	display: block;
+}
+
+.media_filed.youtub iframe:last-child,
+.social-box.youtub iframe:last-child {
+	margin-bottom: 0;
+}
+
+/* Instagram embeds */
+.media_filed.insta iframe,
+.social-box.insta iframe,
+.media_filed iframe[src*="instagram.com"],
+.social-box iframe[src*="instagram.com"],
+.insta iframe {
+	width: 100%;
+	min-height: 350px;
+	height: 100%;
+	border: none;
+}
+
+/* Facebook iframe */
+.facebook-box,
+.media_filed iframe[src*="facebook.com"],
+.social-box iframe[src*="facebook.com"] {
+	width: 100%;
+	min-height: 350px;
+	border: none;
+	overflow: hidden;
+}
+
+/* Twitter / X Timeline */
+.media_filed .twitter-timeline,
+.social-box .twitter-timeline,
+.media_filed iframe[src*="twitter.com"],
+.social-box iframe[src*="twitter.com"],
+.media_filed iframe[src*="x.com"],
+.social-box iframe[src*="x.com"] {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* High Contrast / Dark Mode Support (GIGW 3.0 / DBIM 3.0) */
+.wob .media-sec,
+.wob section.social#media,
+[data-theme="dark"] .media-sec,
+[data-theme="dark"] section.social#media {
+	background: #0b1530 !important;
+	color: #ffffff !important;
+}
+
+.wob .media-sec h2.title_head img,
+.wob .social#media h2.title img,
+[data-theme="dark"] .media-sec h2.title_head img,
+[data-theme="dark"] .social#media h2.title img {
+	filter: invert(100%);
 }

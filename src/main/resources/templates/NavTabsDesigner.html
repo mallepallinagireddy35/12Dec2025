@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>NavTabs Designer - SVPNPA</title>
+
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css" rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css" rel="stylesheet">
+
+<style>
+body {
+	font-family: 'Noto Sans', sans-serif !important;
+	background-color: #f8f9fa;
+}
+
+.tab-item-box {
+	background: #ffffff;
+	border: 1px solid #d0d7de;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	margin-bottom: 18px;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tab-item-box:hover {
+	border-color: #162f6a;
+	box-shadow: 0 3px 8px rgba(15, 44, 89, 0.12);
+}
+
+.tab-item-header {
+	background: #f8fafc;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 10px 16px;
+	font-weight: 600;
+	color: #162f6a;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-item-body {
+	padding: 16px;
+}
+
+.drag-handle {
+	cursor: grab;
+	color: #64748b;
+	margin-right: 10px;
+}
+
+.drag-handle:active {
+	cursor: grabbing;
+}
+
+.lang-badge-en {
+	background: #162f6a;
+	color: #fff;
+	font-size: 0.72rem;
+	padding: 2px 6px;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+
+.lang-badge-hi {
+	background: #b91c1c;
+	color: #fff;
+	font-size: 0.72rem;
+	padding: 2px 6px;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+
+/* NavTabs Live Preview Styling matching user specification */
+.preview-nav-tabs {
+	border-bottom: 2px solid #162f6a !important;
+	gap: 4px;
+}
+
+.preview-nav-tabs .nav-link {
+	color: #334155 !important;
+	background-color: #f8fafc !important;
+	border: 1px solid #cbd5e1 !important;
+	border-bottom: none !important;
+	font-weight: 600;
+	font-size: 0.95rem;
+	padding: 10px 22px;
+	border-radius: 4px 4px 0 0;
+	transition: all 0.2s;
+}
+
+.preview-nav-tabs .nav-link:hover {
+	color: #162f6a !important;
+	background-color: #edf2f7 !important;
+}
+
+.preview-nav-tabs .nav-link.active {
+	color: #ffffff !important;
+	background-color: #162f6a !important;
+	border-color: #162f6a #162f6a transparent !important;
+}
+
+.preview-tab-content-box {
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	border-top: none;
+	padding: 22px 24px;
+	min-height: 220px;
+	border-radius: 0 0 6px 6px;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.preview-tab-content-box .navtab-child-object > h4,
+.preview-tab-content-box .navtab-child-object > h5,
+.preview-tab-content-box .cards-main-heading,
+.preview-tab-content-box .modern-list-card-header,
+.preview-tab-content-box .customTable-title {
+	display: none !important;
+}
+
+.preview-sticky {
+	position: sticky;
+	top: 20px;
+}
+
+.obj-selected-card {
+	border: 2px solid #162f6a;
+	background-color: #f8fafc;
+	border-radius: 6px;
+	padding: 10px 14px;
+	transition: all 0.2s;
+}
+
+.obj-placeholder-card {
+	border: 2px dashed #cbd5e1;
+	background-color: #ffffff;
+	border-radius: 6px;
+	padding: 14px;
+	text-align: center;
+	color: #64748b;
+}
+
+.tab-pane img,
+.tab-pane figure,
+.tab-pane figure img,
+.tab-content img,
+.tab-content figure {
+	max-width: 100% !important;
+	height: auto !important;
+}
+
+/* Modal sizing & styling */
+#selectionPopup .modal-body {
+	max-height: 75vh;
+	overflow-y: auto;
+}
+</style>
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script src="static/assets/Sortable.min.js"></script>
+
+<script>
+	$(function() {		
+		$("#includeFooter").load("footer.html");
+		$("#includeObjSelector").load("static/objectSelector.html?v=" + new Date().getTime(), function() {
+			setupObjectSelector();
+		});
+	});
+</script>
+</head>
+
+<body>
+<div class="flex-wrapper">
+
+	<!-- Standard SVPNPA CMS Header (Same as paragraph.html) -->
+	<div id="includeHeader" th:replace="~{header.html::header}"></div>
+
+	<!-- Page Heading Banner -->
+	<div class="container">
+		<h3 style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+			Design your NavTabs
+		</h3>
+	</div>
+
+	<!-- Hidden Spring Model Attributes for Edit Mode -->
+	<input type="hidden" id="page_id" th:value="${object_id}">
+	<input type="hidden" id="csrf_token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	<input type="hidden" id="raw_object_title_en" th:value="${object_title}">
+	<input type="hidden" id="raw_object_title_hi" th:value="${object_title_hi}">
+	<input type="hidden" id="raw_styles" th:value="${styles}">
+	<input type="hidden" id="raw_classes" th:value="${classes}">
+	<input type="hidden" id="raw_description" th:value="${description}">
+	<input type="hidden" id="raw_help_text" th:value="${help_text}">
+	<input type="hidden" id="raw_keywords" th:value="${keywords}">
+	<input type="hidden" id="raw_navtabs_json_en" th:value="${navtabs_json_en}">
+	<input type="hidden" id="raw_navtabs_json_hi" th:value="${navtabs_json_hi}">
+
+	<div class="mb-5 container mt-4">
+		<div class="row g-4">
+			<!-- Left Column: Tabs Configuration Form -->
+			<div class="col-lg-7">
+				<!-- Title Section with Floating Labels (like paragraph.html) -->
+				<div class="card mb-4 border-0 shadow-sm">
+					<div class="card-header bg-white py-3 border-bottom">
+						<h5 class="mb-0 fw-bold" style="color: #162f6a;">
+							<i class="fas fa-heading text-primary me-2"></i>NavTabs Title & Settings
+						</h5>
+					</div>
+					<div class="card-body">
+						<div class="floating-label mb-3">
+							<input type="text" class="form-control" id="object_title"
+								name="object_title" th:value="${object_title}" required="true"
+								placeholder="Enter Title" oninput="updateLivePreview()">
+							<label for="object_title">Title (English)</label>
+						</div>
+
+						<div class="mb-3">
+							<button type="button" class="btn btn-outline-primary btn-sm mb-2" onclick="toggleHindiSection()">
+								<i class="fas fa-language me-1"></i> Toggle / Generate Hindi Title
+							</button>
+						</div>
+
+						<div id="generateHindiSection" th:style="${object_title_hi != null ? 'display:block;' : 'display:none;'}">
+							<div class="floating-label mb-3">
+								<input type="text" class="form-control" id="object_title_hi"
+									name="object_title_hi" th:value="${object_title_hi}"
+									placeholder="Enter Hindi Title" oninput="updateLivePreview()">
+								<label for="object_title_hi">Title (हिंदी)</label>
+							</div>
+						</div>
+
+						<div class="row g-2">
+							<div class="col-md-6">
+								<label class="form-label small fw-semibold text-muted mb-1">Custom CSS Classes</label>
+								<input type="text" class="form-control form-control-sm" id="classes" placeholder="e.g. shadow-sm my-3" oninput="updateLivePreview()">
+							</div>
+							<div class="col-md-6">
+								<label class="form-label small fw-semibold text-muted mb-1">Custom Inline Styles</label>
+								<input type="text" class="form-control form-control-sm" id="styles" placeholder="e.g. max-width: 1200px; margin: auto;" oninput="updateLivePreview()">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Tabs List Header -->
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<div>
+						<h5 class="fw-bold mb-0" style="color: #162f6a;">
+							<i class="fas fa-layer-group text-primary me-2"></i>Tabs Content
+						</h5>
+						<small class="text-muted">Reorder by dragging. Click "Select from Object Selector" to pick any existing CMS object.</small>
+					</div>
+					<div class="d-flex gap-2">
+						<button type="button" class="btn btn-sm btn-outline-danger" onclick="autoTranslateAllTabs()">
+							<i class="fas fa-language me-1"></i> Auto-Translate All
+						</button>
+						<button type="button" class="btn btn-sm btn-primary" onclick="addNewTab()">
+							<i class="fas fa-plus me-1"></i> Add Tab
+						</button>
+					</div>
+				</div>
+
+				<!-- Sortable Tabs Container -->
+				<div id="tabsContainer"></div>
+
+				<!-- Add Tab Button -->
+				<div class="text-center py-2 mb-4">
+					<button type="button" class="btn btn-outline-primary px-4" onclick="addNewTab()">
+						<i class="fas fa-plus-circle me-1"></i> Add Another Tab
+					</button>
+				</div>
+
+				<!-- Bottom Action Buttons -->
+				<div class="d-flex justify-content-start gap-2 pt-3 border-top">
+					<button type="button" class="btn btn-primary px-4 fw-bold shadow-sm" onclick="saveNavTabs()">
+						<i class="fas fa-save me-1"></i> Save NavTabs
+					</button>
+					<a href="/home" class="btn btn-secondary px-4">
+						<i class="fas fa-arrow-left me-1"></i> Back to Objects
+					</a>
+				</div>
+			</div>
+
+			<!-- Right Column: Interactive Live Preview -->
+			<div class="col-lg-5">
+				<div class="preview-sticky">
+					<div class="card border-0 shadow-sm">
+						<div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+							<h5 class="mb-0 fw-bold" style="color: #162f6a;">
+								<i class="fas fa-eye text-primary me-2"></i>Live Interactive Preview
+							</h5>
+							<ul class="nav nav-pills nav-pills-sm" id="previewLangTabs" role="tablist">
+								<li class="nav-item" role="presentation">
+									<button class="nav-link active py-1 px-3 small fw-bold" id="preview-en-tab" data-bs-toggle="pill" data-bs-target="#preview-en-pane" type="button" role="tab" onclick="switchPreviewLang('en')">English</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button class="nav-link py-1 px-3 small fw-bold" id="preview-hi-tab" data-bs-toggle="pill" data-bs-target="#preview-hi-pane" type="button" role="tab" onclick="switchPreviewLang('hi')">हिंदी</button>
+								</li>
+							</ul>
+						</div>
+						<div class="card-body bg-light p-4">
+							<div id="livePreviewContainer">
+								<!-- Rendered in real-time -->
+							</div>
+						</div>
+						<div class="card-footer bg-white text-muted small py-2 text-center border-top">
+							<i class="fas fa-info-circle me-1 text-primary"></i> Click any tab above to test interactive tab switching.
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Standard SVPNPA CMS Footer (Same as paragraph.html) -->
+	<div id="includeFooter"></div>
+
+</div>
+
+<!-- Object Selector Modal (Just like PageDesigner.html) -->
+<div class="modal fade" id="selectionPopup" data-bs-backdrop="static"
+	data-bs-keyboard="false" tabindex="-1"
+	aria-labelledby="selectionPopupLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content shadow-lg border-0">
+			<div class="modal-header bg-primary text-white py-2 px-3">
+				<h5 class="modal-title fs-5 mb-0" id="selectionPopupLabel">
+					<i class="fas fa-th-large me-2"></i>Select an Existing Object for Tab
+				</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-3">
+				<!-- Dynamically Loaded objectSelector.html -->
+				<div id="includeObjSelector"></div>
+			</div>
+			<div class="modal-footer py-2">
+				<span class="text-muted small me-auto"><i class="fas fa-hand-pointer text-primary me-1"></i>Click on any object card to select it for your tab.</span>
+				<button type="button" class="btn btn-secondary btn-sm"
+					data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+// Global State
+let eligibleObjects = [];
+let objectPreviewCache = {};
+let currentPreviewLang = 'en';
+let activePreviewTabIndex = 0;
+let targetTabBoxId = null;
+
+// Escape HTML utility
+function escapeHtml(str) {
+	if (!str) return '';
+	return String(str)
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
+}
+
+// Toggle Hindi Title Section
+function toggleHindiSection() {
+	const el = $('#generateHindiSection');
+	if (el.is(':visible')) {
+		el.slideUp();
+	} else {
+		el.slideDown();
+		const enVal = $('#object_title').val();
+		if (enVal && !$('#object_title_hi').val()) {
+			translateText(enVal).then(trans => {
+				$('#object_title_hi').val(trans);
+				updateLivePreview();
+			});
+		}
+	}
+}
+
+// Initialize on page load
+$(document).ready(function() {
+	loadEligibleObjects().then(() => {
+		initTabsFromModel();
+		initSortable();
+	});
+});
+
+// Load eligible objects metadata from server
+async function loadEligibleObjects() {
+	try {
+		const res = await fetch('/getNavTabEligibleObjects');
+		if (res.ok) {
+			eligibleObjects = await res.json();
+		}
+	} catch (e) {
+		console.error('Failed to load eligible objects:', e);
+	}
+}
+
+// Initialize Sortable.js for drag and drop
+function initSortable() {
+	const el = document.getElementById('tabsContainer');
+	if (el && typeof Sortable !== 'undefined') {
+		Sortable.create(el, {
+			handle: '.drag-handle',
+			animation: 150,
+			onEnd: function() {
+				updateTabNumbers();
+				updateLivePreview();
+			}
+		});
+	}
+}
+
+// Setup object selector modal UI adjustments
+function setupObjectSelector() {
+	// Hide the '+' Add button inside objectSelector since we're picking existing objects
+	$('#addDiv').addClass('d-none');
+	// Hide NavTabs button inside this modal to prevent recursive tabs
+	$('#item11').closest('.objItems').hide();
+}
+
+// Open the Object Selector Modal for a specific tab
+function openObjectSelectorModal(tabBoxId) {
+	targetTabBoxId = tabBoxId;
+	setupObjectSelector();
+	
+	// Open modal
+	const modalEl = document.getElementById('selectionPopup');
+	if (modalEl) {
+		const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+		modal.show();
+	}
+}
+
+// When a user selects an object from objectSelector (matching PageDesigner.html list1)
+function list1(objectId) {
+	if (!targetTabBoxId) return;
+
+	// Set selected object ID on the target tab
+	$('#' + targetTabBoxId + '_object_id').val(objectId);
+
+	// Update the tab box UI with the selected object's title and badge
+	updateTabObjectDisplay(targetTabBoxId, objectId);
+
+	// Pre-fetch child preview and update live preview
+	fetchChildObjectPreview(objectId).then(() => {
+		updateLivePreview();
+	});
+
+	// Close the modal
+	const modalEl = document.getElementById('selectionPopup');
+	if (modalEl) {
+		const modalInstance = bootstrap.Modal.getInstance(modalEl);
+		if (modalInstance) modalInstance.hide();
+	}
+}
+
+// Handle category selection inside objectSelector (same as PageDesigner.html)
+function selectItem(typeGiven, el) {
+	document.getElementById("viewItems").innerHTML = '';
+	const csrfToken = $('meta[name="_csrf"]').attr('content');
+	const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+	const type = {
+		'type': typeGiven,
+		'source': 'home'
+	};
+
+	const select = document.getElementById("viewItems");
+	document.getElementById("card1").style.display = "block";
+	document.getElementById("addDiv").classList.add("d-none");
+
+	const container = document.createElement("div");
+	container.classList.add("container-fluid", "p-0");
+	const row = document.createElement("div");
+	row.classList.add("row", "row-cols-1", "row-cols-md-2", "row-cols-xl-3", "g-3");
+
+	$.ajax({
+		type: "POST",
+		url: "/getObjectsTypeWise",
+		data: JSON.stringify(type),
+		dataType: 'json',
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		headers: {
+			'X-CSRF-TOKEN': csrfToken,
+			'X-XSRF-HEADER': csrfHeader
+		},
+		contentType: "application/json",
+		success: function(data) {
+			if (!data || data.length === 0) {
+				select.innerHTML = '<div class="alert alert-info text-center my-3"><i class="fas fa-info-circle me-1"></i> No objects found for this category.</div>';
+				return;
+			}
+			for (let i = 0; i < data.length; i++) {
+				const col = document.createElement("div");
+				col.classList.add("col");
+
+				const cardBody = document.createElement("div");
+				cardBody.classList.add("card", "h-100", "shadow-sm", "border");
+				cardBody.style.cursor = "pointer";
+				cardBody.title = "Click to select Object #" + data[i].object_id;
+				cardBody.innerHTML = data[i].card_data;
+				cardBody.setAttribute("onclick", "list1('" + data[i].object_id + "')");
+
+				col.appendChild(cardBody);
+				row.appendChild(col);
+			}
+			container.appendChild(row);
+			select.appendChild(container);
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			console.error("Error fetching objects type wise:", errorThrown);
+		}
+	});
+}
+
+// Clear selected object for a tab
+function clearTabObject(tabBoxId) {
+	$('#' + tabBoxId + '_object_id').val('');
+	updateTabObjectDisplay(tabBoxId, '');
+	updateLivePreview();
+}
+
+// Render the selected object badge or placeholder inside the tab box
+function updateTabObjectDisplay(tabBoxId, objectId) {
+	const displayEl = $('#' + tabBoxId + '_obj_display');
+	if (!objectId) {
+		displayEl.html(`
+			<div class="obj-placeholder-card">
+				<i class="fas fa-layer-group fa-2x mb-1 text-secondary opacity-50"></i>
+				<div class="small">No object selected yet. Click <strong>Select from Object Selector</strong> above.</div>
+			</div>
+		`);
+		return;
+	}
+
+	const obj = eligibleObjects.find(o => String(o.object_id) === String(objectId));
+	const catName = obj ? (obj.category_name || 'Object') : 'Object';
+	const objTitle = (obj && obj.object_title) ? obj.object_title : ('Object #' + objectId);
+
+	displayEl.html(`
+		<div class="obj-selected-card d-flex justify-content-between align-items-center">
+			<div class="d-flex align-items-center gap-2 text-truncate">
+				<span class="badge bg-primary text-uppercase px-2 py-1" style="font-size: 0.75rem;">${escapeHtml(catName)}</span>
+				<span class="fw-bold text-dark text-truncate" style="max-width: 320px;">${escapeHtml(objTitle)}</span>
+				<span class="text-muted small">(ID: ${objectId})</span>
+			</div>
+			<div class="d-flex gap-1">
+				<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" title="Change object" onclick="openObjectSelectorModal('${tabBoxId}')">
+					<i class="fas fa-sync-alt me-1"></i>Change
+				</button>
+				<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" title="Clear selection" onclick="clearTabObject('${tabBoxId}')">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+		</div>
+	`);
+}
+
+// Initialize tabs from model or defaults
+function initTabsFromModel() {
+	const rawEn = $('#raw_navtabs_json_en').val();
+	const rawHi = $('#raw_navtabs_json_hi').val();
+	const titleEn = $('#raw_object_title_en').val();
+	const titleHi = $('#raw_object_title_hi').val();
+	const styles = $('#raw_styles').val();
+	const classes = $('#raw_classes').val();
+
+	if (titleEn && titleEn !== 'null') $('#object_title').val(titleEn);
+	if (titleHi && titleHi !== 'null') {
+		$('#object_title_hi').val(titleHi);
+		$('#generateHindiSection').show();
+	}
+	if (styles && styles !== 'null') $('#styles').val(styles);
+	if (classes && classes !== 'null') $('#classes').val(classes);
+
+	let tabsEn = [];
+	let tabsHi = [];
+
+	if (rawEn && rawEn.trim() !== '' && rawEn !== 'null') {
+		try {
+			tabsEn = JSON.parse(rawEn);
+		} catch (e) {
+			console.error('Error parsing raw_navtabs_json_en:', e);
+		}
+	}
+
+	if (rawHi && rawHi.trim() !== '' && rawHi !== 'null') {
+		try {
+			tabsHi = JSON.parse(rawHi);
+		} catch (e) {
+			console.error('Error parsing raw_navtabs_json_hi:', e);
+		}
+	}
+
+	if (Array.isArray(tabsEn) && tabsEn.length > 0) {
+		tabsEn.forEach((tabEn, idx) => {
+			const tabHi = (Array.isArray(tabsHi) && tabsHi[idx]) ? tabsHi[idx] : {};
+			addTabItem({
+				titleEn: tabEn.title || '',
+				titleHi: tabHi.title || '',
+				objectId: tabEn.objectId || '',
+				viewMoreLink: tabEn.viewMoreLink || '',
+				viewMoreText: tabEn.viewMoreText || 'VIEW MORE'
+			});
+		});
+	} else {
+		// Starter tabs
+		addTabItem({ titleEn: 'Courses & Training', titleHi: 'पाठ्यक्रम एवं प्रशिक्षण', objectId: '', viewMoreLink: '', viewMoreText: 'VIEW MORE' });
+		addTabItem({ titleEn: 'Notifications & Orders', titleHi: 'अधिसूचनाएं एवं आदेश', objectId: '', viewMoreLink: '', viewMoreText: 'VIEW MORE' });
+		addTabItem({ titleEn: 'Photo Gallery', titleHi: 'फोटो गैलरी', objectId: '', viewMoreLink: '', viewMoreText: 'VIEW MORE' });
+	}
+
+	updateTabNumbers();
+	updateLivePreview();
+}
+
+function generateId() {
+	return 'tab_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Add tab item box to DOM
+function addTabItem(data) {
+	const id = generateId();
+	const titleEn = data.titleEn || '';
+	const titleHi = data.titleHi || '';
+	const selectedObjId = data.objectId || '';
+	const viewMoreLink = data.viewMoreLink || '';
+	const viewMoreText = data.viewMoreText || 'VIEW MORE';
+
+	const html = `
+	<div class="tab-item-box" id="${id}">
+		<div class="tab-item-header">
+			<div class="d-flex align-items-center">
+				<i class="fas fa-grip-vertical drag-handle"></i>
+				<span class="tab-number-badge fw-bold me-2">#</span>
+				<span class="tab-header-title text-truncate" style="max-width: 320px;">${escapeHtml(titleEn) || 'New Tab'}</span>
+			</div>
+			<div>
+				<button type="button" class="btn btn-sm btn-outline-danger border-0" title="Delete Tab" onclick="deleteTab('${id}')">
+					<i class="fas fa-trash"></i>
+				</button>
+			</div>
+		</div>
+		<div class="tab-item-body">
+			<!-- Tab Titles EN & HI -->
+			<div class="row g-3 mb-3">
+				<div class="col-md-6">
+					<label class="form-label small fw-semibold">
+						<span class="lang-badge-en me-1">EN</span> Tab Title (English) <span class="text-danger">*</span>
+					</label>
+					<input type="text" class="form-control tab-title-en" value="${escapeHtml(titleEn)}" placeholder="e.g. Training Calendar" oninput="onTabTitleChange('${id}')">
+				</div>
+				<div class="col-md-6">
+					<label class="form-label small fw-semibold d-flex justify-content-between">
+						<span><span class="lang-badge-hi me-1">HI</span> टैब शीर्षक (हिंदी)</span>
+						<button type="button" class="btn btn-sm btn-link p-0 text-decoration-none text-danger" onclick="translateTabTitle('${id}')">
+							<i class="fas fa-language"></i> Translate
+						</button>
+					</label>
+					<input type="text" class="form-control tab-title-hi" value="${escapeHtml(titleHi)}" placeholder="टैब का नाम हिंदी में..." oninput="updateLivePreview()">
+				</div>
+			</div>
+
+			<!-- Content Object Selection via Object Selector Modal -->
+			<div class="bg-light p-3 rounded border mb-3">
+				<div class="d-flex justify-content-between align-items-center mb-2">
+					<label class="form-label small fw-bold mb-0" style="color: #162f6a;">
+						<i class="fas fa-cube text-primary me-1"></i> Tab Content Object <span class="text-danger">*</span>
+					</label>
+					<button type="button" class="btn btn-primary btn-sm px-3 shadow-sm" onclick="openObjectSelectorModal('${id}')">
+						<i class="fas fa-th-large me-1"></i> Select from Object Selector
+					</button>
+				</div>
+				<div class="tab-selected-obj-display mb-1" id="${id}_obj_display">
+					<!-- Populated by updateTabObjectDisplay -->
+				</div>
+				<input type="hidden" class="tab-object-id" id="${id}_object_id" value="${selectedObjId}">
+			</div>
+
+			<!-- Optional "VIEW MORE" Button -->
+			<div class="row g-2 align-items-center">
+				<div class="col-md-8">
+					<label class="form-label small fw-semibold text-muted mb-1">
+						<i class="fas fa-link me-1"></i> Optional "VIEW MORE" Page URL
+					</label>
+					<input type="text" class="form-control form-control-sm tab-viewmore-link" value="${escapeHtml(viewMoreLink)}" placeholder="/training-calendar or /Preview?page_id=..." oninput="updateLivePreview()">
+				</div>
+				<div class="col-md-4">
+					<label class="form-label small fw-semibold text-muted mb-1">Button Text</label>
+					<input type="text" class="form-control form-control-sm tab-viewmore-text" value="${escapeHtml(viewMoreText)}" placeholder="VIEW MORE" oninput="updateLivePreview()">
+				</div>
+			</div>
+		</div>
+	</div>`;
+
+	$('#tabsContainer').append(html);
+	updateTabNumbers();
+	updateTabObjectDisplay(id, selectedObjId);
+
+	if (selectedObjId) {
+		fetchChildObjectPreview(selectedObjId);
+	}
+}
+
+// Add new empty tab
+function addNewTab() {
+	addTabItem({
+		titleEn: 'New Tab',
+		titleHi: '',
+		objectId: '',
+		viewMoreLink: '',
+		viewMoreText: 'VIEW MORE'
+	});
+	updateLivePreview();
+}
+
+// Delete tab
+function deleteTab(id) {
+	const boxes = $('.tab-item-box');
+	if (boxes.length <= 1) {
+		alert('A NavTabs component must contain at least 1 tab.');
+		return;
+	}
+	if (confirm('Are you sure you want to remove this tab?')) {
+		$('#' + id).remove();
+		updateTabNumbers();
+		if (activePreviewTabIndex >= $('.tab-item-box').length) {
+			activePreviewTabIndex = Math.max(0, $('.tab-item-box').length - 1);
+		}
+		updateLivePreview();
+	}
+}
+
+function updateTabNumbers() {
+	$('.tab-item-box').each(function(idx) {
+		$(this).find('.tab-number-badge').text('Tab ' + (idx + 1) + ':');
+	});
+}
+
+function onTabTitleChange(id) {
+	const el = $('#' + id);
+	const val = el.find('.tab-title-en').val().trim();
+	el.find('.tab-header-title').text(val || 'New Tab');
+	updateLivePreview();
+}
+
+// Fetch and cache child object HTML preview using GET
+async function fetchChildObjectPreview(objId) {
+	if (!objId) return '';
+	if (objectPreviewCache[objId]) {
+		return objectPreviewCache[objId];
+	}
+
+	try {
+		const langParam = (currentPreviewLang === 'hi') ? 'H' : 'E';
+		const res = await fetch(`/getChildObjectPreview?object_id=${encodeURIComponent(objId)}&lang=${langParam}`);
+		if (res.ok) {
+			const data = await res.json();
+			if (data && data.status === 'success') {
+				objectPreviewCache[objId] = data.html || '';
+				return data.html;
+			}
+		}
+	} catch (e) {
+		console.error('Failed to fetch object preview for id ' + objId, e);
+	}
+	return '';
+}
+
+function switchPreviewLang(lang) {
+	currentPreviewLang = lang;
+	objectPreviewCache = {};
+	const promises = [];
+	$('.tab-object-id').each(function() {
+		const objId = $(this).val();
+		if (objId) promises.push(fetchChildObjectPreview(objId));
+	});
+	Promise.all(promises).then(() => {
+		updateLivePreview();
+	});
+}
+
+function setActivePreviewTab(idx) {
+	activePreviewTabIndex = idx;
+	updateLivePreview();
+}
+
+// Render Live Interactive Preview
+function updateLivePreview() {
+	const title = (currentPreviewLang === 'hi') ? $('#object_title_hi').val() : $('#object_title').val();
+	const customClasses = $('#classes').val() || '';
+	const customStyles = $('#styles').val() || '';
+
+	const tabs = [];
+	$('.tab-item-box').each(function(idx) {
+		const el = $(this);
+		const tEn = el.find('.tab-title-en').val().trim() || ('Tab ' + (idx + 1));
+		const tHi = el.find('.tab-title-hi').val().trim() || tEn;
+		const displayTitle = (currentPreviewLang === 'hi') ? tHi : tEn;
+		const objId = el.find('.tab-object-id').val();
+		const vLink = el.find('.tab-viewmore-link').val().trim();
+		const vText = el.find('.tab-viewmore-text').val().trim() || 'VIEW MORE';
+
+		tabs.push({
+			index: idx,
+			title: displayTitle,
+			objectId: objId,
+			viewMoreLink: vLink,
+			viewMoreText: vText
+		});
+	});
+
+	if (tabs.length === 0) {
+		$('#livePreviewContainer').html('<div class="text-center text-muted py-5"><i class="fas fa-layer-group fa-3x mb-2"></i><p>No tabs added yet. Click "+ Add Tab" to begin.</p></div>');
+		return;
+	}
+
+	if (activePreviewTabIndex >= tabs.length) {
+		activePreviewTabIndex = 0;
+	}
+
+	let html = `<div class="navtabs-preview-wrapper ${escapeHtml(customClasses)}" style="${escapeHtml(customStyles)}">`;
+
+	// Component Heading
+	if (title && title.trim() !== '') {
+		html += `<h4 class="fw-bold mb-3" style="color: #162f6a; font-size: 1.35rem;">${escapeHtml(title)}</h4>`;
+	}
+
+	// Tabs Header (Bootstrap 5 nav nav-tabs)
+	html += `<ul class="nav nav-tabs preview-nav-tabs" role="tablist">`;
+	tabs.forEach((tab, idx) => {
+		const isActive = (idx === activePreviewTabIndex);
+		html += `
+		<li class="nav-item" role="presentation">
+			<button class="nav-link ${isActive ? 'active' : ''}" type="button" role="tab" onclick="setActivePreviewTab(${idx})">
+				${escapeHtml(tab.title)}
+			</button>
+		</li>`;
+	});
+	html += `</ul>`;
+
+	// Active Tab Content Pane
+	const activeTab = tabs[activePreviewTabIndex];
+	html += `<div class="preview-tab-content-box">`;
+
+	if (activeTab.objectId) {
+		const childHtml = objectPreviewCache[activeTab.objectId];
+		if (childHtml) {
+			html += `<div class="preview-child-content">${childHtml}</div>`;
+		} else {
+			html += `
+			<div class="text-center text-muted py-4">
+				<div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+				<p class="mb-0 small">Loading content for Object #${activeTab.objectId}...</p>
+			</div>`;
+			fetchChildObjectPreview(activeTab.objectId).then(() => updateLivePreview());
+		}
+	} else {
+		html += `
+		<div class="text-center text-muted py-4 border border-dashed rounded bg-light">
+			<i class="fas fa-th-large me-1 text-primary"></i> Please click <strong>Select from Object Selector</strong> on the left to assign content to this tab.
+		</div>`;
+	}
+
+	// Optional "VIEW MORE" Button
+	if (activeTab.viewMoreLink && activeTab.viewMoreLink !== '#') {
+		html += `
+		<div class="text-end pt-3 mt-3 border-top">
+			<a href="${escapeHtml(activeTab.viewMoreLink)}" target="_blank" class="btn btn-outline-primary btn-sm px-3 py-1 fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+				${escapeHtml(activeTab.viewMoreText)} <i class="fas fa-chevron-right ms-1"></i>
+			</a>
+		</div>`;
+	}
+
+	html += `</div>`; // .preview-tab-content-box
+	html += `</div>`; // .navtabs-preview-wrapper
+
+	$('#livePreviewContainer').html(html);
+}
+
+// Translations using MyMemory API
+async function translateText(text) {
+	if (!text || text.trim() === '') return '';
+	try {
+		const url = 'https://api.mymemory.translated.net/get';
+		const params = new URLSearchParams({ q: text, langpair: 'en|hi' });
+		const res = await fetch(`${url}?${params}`);
+		const data = await res.json();
+		if (data && data.responseData && data.responseData.translatedText) {
+			return data.responseData.translatedText;
+		}
+	} catch (e) {
+		console.error('Translation error:', e);
+	}
+	return text;
+}
+
+async function translateTabTitle(id) {
+	const el = $('#' + id);
+	const val = el.find('.tab-title-en').val();
+	if (!val) return;
+	const translated = await translateText(val);
+	el.find('.tab-title-hi').val(translated);
+	updateLivePreview();
+}
+
+async function autoTranslateAllTabs() {
+	const headingEn = $('#object_title').val();
+	if (headingEn && !$('#object_title_hi').val()) {
+		$('#object_title_hi').val(await translateText(headingEn));
+		$('#generateHindiSection').slideDown();
+	}
+
+	const boxes = $('.tab-item-box');
+	for (let i = 0; i < boxes.length; i++) {
+		const el = $(boxes[i]);
+		const tEn = el.find('.tab-title-en').val();
+		const tHi = el.find('.tab-title-hi');
+		if (tEn && (!tHi.val() || tHi.val().trim() === '')) {
+			tHi.val(await translateText(tEn));
+		}
+	}
+	updateLivePreview();
+	alert('Auto-translation completed!');
+}
+
+// Save NavTabs to Server
+function saveNavTabs() {
+	const titleEn = $('#object_title').val().trim();
+	const titleHi = $('#object_title_hi').val().trim();
+
+	const tabsEn = [];
+	const tabsHi = [];
+
+	let hasError = false;
+	const boxes = $('.tab-item-box');
+
+	if (boxes.length === 0) {
+		alert('Please add at least one tab before saving.');
+		return;
+	}
+
+	boxes.each(function(idx) {
+		const el = $(this);
+		const tEn = el.find('.tab-title-en').val().trim();
+		const tHi = el.find('.tab-title-hi').val().trim() || tEn;
+		const objIdVal = el.find('.tab-object-id').val();
+		const vLink = el.find('.tab-viewmore-link').val().trim();
+		const vText = el.find('.tab-viewmore-text').val().trim() || 'VIEW MORE';
+
+		if (!tEn) {
+			alert('Tab #' + (idx + 1) + ' is missing a title.');
+			el.find('.tab-title-en').focus();
+			hasError = true;
+			return false;
+		}
+
+		if (!objIdVal) {
+			alert('Please select a content object for Tab #' + (idx + 1) + ' ("' + tEn + '").');
+			hasError = true;
+			return false;
+		}
+
+		tabsEn.push({
+			title: tEn,
+			objectId: parseInt(objIdVal),
+			viewMoreLink: vLink,
+			viewMoreText: vText
+		});
+
+		tabsHi.push({
+			title: tHi,
+			objectId: parseInt(objIdVal),
+			viewMoreLink: vLink,
+			viewMoreText: vText
+		});
+	});
+
+	if (hasError) return;
+
+	const hindiMeta = {
+		title: titleHi,
+		help_text: ''
+	};
+
+	const csrfToken = $('meta[name="_csrf"]').attr('content');
+	const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+	const payload = {
+		object_id: $('#page_id').val() || '',
+		imgType: '',
+		jsonString: JSON.stringify(tabsEn),
+		jsonString_hi: JSON.stringify(tabsHi),
+		type: '12',
+		marquee: '',
+		linksString: JSON.stringify([]),
+		newJson: '',
+		list_type: 'navtabs',
+		expString: JSON.stringify([]),
+		object_title: titleEn,
+		object_title_hi: titleHi,
+		styles: $('#styles').val() || '',
+		classes: $('#classes').val() || '',
+		description: '',
+		help_text: '',
+		alternate_text: '',
+		keywords: '',
+		meta_hi: JSON.stringify(hindiMeta)
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: '/save',
+		data: JSON.stringify(payload),
+		contentType: 'application/json',
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		headers: {
+			'X-CSRF-TOKEN': csrfToken,
+			'X-XSRF-HEADER': csrfHeader
+		},
+		success: function(response) {
+			alert(response.success || 'NavTabs saved successfully!');
+			window.location.href = '/home';
+		},
+		error: function(xhr, status, error) {
+			console.error('Error saving navtabs:', error);
+			alert('Error saving NavTabs: ' + (xhr.responseJSON?.message || error));
+		}
+	});
+}
+</script>
+
+</body>
+</html>

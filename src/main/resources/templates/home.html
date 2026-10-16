@@ -46,13 +46,13 @@
 
 	<!-- 	<div class="container itemsContainer mt-5">
 		<div class="left-button" onclick="scrollItems('left')">
-			<i class="fas fa-less-than fa-2x" style="color: #2668d9;"></i>
+			<i class="fas fa-less-than fa-2x" style="color: #162f6a;"></i>
 		</div>
 		
 	<div class="items-container">
 			<div class="card item" onclick="selectItem('1')">
 				<div class="card-body">
-					<i class="fa-solid fa-table  fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-table  fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Table</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -62,7 +62,7 @@
 			</div>
 			<div class="card item" onclick="selectItem('6')">
 				<div class="card-body">
-					<i class="fa-solid fa-paragraph fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-paragraph fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Paragraph</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -72,7 +72,7 @@
 			</div>
 			<div class="card item" onclick="selectItem('3')">
 				<div class="card-body">
-					<i class="fa-solid fa-list-ol  fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-list-ol  fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Lists</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -83,7 +83,7 @@
 
 			<div class="card item" onclick="selectItem('2')">
 				<div class="card-body">
-					<i class="fa-solid fa-images fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-images fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Images</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -93,7 +93,7 @@
 			</div>
 			<div class="card item" onclick="selectItem('5')">
 				<div class="card-body">
-					<i class="fa-solid fa-panorama fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-panorama fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Image Carousel</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -103,7 +103,7 @@
 			</div>
 			<div class="card item" onclick="selectItem('7')">
 				<div class="card-body">
-					<i class="fa-solid fa-video fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-video fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Videos</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -114,7 +114,7 @@
 			<div class="card item" onclick="selectItem('8')">
 				<div class="card-body">
 					<i class="fa-solid fa-microphone-lines fa-5x"
-						style="color: #e2554b;"></i>
+						style="color: #214aab;"></i>
 					<h6 class="card-title">Audios</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -124,7 +124,7 @@
 			</div>
 			<div class="card item" onclick="selectItem('9')">
 				<div class="card-body">
-					<i class="fa-solid fa-file-pdf fa-5x" style="color: #e2554b;"></i>
+					<i class="fa-solid fa-file-pdf fa-5x" style="color: #214aab;"></i>
 					<h6 class="card-title">Documents</h6>
 					<p class="card-text text-center">
 						Design Now <i class="fas fa-greater-than"></i>
@@ -134,7 +134,7 @@
 			</div>
 		</div>
 		<div class="right-button" onclick="scrollItems('right')">
-			<i class="fas fa-greater-than fa-2x" style="color: #2668d9;"></i>
+			<i class="fas fa-greater-than fa-2x" style="color: #162f6a;"></i>
 		</div>
 	</div> -->
 
@@ -159,6 +159,10 @@
 				hyperLinks = 'list';
 			} else if (typeGiven == 10) {
 				hyperLinks = 'embed';
+			} else if (typeGiven == 11) {
+				hyperLinks = 'cards';
+			} else if (typeGiven == 12) {
+				hyperLinks = 'navtabs';
 			} else if (typeGiven == 2) {
 				hyperLinks = 'galleryObjects?type=' + typeGiven;
 			} else {

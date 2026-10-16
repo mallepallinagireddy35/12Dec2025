@@ -161,7 +161,8 @@ public class WebSecurityConfig {
 				"/reset-password/**", "/updateCookie", "/registration", "/home", "/index", "/Preview/**", "/getsignin", "/getPublicForm", "/insertPublicFormData", "/getForm", "/generateOtp","/validateOtp","/translateContent","/translation",
 				"/getsignin", "/Preview/**", "/customerror", "/getCaptcha","/userReport",
 				"/getCaptcha", "/captcha/**","/getDynamicForm/**","/getDynamicForm/**", "/captcha/**", "/universalSearch/","/universalSearch", "/static/assets/ckeditor_4.22.1/**",
-				"/checkGalleryFolderUsage", "/deleteGalleryFolder", "/galleryFolderManager" , "/lastUpdated"};
+				"/checkGalleryFolderUsage", "/deleteGalleryFolder", "/galleryFolderManager" , "/lastUpdated", "/getDbimResources",
+				"/navtabs", "/getNavTabEligibleObjects", "/getChildObjectPreview"};
 
 		
 
@@ -297,10 +298,10 @@ public class WebSecurityConfig {
 
 	private HeaderWriter createContentSecurityPolicyHeader() {
 		String policy = "default-src 'self'; "
-				+ "frame-src 'self' https://www.youtube.com/; connect-src 'self' https://api.mymemory.translated.net; "
-				+ "script-src 'self' 'unsafe-inline' https://code.responsivevoice.org; "
+				+ "frame-src 'self' https://www.youtube.com/ https://youtube.com/ https://platform.twitter.com/ https://syndication.twitter.com/ https://www.facebook.com/ https://web.facebook.com/ https://www.instagram.com/; connect-src 'self' https://api.mymemory.translated.net https://syndication.twitter.com https://cdn.syndication.twimg.com; "
+				+ "script-src 'self' 'unsafe-inline' https://code.responsivevoice.org https://platform.twitter.com https://cdn.syndication.twimg.com; "
 				+ "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/; "
-				+ "img-src 'self' data: https://www.svpnpa.gov.in https://www.ciuvo.com; "
+				+ "img-src 'self' data: https://www.svpnpa.gov.in https://www.ciuvo.com https://*.twimg.com https://*.cdninstagram.com https://*.facebook.com https://*.fbcdn.net; "
 				+ "font-src 'self' https://fonts.gstatic.com/; "
 				+ "frame-ancestors 'self' http://10.160.1.155:8080/; base-uri 'self';"
 				+ "x-content-type-options nosniff"; // Adding the X-Content-Type header here

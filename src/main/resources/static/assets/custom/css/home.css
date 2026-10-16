@@ -77,13 +77,13 @@ label.radio-card input[type='radio'] {
 }
 
 label.radio-card input[type='radio']:checked+.card-content-wrapper {
-	box-shadow: 0 2px 4px 0 rgba(219, 215, 215, 0.5), 0 0 0 2px #3057d5;
+	box-shadow: 0 2px 4px 0 rgba(219, 215, 215, 0.5), 0 0 0 2px var(--brand-key, #162f6a);
 }
 
 label.radio-card input[type='radio']:checked+.card-content-wrapper .check-icon
 	{
-	background: #3057d5;
-	border-color: #3057d5;
+	background: var(--brand-key, #162f6a);
+	border-color: var(--brand-key, #162f6a);
 	transform: scale(1.2);
 }
 
@@ -95,8 +95,8 @@ label.radio-card input[type='radio']:checked+.card-content-wrapper .check-icon:b
 
 label.radio-card input[type='radio']:focus+.card-content-wrapper .check-icon
 	{
-	box-shadow: 0 0 0 4px rgba(48, 86, 213, 0.2);
-	border-color: #3056d5;
+	box-shadow: 0 0 0 4px rgba(22, 47, 106, 0.2);
+	border-color: var(--brand-key, #162f6a);
 }
 
 label.radio-card .card-content img {
@@ -117,22 +117,7 @@ label.radio-card .card-content h6 {
 	color: #686d73;
 }
 
-.carousel-inner {
-	padding: 1em;
-}
 
- .carousel-control-prev, .carousel-control-next {
-	background-color: red;
-	width: 6vh;
-	height: 6vh;
-	border-radius: 50%;
-	top: 50%;
-}
-
-.carousel-control-prev span, .carousel-control-next span {
-	width: 1.5rem;
-	height: 1.5rem;
-}
 
 @media screen and (min-width: 577px) {
 	.cards-wrapper {

@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-<title>123List Designer</title>
+<title>List Designer - SVPNPA</title>
 <!-- Import CSS -->
 <link href="static/assets/bootstrap_5.3/css/bootstrap.css"
 	rel="stylesheet">
 <link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link href="static/assets/custom/css/portal.css" rel="stylesheet">
 <link rel="icon" href="static/assets/img/academy_logo_lg.png">
 <link href="static/assets/fontawesome_6.4/css/all.min.css"
 	rel="stylesheet">
@@ -38,146 +39,338 @@ div:hover .deleteStyle {
   flex: 0 0 auto;
   width: 4.15%;
 }
+
+/* Card Appearance Presets */
+.theme-preset-card {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+}
+.theme-preset-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+.theme-preset-card.selected-preset {
+    border-color: #162f6a !important;
+    background-color: #f8fafc;
+}
 </style>
 <script>
+		// Translations using mymemory API
+		async function translateText(text) {
+			if (!text || text.trim() === '') return '';
+			try {
+				const url = 'https://api.mymemory.translated.net/get';
+				const params = new URLSearchParams({ q: text, langpair: 'en|hi' });
+				const res = await fetch(`${url}?${params}`);
+				const data = await res.json();
+				if (data && data.responseData && data.responseData.translatedText) {
+					return data.responseData.translatedText;
+				}
+			} catch(e) {
+				console.error('Translation error', e);
+			}
+			return text;
+		}
+
+		async function translateIt() {
+			try {
+				var titleEn = document.getElementById("object_title").value.trim();
+				if (titleEn) {
+					document.getElementById("object_title_hi").value = await translateText(titleEn);
+				}
+				var descEn = document.getElementById("description").value.trim();
+				if (descEn) {
+					document.getElementById("description_hi").value = await translateText(descEn);
+				}
+				var kwEn = document.getElementById("keywords").value.trim();
+				if (kwEn) {
+					document.getElementById("keywords_hi").value = await translateText(kwEn);
+				}
+				var helpEn = document.getElementById("help_text").value.trim();
+				if (helpEn) {
+					document.getElementById("help_text_hi").value = await translateText(helpEn);
+				}
+
+				var myList = document.getElementById('myList');
+				var myListHindi = document.getElementById('myList_Hindi');
+				var myTableInputs = myList ? myList.getElementsByClassName("item") : [];
+				var myTableInputs_hi = myListHindi ? myListHindi.getElementsByClassName("item_hi") : [];
+				for (var i = 0; i < myTableInputs.length; i++) {
+					var textEn = myTableInputs[i].value ? myTableInputs[i].value.trim() : '';
+					if (textEn && myTableInputs_hi[i]) {
+						var hasNew = /(?:\[new\]|<span[^>]*modern-list-badge-new|<img[^>]*3640b7b6868946348904a3be1d3d8cd4)/i.test(textEn);
+						var cleanText = textEn
+							.replace(/<img[^>]*3640b7b6868946348904a3be1d3d8cd4[^>]*>/gi, '')
+							.replace(/\[new\]/gi, '')
+							.replace(/<span[^>]*modern-list-badge-new[^>]*>.*?<\/span>/gi, '')
+							.trim();
+						var translated = await translateText(cleanText);
+						if (hasNew) {
+							translated += ' [NEW]';
+						}
+						myTableInputs_hi[i].value = translated;
+					}
+				}
+				updateLivePreview();
+				syncNewBadgeButtonStates();
+				alert('Translation completed!');
+			} catch (err) {
+				console.error("Translation error:", err);
+				alert('Translation completed with fallback.');
+			}
+		}
+
+		function syncLinkExp(inputEl, fieldType) {
+			var $row = $(inputEl).closest('.list_items');
+			var rowId = $row.attr('data-row-id');
+			var val = $(inputEl).val();
+			var isHindi = $row.closest('#myList_Hindi').length > 0;
+			var targetList = isHindi ? '#myList' : '#myList_Hindi';
+			if (rowId) {
+				$(targetList + ' .list_items[data-row-id="' + rowId + '"]').find('.' + fieldType).val(val);
+			} else {
+				var index = $row.index();
+				$(targetList + ' .list_items').eq(index).find('.' + fieldType).val(val);
+			}
+		}
+
+		function syncHindiOrder() {
+			var containerHi = document.getElementById('myList_Hindi');
+			if (!containerHi) return;
+			var enRows = document.querySelectorAll('#myList .list_items');
+			enRows.forEach(function(enRow) {
+				var rowId = enRow.getAttribute('data-row-id');
+				if (rowId) {
+					var hiRow = containerHi.querySelector('.list_items[data-row-id="' + rowId + '"]');
+					if (hiRow) {
+						containerHi.appendChild(hiRow);
+					}
+				}
+			});
+		}
+
+		function syncEnglishOrder() {
+			var containerEn = document.getElementById('myList');
+			if (!containerEn) return;
+			var hiRows = document.querySelectorAll('#myList_Hindi .list_items');
+			hiRows.forEach(function(hiRow) {
+				var rowId = hiRow.getAttribute('data-row-id');
+				if (rowId) {
+					var enRow = containerEn.querySelector('.list_items[data-row-id="' + rowId + '"]');
+					if (enRow) {
+						containerEn.appendChild(enRow);
+					}
+				}
+			});
+		}
+
+		function ensureRowIds() {
+			var enRows = $('#myList .list_items');
+			var hiRows = $('#myList_Hindi .list_items');
+			var maxLen = Math.max(enRows.length, hiRows.length);
+			for (var i = 0; i < maxLen; i++) {
+				var rowId = 'row-' + i;
+				if (enRows[i] && !enRows[i].getAttribute('data-row-id')) {
+					enRows[i].setAttribute('data-row-id', rowId);
+				}
+				if (hiRows[i] && !hiRows[i].getAttribute('data-row-id')) {
+					hiRows[i].setAttribute('data-row-id', rowId);
+				}
+			}
+		}
+
 		function convertTableToJSON(event) {
 			event.preventDefault();
-			var list_div = document.getElementById('myList'); // Replace 'myTable' with the ID of your HTML table
-			var rows = list_div.getElementsByClassName('item');
-			var jsonData = [];
-			var jsonData_hi = [];
-			var temp = '';
-			debugger;
-			var rowData = [];
-			if (document.getElementById("object_title").value == '') {
+			var list_div = document.getElementById('myList');
+			var list_div_hi = document.getElementById('myList_Hindi');
+			var rows = list_div ? list_div.getElementsByClassName('item') : [];
+			var rows_hi = list_div_hi ? list_div_hi.getElementsByClassName('item_hi') : [];
+			var linkRows = list_div ? list_div.getElementsByClassName('link') : [];
+			var expRows = list_div ? list_div.getElementsByClassName('exp') : [];
+
+			var titleVal = document.getElementById("object_title").value.trim();
+			if (titleVal === '') {
 				alert("Please fill title");
 				return false;
 			}
-			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
-				var cells = rows[i].getElementsByTagName('td');
-				var columnValue = rows[i].value; // Assumes the first row contains column headers
-				if (columnValue == '') {
-						alert("Please fill all fields");
-						return false;
-					}
-				rowData[i] = encodeURIComponent(columnValue);
+
+			if (rows.length === 0) {
+				alert("Please add at least one list item");
+				return false;
 			}
-			var rows_hi = document.getElementsByClassName('item_hi');
+
+			var rowData = [];
 			var rowData_hi = [];
-			for (var i = 0; i < rows_hi.length; i++) { // Start from 1 to skip the table header
-				var columnValue = rows_hi[i].value; // Assumes the first row contains column headers
-				//---------30-09-2026----------------------------------------
-				if ((columnValue.match(/"/g) || []).length % 2 !== 0) {
-					columnValue = columnValue.replace(/"/g, '');
-                }
-				rowData_hi[i] = encodeURIComponent(columnValue);
-			}
-			temp = rowData.join(',');
-			jsonData.push(temp);
-			var json = '[' + jsonData + ']';
-			document.getElementById("jsonString").value = JSON.stringify(json,
-				null, 2);
-			var temp_hi = rowData_hi.join(',');
-			jsonData_hi.push(temp_hi);
-			var json_hi = '[' + jsonData_hi + ']';
-			document.getElementById("jsonString_hi").value = JSON.stringify(
-				json_hi, null, 2);
-			jsonData = [];
-			rows = document.getElementsByClassName('link');
-			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
-				var cells = rows[i].getElementsByTagName('td');
-				var columnValue = rows[i].value; // Assumes the first row contains column headers
-				if (columnValue == null || columnValue == '')
-					columnValue = '#';
+			var rowData_links = [];
+			var rowData_exp = [];
+
+			for (var i = 0; i < rows.length; i++) {
+				var columnValue = rows[i].value ? rows[i].value.trim() : '';
+				if (columnValue === '') {
+					alert("Please fill all fields");
+					return false;
+				}
+				// Clean and normalize legacy badge HTML to [NEW] tag
+				columnValue = columnValue.replace(/<img[^>]*3640b7b6868946348904a3be1d3d8cd4[^>]*>/gi, ' [NEW]');
+				columnValue = columnValue.replace(/<span[^>]*modern-list-badge-new[^>]*>.*?<\/span>/gi, ' [NEW]');
+				columnValue = columnValue.replace(/\s+/g, ' ').trim();
 				rowData[i] = encodeURIComponent(columnValue);
+
+				// Hindi item: use Hindi input if filled, otherwise fallback to English text
+				var columnValue_hi = (rows_hi[i] && rows_hi[i].value) ? rows_hi[i].value.trim() : '';
+				if (!columnValue_hi) {
+					columnValue_hi = columnValue;
+				}
+				if ((columnValue_hi.match(/"/g) || []).length % 2 !== 0) {
+					columnValue_hi = columnValue_hi.replace(/"/g, '');
+				}
+				columnValue_hi = columnValue_hi.replace(/<img[^>]*3640b7b6868946348904a3be1d3d8cd4[^>]*>/gi, ' [NEW]');
+				columnValue_hi = columnValue_hi.replace(/<span[^>]*modern-list-badge-new[^>]*>.*?<\/span>/gi, ' [NEW]');
+				columnValue_hi = columnValue_hi.replace(/\s+/g, ' ').trim();
+				rowData_hi[i] = encodeURIComponent(columnValue_hi);
+
+				// Links (one per item, taken from English list)
+				var linkVal = (linkRows[i] && linkRows[i].value) ? linkRows[i].value.trim() : '';
+				if (!linkVal) linkVal = '#';
+				rowData_links[i] = encodeURIComponent(linkVal);
+
+				// Expirations (one per item, taken from English list)
+				var expVal = (expRows[i] && expRows[i].value) ? expRows[i].value.trim() : '';
+				rowData_exp[i] = encodeURIComponent(expVal);
 			}
-			temp = rowData.join(',');
-			jsonData.push(temp);
-			var json = '[' + jsonData + ']';
-			document.getElementById("linksString").value = JSON.stringify(json,
-				null, 2);
-			jsonData = [];
-			rows = document.getElementsByClassName('exp');
-			for (var i = 0; i < rows.length; i++) { // Start from 1 to skip the table header
-				var cells = rows[i].getElementsByTagName('td');
-				var columnValue = rows[i].value; // Assumes the first row contains column headers
-				if (columnValue == null || columnValue == '')
-					columnValue = '';
-				rowData[i] = encodeURIComponent(columnValue);
-			}
-			temp = rowData.join(',');
-			jsonData.push(temp);
-			var json = '[' + jsonData + ']';
-			document.getElementById("expString").value = JSON.stringify(json, null, 2);
-			var hindi_meta = {
-				"keywords": document.getElementById("keywords_hi").value,
-				"description": document.getElementById("description_hi").value,
-				"title": document.getElementById("object_title_hi").value,
-				"help_text": document.getElementById("help_text_hi").value
+
+			var json = '[' + rowData.join(',') + ']';
+			document.getElementById("jsonString").value = JSON.stringify(json, null, 2);
+
+			var json_hi = '[' + rowData_hi.join(',') + ']';
+			document.getElementById("jsonString_hi").value = JSON.stringify(json_hi, null, 2);
+
+			var json_links = '[' + rowData_links.join(',') + ']';
+			document.getElementById("linksString").value = JSON.stringify(json_links, null, 2);
+
+			var json_exp = '[' + rowData_exp.join(',') + ']';
+			document.getElementById("expString").value = JSON.stringify(json_exp, null, 2);
+
+			var selectedTheme = $('#theme_navy').val() || $('#list_theme_preset').val() || 'navy';
+			var headerIcon = $('#header_icon_input').val() ? $('#header_icon_input').val().trim() : '';
+			var isViewMoreEnabled = $('#show_view_more_check').is(':checked');
+			var viewMoreUrl = isViewMoreEnabled ? ($('#view_more_url_input').val() ? $('#view_more_url_input').val().trim() : '') : '';
+
+			var titleEn = titleVal;
+			var descEn = document.getElementById("description").value.trim();
+			var helpEn = document.getElementById("help_text").value.trim();
+			var kwEn = document.getElementById("keywords").value.trim();
+
+			var titleHi = document.getElementById("object_title_hi").value.trim() || titleEn;
+			var descHi = document.getElementById("description_hi").value.trim() || descEn;
+			var helpHi = document.getElementById("help_text_hi").value.trim() || helpEn;
+			var kwHi = document.getElementById("keywords_hi").value.trim() || kwEn;
+
+			var english_meta = {
+				"keywords": kwEn,
+				"description": descEn,
+				"title": titleEn,
+				"help_text": helpEn,
+				"theme": selectedTheme,
+				"header_icon": headerIcon,
+				"show_view_more": isViewMoreEnabled,
+				"view_more_url": viewMoreUrl
 			};
-			document.getElementById("meta_hi").value = JSON.stringify(hindi_meta,null, 2);
-			
+			var hindi_meta = {
+				"keywords": kwHi,
+				"description": descHi,
+				"title": titleHi,
+				"help_text": helpHi,
+				"theme": selectedTheme,
+				"header_icon": headerIcon,
+				"show_view_more": isViewMoreEnabled,
+				"view_more_url": viewMoreUrl
+			};
+
+			var classVal = 'list-card-' + selectedTheme;
+			if (isViewMoreEnabled) {
+				classVal += ' has-view-more';
+			}
+			document.getElementById("classes").value = classVal;
+
+			if (selectedTheme === 'custom') {
+				var customBg = $('#list_bg_color').val() || '#162f6a';
+				var customText = $('#list_text_color').val() || '#ffffff';
+				var customTitle = $('#list_title_color').val() || customText;
+				var customStyles = 'background-color:' + customBg + '; color:' + customText + ';';
+				document.getElementById("styles").value = customStyles;
+				english_meta.bg_color = customBg;
+				english_meta.text_color = customText;
+				english_meta.title_color = customTitle;
+				hindi_meta.bg_color = customBg;
+				hindi_meta.text_color = customText;
+				hindi_meta.title_color = customTitle;
+			} else {
+				document.getElementById("styles").value = '';
+			}
+			document.getElementById("meta_hi").value = JSON.stringify(hindi_meta, null, 2);
 			
 			var csrfToken = $('meta[name="_csrf"]').attr('content');
 		    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');		    
 			var data = {
-				 "object_id":document.getElementById('page_id').value,						
-				 "imgType":"",				 
-				 "jsonString" : document.getElementById('jsonString').value,
-				 "type":document.getElementById('type').value,							 					
-				 "marquee":document.getElementById('marquee').value,	
-				 "linksString":document.getElementById('linksString').value,
-				 "newJson":"",						
-				 "list_type":document.getElementById('list_style').value,			 
-				 "expString":document.getElementById('expString').value,
-				 "object_title":document.getElementById('object_title').value, 					
-				 "object_title_hi":document.getElementById('object_title_hi').value,
-				 "styles":document.getElementById('styles').value,
-				 "classes":document.getElementById('classes').value,
-				 "description":document.getElementById('description').value,
-				 "help_text":document.getElementById('help_text').value,
-				 "alternate_text":"",
-				 "keywords":document.getElementById('keywords').value,
-				 "jsonString_hi":document.getElementById('jsonString_hi').value,
-				 "meta_hi":document.getElementById('meta_hi').value
+				 "object_id": document.getElementById('page_id').value,						
+				 "imgType": "",				 
+				 "jsonString": document.getElementById('jsonString').value,
+				 "type": document.getElementById('type').value,							 					
+				 "marquee": document.getElementById('marquee').value,	
+				 "linksString": document.getElementById('linksString').value,
+				 "newJson": JSON.stringify(english_meta, null, 2),						
+				 "list_type": document.getElementById('list_style').value,			 
+				 "expString": document.getElementById('expString').value,
+				 "object_title": titleEn, 					
+				 "object_title_hi": titleHi,
+				 "styles": document.getElementById('styles').value,
+				 "classes": document.getElementById('classes').value,
+				 "description": descEn,
+				 "help_text": helpEn,
+				 "alternate_text": "",
+				 "keywords": kwEn,
+				 "jsonString_hi": document.getElementById('jsonString_hi').value,
+				 "meta_hi": document.getElementById('meta_hi').value
 			};	
 			
-			/* alert("jsonString==="+document.getElementById('jsonString').value);
-			alert("jsonString_hi==="+document.getElementById('jsonString_hi').value); */
 			$.ajax({
-			type: "POST",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader(csrfHeader, csrfToken);
-			},
-			headers : {
-				'X-CSRF-TOKEN' : csrfToken,
-				'X-XSRF-HEADER' : csrfHeader
-			},
-			url: "/save",								
-			contentType: "application/json",
-			data: JSON.stringify(data),			
-			success: function (response) {				
-				alert(response.success);
-				//return false;		
-			},
-			error: function (xhr, status, error) {
-	            console.error("Error:", error)	            
-	            //return false;	        
-			}
-		});
-			
+				type: "POST",
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader(csrfHeader, csrfToken);
+				},
+				headers : {
+					'X-CSRF-TOKEN' : csrfToken,
+					'X-XSRF-HEADER' : csrfHeader
+				},
+				url: "/save",								
+				contentType: "application/json",
+				data: JSON.stringify(data),			
+				success: function (response) {				
+					alert(response.success);
+				},
+				error: function (xhr, status, error) {
+					console.error("Error:", error);
+					alert("Failed to save data. Please check connection.");
+				}
+			});
 		}
+
 		function isNumber(evt) {
-        evt = (evt) ? evt : window.event;
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {          
-            return false;
-        }
-        return true;
-    	}
+			evt = (evt) ? evt : window.event;
+			var charCode = (evt.which) ? evt.which : evt.keyCode;
+			if (charCode > 31 && (charCode < 48 || charCode > 57)) {          
+				return false;
+			}
+			return true;
+		}
+
 		function createList() {
 		    document.getElementById("designList").style.display = 'block';
-		    var rowCount = document.getElementById("rowCount").value;
+		    var rowCount = parseInt(document.getElementById("rowCount").value) || 1;
 		    var myList = document.getElementById("myList");
 		    var myListHindi = document.getElementById("myList_Hindi");
 		    
@@ -190,112 +383,62 @@ div:hover .deleteStyle {
 		    var hindiRows = '';
 
 		    for (var i = 0; i < rowCount; i++) {
+		        var rowId = 'row-' + i;
 		        englishRows += `
-		            <div class="draggable row mt-1 g-1 list_items" draggable="true">
+		            <div class="draggable row mt-1 g-1 list_items" draggable="true" data-row-id="${rowId}">
 		                <div class="col-13">
-		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);" title="Delete Row"></i>
 		                    <i class="fas fa-grip-vertical deleteStyle"></i>
 		                </div>
 		                <div class="col">
-		                    <input type="text" placeholder="Name of List item" class="form-control item" required>
+		                    <div class="input-group">
+		                        <input type="text" placeholder="Name of List item" class="form-control item" required oninput="updateLivePreview()">
+		                        <button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+		                            <span class="badge rounded-pill text-warning border border-warning">New</span>
+		                        </button>
+		                    </div>
 		                </div>
 		                <div class="col">
 		                    <div class="input-group">
-		                        <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                        <input type="text" placeholder="Paste Link here" class="form-control link" required oninput="syncLinkExp(this, 'link'); updateLivePreview();">
 		                        <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
 		                    </div>
 		                </div>
 		                <div class="col">
-		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" oninput="syncLinkExp(this, 'exp');" required>
 		                </div>
 		            </div>
 		        `;
 
 		        hindiRows += `
-		            <div class="draggable row mt-1 g-1 list_items" draggable="true">
+		            <div class="draggable row mt-1 g-1 list_items" draggable="true" data-row-id="${rowId}">
 		                <div class="col-13">
-		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
+		                    <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);" title="Delete Row"></i>
 		                    <i class="fas fa-grip-vertical deleteStyle"></i>
 		                </div>
 		                <div class="col">
-		                    <input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" required>
+		                    <div class="input-group">
+		                        <input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" required oninput="updateLivePreview()">
+		                        <button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+		                            <span class="badge rounded-pill text-warning border border-warning">New</span>
+		                        </button>
+		                    </div>
 		                </div>
 		                <div class="col">
 		                    <div class="input-group">
-		                        <input type="text" placeholder="Paste Link here" class="form-control link" required>
+		                        <input type="text" placeholder="Paste Link here" class="form-control link" required oninput="syncLinkExp(this, 'link'); updateLivePreview();">
 		                        <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
 		                    </div>
 		                </div>
 		                <div class="col">
-		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
+		                    <input type="datetime-local" class="form-control exp" placeholder="Expiration date" oninput="syncLinkExp(this, 'exp');" required>
 		                </div>
 		            </div>
 		        `;
 		    }
 		    myList.innerHTML = englishRows;
 		    myListHindi.innerHTML = hindiRows;
-		}
-	</script>
-<script type="text/javascript">
-		async function translateIt() {
-			const url = 'https://api.mymemory.translated.net/get';
-			debugger;
-			//Hindi Meta
-			var englishContent = document.getElementById("object_title").value;
-			var params = new URLSearchParams({
-				q: englishContent,
-				langpair: 'en|hi'
-			});
-			var response = await
-				fetch(`${url}?${params}`);
-			var data = await
-				response.json();
-			document.getElementById("object_title_hi").value = data.responseData.translatedText;
-			var englishContent = document.getElementById("description").value;
-			var params = new URLSearchParams({
-				q: englishContent,
-				langpair: 'en|hi'
-			});
-			var response = await
-				fetch(`${url}?${params}`);
-			var data = await
-				response.json();
-			document.getElementById("description_hi").value = data.responseData.translatedText;
-			var englishContent = document.getElementById("keywords").value;
-			var params = new URLSearchParams({
-				q: englishContent,
-				langpair: 'en|hi'
-			});
-			var response = await
-				fetch(`${url}?${params}`);
-			var data = await
-				response.json();
-			document.getElementById("keywords_hi").value = data.responseData.translatedText;
-			var englishContent = document.getElementById("help_text").value;
-			var params = new URLSearchParams({
-				q: englishContent,
-				langpair: 'en|hi'
-			});
-			var response = await
-				fetch(`${url}?${params}`);
-			var data = await
-				response.json();
-			document.getElementById("help_text_hi").value = data.responseData.translatedText;
-			//Hindi Meta ends
-			var myTableInputs = document.getElementsByClassName("item");
-			var myTableInputs_hi = document.getElementsByClassName("item_hi");
-			for (var i = 0; i < myTableInputs.length; i++) {
-				var englishContent = myTableInputs[i].value;
-				const params = new URLSearchParams({
-					q: englishContent,
-					langpair: 'en|hi'
-				});
-				const response = await
-					fetch(`${url}?${params}`);
-				const data = await
-					response.json();
-				myTableInputs_hi[i].value = data.responseData.translatedText;
-			}
+		    updateLivePreview();
 		}
 	</script>
 <script>
@@ -325,13 +468,9 @@ div:hover .deleteStyle {
 						</div>
 						<div class="col-3">
 							<div class="floating-label"> <select class="form-select" id="marquee" name="marquee">
-									<option value="" th:selected="${marquee == null}">Normal
-										List</option>
-									<option value="marquee,left" th:selected="${marquee == 'ul,marquee,left'}">Horizontal
-										Scrolling</option>
-									<option value="marquee,up" th:selected="${marquee == 'ul,marquee,up'}">Vertical
-										Scrolling</option>
-								</select><label for="marquee">Scrolling type:</label></div>
+									<option value="" th:selected="${marquee == null || marquee == 'ul,marquee,up'}">Normal List (Modern Scrollable Card)</option>
+									<option value="marquee,left" th:selected="${marquee == 'ul,marquee,left'}">Horizontal News Ticker</option>
+								</select><label for="marquee">List Display Type:</label></div>
 						</div>
 						<div class="col-3">
 							<div class="floating-label">
@@ -426,6 +565,157 @@ div:hover .deleteStyle {
 					</div>
 				</div>
 
+				<!-- List Navigation & "VIEW MORE >" Button Settings -->
+				<div class="card mt-3 shadow-sm border-0">
+					<div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+						<h5 class="mb-0 fw-bold text-dark">
+							<i class="fas fa-arrow-up-right-from-square me-2 text-primary"></i>List Navigation &amp; "VIEW MORE &gt;" Button
+						</h5>
+						<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Navigation Settings</span>
+					</div>
+					<div class="card-body p-4">
+						<input type="hidden" name="list_theme_preset" id="theme_navy" value="navy">
+						<input type="hidden" id="list_theme_preset" value="navy">
+						<input type="hidden" id="list_bg_color" value="#162f6a">
+						<input type="hidden" id="list_text_color" value="#ffffff">
+						<input type="hidden" id="list_title_color" value="#ffffff">
+
+						<!-- Choose Theme Preset -->
+						<label class="form-label fw-bold text-dark mb-2">
+							<i class="fas fa-palette me-1 text-primary"></i>Choose Visual Theme:
+						</label>
+						<div class="row g-3 mb-3">
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2 p-3 selected-preset" id="listPresetNavy" onclick="selectListTheme('navy')" style="cursor: pointer;">
+									<div class="fw-bold d-flex justify-content-between align-items-center mb-1 text-white px-2 py-1 rounded" style="background: #162f6a;">
+										<span>Dark Navy</span> <i class="fas fa-check-circle" id="iconPresetNavy"></i>
+									</div>
+									<small class="text-muted">Deep blue background (#162f6a) with white text.</small>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2 p-3" id="listPresetLight" onclick="selectListTheme('light')" style="cursor: pointer;">
+									<div class="fw-bold d-flex justify-content-between align-items-center mb-1 px-2 py-1 border rounded bg-white" style="color: #162f6a;">
+										<span>Clean Light</span> <i class="fas fa-check-circle d-none" id="iconPresetLight"></i>
+									</div>
+									<small class="text-muted">Clean white background with deep blue text.</small>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="card h-100 theme-preset-card border-2 p-3" id="listPresetCustom" onclick="selectListTheme('custom')" style="cursor: pointer;">
+									<div class="fw-bold d-flex justify-content-between align-items-center mb-1 text-dark px-2 py-1 border rounded bg-light">
+										<span>Custom Colors</span> <i class="fas fa-check-circle d-none" id="iconPresetCustom"></i>
+									</div>
+									<small class="text-muted">Choose custom background, text, and title colors.</small>
+								</div>
+							</div>
+						</div>
+
+						<!-- Custom Color Pickers -->
+						<div id="listCustomColorsSection" class="p-3 mb-3 rounded border bg-light" style="display: none;">
+							<div class="row g-3">
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Card Background:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="listCustomBgColor" value="#162f6a" oninput="onListBgColorChange(this.value)">
+										<input type="text" class="form-control" id="listCustomBgColorText" value="#162f6a" oninput="onListBgColorChange(this.value)">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Title / Accent Color:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="listCustomTitleColor" value="#ffffff" oninput="onListTitleColorChange(this.value)">
+										<input type="text" class="form-control" id="listCustomTitleColorText" value="#ffffff" oninput="onListTitleColorChange(this.value)">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label small fw-semibold">Text / Body Color:</label>
+									<div class="input-group input-group-sm">
+										<input type="color" class="form-control form-control-color" id="listCustomTextColor" value="#ffffff" oninput="onListTextColorChange(this.value)">
+										<input type="text" class="form-control" id="listCustomTextColorText" value="#ffffff" oninput="onListTextColorChange(this.value)">
+									</div>
+								</div>
+							</div>
+							<small class="text-muted d-block mt-2">
+								<i class="fas fa-info-circle text-primary me-1"></i>
+								Selecting background color automatically sets text to white for blue/dark backgrounds.
+							</small>
+						</div>
+
+						<!-- Header Icon Selection & Navigation Settings -->
+						<div class="row g-3">
+							<!-- Header Icon -->
+							<div class="col-md-6">
+								<label class="form-label fw-bold text-dark">
+									<i class="fas fa-icons me-1 text-primary"></i> Header Icon
+								</label>
+								<div class="input-group mb-2">
+									<span class="input-group-text" id="header_icon_preview_badge"><i class="fas fa-search-plus" id="header_icon_preview_icon"></i></span>
+									<input type="text" id="header_icon_input" class="form-control" placeholder="e.g. fas fa-search-plus or fas fa-link" value="" oninput="onHeaderIconInputChange()">
+									<button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearHeaderIcon()">No Icon</button>
+								</div>
+								<div class="d-flex flex-wrap gap-1 align-items-center">
+									<small class="text-muted me-1">Quick Select:</small>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-search-plus')"><i class="fas fa-search-plus me-1"></i>Search+</button>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-link')"><i class="fas fa-link me-1"></i>Link</button>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-bullhorn')"><i class="fas fa-bullhorn me-1"></i>Notice</button>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-bell')"><i class="fas fa-bell me-1"></i>Alert</button>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-newspaper')"><i class="fas fa-newspaper me-1"></i>News</button>
+									<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="setHeaderIcon('fas fa-list-check')"><i class="fas fa-list-check me-1"></i>List</button>
+								</div>
+							</div>
+
+							<!-- Navigation Button ("VIEW MORE >") Option & Target URL -->
+							<div class="col-md-6">
+								<div class="d-flex justify-content-between align-items-center mb-2">
+									<label class="form-label fw-bold text-dark mb-0">
+										<i class="fas fa-arrow-up-right-from-square me-1 text-primary"></i> "VIEW MORE &gt;" Button
+									</label>
+									<div class="form-check form-switch m-0">
+										<input class="form-check-input" type="checkbox" id="show_view_more_check" checked onchange="toggleViewMoreOption()">
+										<label class="form-check-label fw-bold text-primary small" for="show_view_more_check">Enable Button</label>
+									</div>
+								</div>
+								<div id="view_more_url_container">
+									<div class="input-group">
+										<input type="text" id="view_more_url_input" class="form-control" placeholder="/Preview?page_id=... or target URL" value="/Preview?page_id=196" oninput="updateLivePreview()">
+										<button type="button" class="btn btn-primary" onclick="openViewMoreLinkModal()">
+											<i class="fas fa-list-check me-1"></i> Select Page
+										</button>
+									</div>
+									<small class="text-muted d-block mt-1">
+										<i class="fas fa-info-circle text-primary me-1"></i>
+										When enabled, displays a "VIEW MORE &gt;" navigation button on the card linking to the selected page or URL.
+									</small>
+								</div>
+								<div id="view_more_disabled_msg" class="text-muted small mt-1" style="display: none;">
+									<i class="fas fa-ban text-secondary me-1"></i> "VIEW MORE &gt;" button is disabled for this list.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Live Interactive Preview -->
+				<div class="card mt-3 shadow-sm border-0 mb-3">
+					<div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+						<h5 class="mb-0 fw-bold text-dark">
+							<i class="fas fa-eye me-2 text-primary"></i>Live Card Preview
+						</h5>
+						<div class="btn-group btn-group-sm" role="group">
+							<button type="button" class="btn btn-outline-primary active" id="btnPreviewEn" onclick="switchPreviewLang('en')">English</button>
+							<button type="button" class="btn btn-outline-primary" id="btnPreviewHi" onclick="switchPreviewLang('hi')">हिंदी</button>
+						</div>
+					</div>
+					<div class="card-body p-4 bg-light">
+						<div class="row justify-content-center">
+							<div class="col-md-8 col-lg-6" id="live_preview_container">
+								<!-- Dynamically rendered modern list card preview -->
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div id="designList"
 					th:attr="style=${list_items!=null ? 'display:block;' : 'display:none'}">
 					<div class="card mt-2">
@@ -447,21 +737,27 @@ div:hover .deleteStyle {
 										</div>
 										<div id="myList">
 											<div th:each="row, rowStat : ${list_items}"
+												th:attr="data-row-id='row-' + ${rowStat.index}"
 												class="draggable row mt-1 g-1 list_items" draggable="true">
 												<div class="col-13">
 													<i class="fas fa-trash text-danger deleteStyle"
-														onClick="deleteRow(this);"></i>
+														onClick="deleteRow(this);" title="Delete Row"></i>
 													<i class="fas fa-grip-vertical deleteStyle"></i>
 												</div>
 												<div class="col">
-													<input type="text" th:value="${row}" name="value"
-														class="item mr-3 form-control" required>
+													<div class="input-group">
+														<input type="text" th:value="${row}" name="value"
+															class="item form-control" required oninput="updateLivePreview()">
+														<button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+															<span class="badge rounded-pill text-warning border border-warning">New</span>
+														</button>
+													</div>
 												</div>
 												<div class="col">
 													<div class="input-group">
-														<input type="text" th:value="${link_items[rowStat.index]}"
+														<input type="text" th:value="${link_items != null && rowStat.index < link_items.length ? link_items[rowStat.index] : '#'}"
 															name="value" placeholder="Paste Link here"
-															class="link form-control" required> <a
+															class="link form-control" required oninput="syncLinkExp(this, 'link'); updateLivePreview();"> <a
 															onclick="hyperlinksPopupMethod(this);"
 															data-bs-toggle="modal" data-bs-target="#hyperLinksPopup"
 															class="btn btn-primary">Insert HyperLink</a>
@@ -469,9 +765,9 @@ div:hover .deleteStyle {
 												</div>
 												<div class="col">
 													<input type="datetime-local"
-														th:value="${exp_items[rowStat.index]}" name="value"
+														th:value="${exp_items != null && rowStat.index < exp_items.length ? exp_items[rowStat.index] : ''}" name="value"
 														class="exp form-control"
-														placeholder="Select Expiration Date" required>
+														placeholder="Select Expiration Date" oninput="syncLinkExp(this, 'exp');" required>
 												</div>
 											</div>
 										</div>
@@ -488,6 +784,9 @@ div:hover .deleteStyle {
 									th:value="${object_id}" name="object_id"> <input
 									type="hidden" id="type" class="form-control" th:value="3"
 									name="type">
+								<input type="hidden" id="saved_object_meta" th:value="${object_meta}">
+								<input type="hidden" id="saved_classes" th:value="${classes}">
+								<input type="hidden" id="saved_styles" th:value="${styles}">
 								<div class="d-flex flex-row justify-content-center">
 									<input type="checkbox" id="togglehindiCard"> Hindi
 									Context
@@ -509,8 +808,8 @@ div:hover .deleteStyle {
 								<div class="row g-2 d-flex justify-content-center">
 									<div class="col-6 mb-3 floating-label">
 									<input type="text" id="object_title_hi" name="object_title_hi"
-										th:value="${object_title_hi}" required class="form-control"
-										placeholder="तालिका शीर्षक" /> <label for="object_title_hi">शीर्षक</label>
+										th:value="${object_title_hi}" class="form-control"
+										placeholder="तालिका शीर्षक" oninput="updateLivePreview()" /> <label for="object_title_hi">शीर्षक</label>
 								</div>
 								</div>
 								<div class="row g-2 d-flex justify-content-center">
@@ -547,22 +846,28 @@ div:hover .deleteStyle {
 								</div>
 								<div id="myList_Hindi">
 									<div th:each="row, rowStat : ${list_items}"
+										th:attr="data-row-id='row-' + ${rowStat.index}"
 										class="draggable row mt-1 g-1 list_items" draggable="true">
 											<div class="col-13">
 												<i class="fas fa-trash text-danger deleteStyle"
-													onClick="deleteRow(this);"></i>
-												<i class="fas fa-grip-vertical"></i>
-											</div>
-											<div class="col">
-												<input type="text"
-													th:value="${list_items_hi[rowStat.index]}" name="value"
-													class="item_hi mr-3 form-control" required>
+													onClick="deleteRow(this);" title="Delete Row"></i>
+												<i class="fas fa-grip-vertical deleteStyle"></i>
 											</div>
 											<div class="col">
 												<div class="input-group">
-													<input type="text" th:value="${link_items[rowStat.index]}"
+													<input type="text"
+														th:value="${list_items_hi != null && rowStat.index < list_items_hi.length ? list_items_hi[rowStat.index] : ''}" name="value"
+														class="item_hi form-control" oninput="updateLivePreview()">
+													<button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+														<span class="badge rounded-pill text-warning border border-warning">New</span>
+													</button>
+												</div>
+											</div>
+											<div class="col">
+												<div class="input-group">
+													<input type="text" th:value="${link_items != null && rowStat.index < link_items.length ? link_items[rowStat.index] : '#'}"
 														name="value" placeholder="Paste Link here"
-														class="link form-control" required> <a
+														class="link form-control" oninput="syncLinkExp(this, 'link'); updateLivePreview();"> <a
 														onclick="hyperlinksPopupMethod(this);"
 														data-bs-toggle="modal" data-bs-target="#hyperLinksPopup"
 														class="btn btn-primary">Insert HyperLink</a>
@@ -570,9 +875,9 @@ div:hover .deleteStyle {
 											</div>
 											<div class="col">
 												<input type="datetime-local"
-													th:value="${exp_items[rowStat.index]}" name="value"
+													th:value="${exp_items != null && rowStat.index < exp_items.length ? exp_items[rowStat.index] : ''}" name="value"
 													class="exp form-control"
-													placeholder="Select Expiration Date" required>
+													placeholder="Select Expiration Date" oninput="syncLinkExp(this, 'exp');">
 											</div>
 									</div>
 								</div>
@@ -641,76 +946,511 @@ div:hover .deleteStyle {
 <script>
 		$(document).ready(function () {
 			$('#togglehindiCard').click(function () {
-				alert("in side hindi");
 				if ($(this).is(':checked')) {
-					$('#hindiCard').show();
-					$('.item_hi').show();
 					$('#hindiCard_2').show();
+					$('.item_hi').show();
 				} else {
-					$('#hindiCard').hide();
-					$('.item_hi').hide();
 					$('#hindiCard_2').hide();
+					$('.item_hi').hide();
 				}
 			});
+
+			// Auto open Hindi card if Hindi title or Hindi items have content
+			var hasHindiContent = false;
+			var titleHiVal = $('#object_title_hi').val();
+			if (titleHiVal && titleHiVal.trim() !== '') {
+				hasHindiContent = true;
+			} else {
+				$('#myList_Hindi .item_hi').each(function() {
+					if ($(this).val() && $(this).val().trim() !== '') {
+						hasHindiContent = true;
+						return false;
+					}
+				});
+			}
+			if (hasHindiContent) {
+				$('#togglehindiCard').prop('checked', true);
+				$('#hindiCard_2').show();
+				$('.item_hi').show();
+			}
+
+			ensureRowIds();
+			initCardAppearance();
 		});
+
 		function deleteRow(el) {
-		    $(el).closest('.list_items').remove(); // Adjusting to remove the closest .list_items div
+			var $row = $(el).closest('.list_items');
+			var rowId = $row.attr('data-row-id');
+			if (rowId) {
+				$('#myList .list_items[data-row-id="' + rowId + '"]').remove();
+				$('#myList_Hindi .list_items[data-row-id="' + rowId + '"]').remove();
+			} else {
+				var index = $row.index();
+				$('#myList .list_items').eq(index).remove();
+				$('#myList_Hindi .list_items').eq(index).remove();
+			}
+			var count = $('#myList .list_items').length;
+			$('#rowCount').val(count);
+			updateLivePreview();
 		}
-	</script>
-<script>
+
 		function addRow() {
-		    var myList = document.getElementById("myList");
-		    var myListHindi = document.getElementById("myList_Hindi");
-		    
-		    // Create a new row for the English list
-		    var newRow = `
-		        <div class="draggable row g-1 mt-1 list_items" draggable="true">
-		            <div class="col-13">
-		                <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
-		                <i class="fas fa-grip-vertical deleteStyle"></i>
-		            </div>
-		            <div class="col">
-		                <input type="text" placeholder="Name of List item" class="form-control item" required>
-		            </div>
-		            <div class="col">
-		                <div class="input-group">
-		                    <input type="text" placeholder="Paste Link here" class="form-control link" required>
-		                    <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
-		                </div>
-		            </div>
-		            <div class="col">
-		                <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
-		            </div>
-		        </div>
-		    `;
-		    
-		    // Append the new row to the English list
-		    myList.innerHTML += newRow;
+			var myList = document.getElementById("myList");
+			var myListHindi = document.getElementById("myList_Hindi");
+			if (!myList || !myListHindi) return;
 
-		    // Create a new row for the Hindi list
-		    var newRowHindi = `
-		        <div class="draggable row g-1 mt-1 list_items" draggable="true">
-		            <div class="col-13">
-		                <i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);"></i>
-		                <i class="fas fa-grip-vertical deleteStyle"></i>
-		            </div>
-		            <div class="col">
-		                <input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" required>
-		            </div>
-		            <div class="col">
-		                <div class="input-group">
-		                    <input type="text" placeholder="Paste Link here" class="form-control link" required>
-		                    <a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
-		                </div>
-		            </div>
-		            <div class="col">
-		                <input type="datetime-local" class="form-control exp" placeholder="Expiration date" required>
-		            </div>
-		        </div>
-		    `;
+			var rowId = 'row-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 
-		    // Append the new row to the Hindi list
-		    myListHindi.innerHTML += newRowHindi;
+			// Create a new row for the English list
+			var newRow = `
+				<div class="draggable row g-1 mt-1 list_items" draggable="true" data-row-id="${rowId}">
+					<div class="col-13">
+						<i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);" title="Delete Row"></i>
+						<i class="fas fa-grip-vertical deleteStyle"></i>
+					</div>
+					<div class="col">
+						<div class="input-group">
+							<input type="text" placeholder="Name of List item" class="form-control item" required oninput="updateLivePreview()">
+							<button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+								<span class="badge rounded-pill text-warning border border-warning">New</span>
+							</button>
+						</div>
+					</div>
+					<div class="col">
+						<div class="input-group">
+							<input type="text" placeholder="Paste Link here" class="form-control link" required oninput="syncLinkExp(this, 'link'); updateLivePreview();">
+							<a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+						</div>
+					</div>
+					<div class="col">
+						<input type="datetime-local" class="form-control exp" placeholder="Expiration date" oninput="syncLinkExp(this, 'exp');" required>
+					</div>
+				</div>
+			`;
+
+			// Create a new row for the Hindi list
+			var newRowHindi = `
+				<div class="draggable row g-1 mt-1 list_items" draggable="true" data-row-id="${rowId}">
+					<div class="col-13">
+						<i class="fas fa-trash text-danger deleteStyle" onClick="deleteRow(this);" title="Delete Row"></i>
+						<i class="fas fa-grip-vertical deleteStyle"></i>
+					</div>
+					<div class="col">
+						<div class="input-group">
+							<input type="text" placeholder="सूची आइटम का नाम" class="form-control item_hi" oninput="updateLivePreview()">
+							<button type="button" class="btn btn-outline-warning" onclick="toggleItemNewBadge(this)" title="Toggle 'New' Badge">
+								<span class="badge rounded-pill text-warning border border-warning">New</span>
+							</button>
+						</div>
+					</div>
+					<div class="col">
+						<div class="input-group">
+							<input type="text" placeholder="Paste Link here" class="form-control link" oninput="syncLinkExp(this, 'link'); updateLivePreview();">
+							<a onClick="hyperlinksPopupMethod(this);" data-bs-toggle="modal" data-bs-target="#hyperLinksPopup" class="btn btn-primary">Insert HyperLink</a>
+						</div>
+					</div>
+					<div class="col">
+						<input type="datetime-local" class="form-control exp" placeholder="Expiration date" oninput="syncLinkExp(this, 'exp');">
+					</div>
+				</div>
+			`;
+
+			// Append rows without destroying existing input values
+			myList.insertAdjacentHTML('beforeend', newRow);
+			myListHindi.insertAdjacentHTML('beforeend', newRowHindi);
+
+			var count = myList.getElementsByClassName('list_items').length;
+			var rowCountInput = document.getElementById("rowCount");
+			if (rowCountInput) {
+				rowCountInput.value = count;
+			}
+			updateLivePreview();
+		}
+
+		/* ==========================================================================
+		   Card Appearance & Live Preview Controller
+		   ========================================================================== */
+		let currentPreviewLang = 'en';
+
+		function getContrastTextColor(colorVal) {
+			if (!colorVal) return '#ffffff';
+			var hex = colorVal.trim();
+			if (hex.startsWith('#')) hex = hex.substring(1);
+			if (hex.length === 3) {
+				hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+			}
+			if (hex.length !== 6) return '#ffffff';
+
+			var r = parseInt(hex.substring(0, 2), 16);
+			var g = parseInt(hex.substring(2, 4), 16);
+			var b = parseInt(hex.substring(4, 6), 16);
+
+			// Blue dominant tone
+			var isBlue = (b > 80 && b >= g && b > r * 0.8) || (b > 110);
+			var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+			if (isBlue || luminance < 0.55) {
+				return '#ffffff'; // White text on blue/dark background
+			} else {
+				return '#162f6a'; // Deep blue text on light background
+			}
+		}
+
+		function selectListTheme(theme) {
+			$('#theme_navy').val(theme);
+			$('#list_theme_preset').val(theme);
+			$('#listPresetNavy, #listPresetLight, #listPresetCustom').removeClass('selected-preset');
+			$('#iconPresetNavy, #iconPresetLight, #iconPresetCustom').addClass('d-none');
+
+			if (theme === 'navy') {
+				$('#listPresetNavy').addClass('selected-preset');
+				$('#iconPresetNavy').removeClass('d-none');
+				$('#listCustomColorsSection').hide();
+				$('#list_bg_color').val('#162f6a');
+				$('#list_text_color').val('#ffffff');
+				$('#list_title_color').val('#ffffff');
+			} else if (theme === 'light') {
+				$('#listPresetLight').addClass('selected-preset');
+				$('#iconPresetLight').removeClass('d-none');
+				$('#listCustomColorsSection').hide();
+				$('#list_bg_color').val('#ffffff');
+				$('#list_text_color').val('#1e293b');
+				$('#list_title_color').val('#162f6a');
+			} else if (theme === 'custom') {
+				$('#listPresetCustom').addClass('selected-preset');
+				$('#iconPresetCustom').removeClass('d-none');
+				$('#listCustomColorsSection').show();
+			}
+			updateLivePreview();
+		}
+
+		function onListBgColorChange(colorVal) {
+			if (!colorVal) return;
+			$('#list_bg_color').val(colorVal);
+			$('#listCustomBgColor').val(colorVal);
+			$('#listCustomBgColorText').val(colorVal);
+
+			var autoColor = getContrastTextColor(colorVal);
+			$('#list_text_color').val(autoColor);
+			$('#list_title_color').val(autoColor);
+			$('#listCustomTextColor').val(autoColor);
+			$('#listCustomTextColorText').val(autoColor);
+			$('#listCustomTitleColor').val(autoColor);
+			$('#listCustomTitleColorText').val(autoColor);
+
+			updateLivePreview();
+		}
+
+		function onListTextColorChange(colorVal) {
+			if (!colorVal) return;
+			$('#list_text_color').val(colorVal);
+			$('#listCustomTextColor').val(colorVal);
+			$('#listCustomTextColorText').val(colorVal);
+			updateLivePreview();
+		}
+
+		function onListTitleColorChange(colorVal) {
+			if (!colorVal) return;
+			$('#list_title_color').val(colorVal);
+			$('#listCustomTitleColor').val(colorVal);
+			$('#listCustomTitleColorText').val(colorVal);
+			updateLivePreview();
+		}
+
+		function selectThemePreset(theme, doUpdatePreview) {
+			selectListTheme(theme || 'navy');
+		}
+
+		function onThemePresetChange() {
+			var val = $('#theme_navy').val() || 'navy';
+			selectThemePreset(val, true);
+		}
+
+		function setHeaderIcon(iconClass) {
+			$('#header_icon_input').val(iconClass);
+			onHeaderIconInputChange();
+		}
+
+		function clearHeaderIcon() {
+			$('#header_icon_input').val('');
+			onHeaderIconInputChange();
+		}
+
+		function onHeaderIconInputChange() {
+			var val = $('#header_icon_input').val().trim();
+			if (val) {
+				$('#header_icon_preview_badge').show();
+				$('#header_icon_preview_icon').attr('class', val);
+			} else {
+				$('#header_icon_preview_badge').hide();
+			}
+			updateLivePreview();
+		}
+
+		function switchPreviewLang(lang) {
+			currentPreviewLang = lang;
+			if (lang === 'hi') {
+				$('#btnPreviewHi').addClass('active');
+				$('#btnPreviewEn').removeClass('active');
+			} else {
+				$('#btnPreviewEn').addClass('active');
+				$('#btnPreviewHi').removeClass('active');
+			}
+			updateLivePreview();
+		}
+
+		function escapeHtml(str) {
+			if (!str) return '';
+			return String(str)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#39;');
+		}
+
+		function formatPreviewItemText(text) {
+			if (!text) return '';
+			var badgeHtml = '<span class="badge rounded-pill text-warning border border-warning modern-list-badge-new">New</span>';
+			var hasBadge = /(?:\[new\]|<span[^>]*modern-list-badge-new|<img[^>]*3640b7b6868946348904a3be1d3d8cd4)/i.test(text);
+			var cleanText = text
+				.replace(/<img[^>]*3640b7b6868946348904a3be1d3d8cd4\.png[^>]*>/gi, '')
+				.replace(/\[new\]/gi, '')
+				.replace(/<span[^>]*modern-list-badge-new[^>]*>.*?<\/span>/gi, '')
+				.trim();
+			return escapeHtml(cleanText) + (hasBadge ? ' ' + badgeHtml : '');
+		}
+
+		function toggleItemNewBadge(btn) {
+			var input = $(btn).closest('.input-group').find('input.item, input.item_hi');
+			if (!input.length) return;
+			var val = input.val().trim();
+			var hasNew = /(?:\[new\]|<span[^>]*modern-list-badge-new[^>]*>|<img[^>]*3640b7b6868946348904a3be1d3d8cd4)/i.test(val);
+			if (hasNew) {
+				val = val.replace(/\s*(?:\[new\]|<span[^>]*modern-list-badge-new[^>]*>.*?<\/span>|<img[^>]*3640b7b6868946348904a3be1d3d8cd4[^>]*>)\s*/gi, ' ').trim();
+				$(btn).removeClass('active bg-warning-subtle');
+			} else {
+				val = (val + ' [NEW]').trim();
+				$(btn).addClass('active bg-warning-subtle');
+			}
+			input.val(val);
+			updateLivePreview();
+		}
+
+		function syncNewBadgeButtonStates() {
+			$('.list_items').each(function() {
+				var input = $(this).find('input.item, input.item_hi');
+				var btn = $(this).find('button[onclick*="toggleItemNewBadge"]');
+				if (input.length && btn.length) {
+					var val = input.val() || '';
+					var hasNew = /(?:\[new\]|<span[^>]*modern-list-badge-new|<img[^>]*3640b7b6868946348904a3be1d3d8cd4)/i.test(val);
+					if (hasNew) {
+						btn.addClass('active bg-warning-subtle');
+					} else {
+						btn.removeClass('active bg-warning-subtle');
+					}
+				}
+			});
+		}
+
+		function updateLivePreview() {
+			var theme = $('#theme_navy').val() || $('#list_theme_preset').val() || 'navy';
+			var isHindi = (currentPreviewLang === 'hi');
+			var titleVal = isHindi ? ($('#object_title_hi').val() || $('#object_title').val() || 'शीर्षक')
+			                       : ($('#object_title').val() || 'Important Links');
+			var iconClass = $('#header_icon_input').val() ? $('#header_icon_input').val().trim() : '';
+			var viewMoreUrl = $('#view_more_url_input').val() ? $('#view_more_url_input').val().trim() : '';
+
+			// Collect rows
+			var listContainerId = isHindi ? 'myList_Hindi' : 'myList';
+			var itemClass = isHindi ? '.item_hi' : '.item';
+			var items = [];
+
+			$('#' + listContainerId + ' .list_items').each(function () {
+				var text = $(this).find(itemClass).val() || '';
+				var link = $(this).find('.link').val() || '#';
+				if (text.trim() !== '') {
+					items.push({ text: text.trim(), link: link.trim() });
+				}
+			});
+
+			// If no items entered yet, show realistic sample items matching user screenshots
+			var displayItems = items.length > 0 ? items : [
+				{ text: 'Special Foundation Course -2026 for the backlog candidates - reg. [NEW]', link: '#' },
+				{ text: 'Special Foundation Course -2026 for the backlog candidates reg.', link: '#' },
+				{ text: '“Run for Unity” on the occasion of “Rashtriya Ekta Diwas” - regarding', link: '#' },
+				{ text: 'National Police Memorial Day - observance', link: '#' },
+				{ text: 'Basic Course 77 RR Joining Instructions', link: '#' }
+			];
+
+			var customInlineStyle = '';
+			if (theme === 'custom') {
+				var bg = $('#list_bg_color').val();
+				var text = $('#list_text_color').val();
+				customInlineStyle = 'style="background-color: ' + bg + ' !important; color: ' + text + ' !important;"';
+			}
+
+			var html = '<div class="modern-list-card-wrapper">';
+			html += '<div class="modern-list-card list-card-' + theme + '" ' + customInlineStyle + '>';
+
+			// Header
+			if (titleVal || iconClass) {
+				var titleColorStyle = '';
+				if (theme === 'custom') {
+					titleColorStyle = 'style="color: ' + $('#list_title_color').val() + ' !important;"';
+				}
+				html += '<div class="modern-list-card-header">';
+				if (iconClass) {
+					html += '<i class="' + iconClass + ' header-icon" ' + titleColorStyle + '></i>';
+				}
+				if (titleVal) {
+					html += '<h4 class="header-title" ' + titleColorStyle + '>' + escapeHtml(titleVal) + '</h4>';
+				}
+				html += '</div>';
+			}
+
+			// Body (scrollable container showing up to 10 items)
+			html += '<div class="modern-list-card-body"><ul class="modern-list-items">';
+
+			displayItems.forEach(function (item) {
+				var itemCustomStyle = '';
+				if (theme === 'custom') {
+					itemCustomStyle = 'style="color: ' + $('#list_text_color').val() + ' !important;"';
+				}
+				html += '<li class="modern-list-item">';
+				html += '<a href="' + (item.link || '#') + '" class="modern-list-item-link" ' + itemCustomStyle + ' onclick="return false;">';
+				html += '<span class="modern-list-item-text">' + formatPreviewItemText(item.text) + '</span>';
+				html += '<i class="fas fa-chevron-right modern-list-item-chevron"></i>';
+				html += '</a></li>';
+			});
+
+			html += '</ul></div></div>';
+
+			// "VIEW MORE >" button (renders if enabled by user)
+			var isViewMoreEnabled = $('#show_view_more_check').is(':checked');
+			if (isViewMoreEnabled) {
+				var targetLink = (viewMoreUrl && viewMoreUrl.trim() !== '' && viewMoreUrl !== '#') ? viewMoreUrl : '#';
+				var btnText = isHindi ? 'और देखें' : 'VIEW MORE';
+				html += '<div class="modern-list-footer">';
+				html += '<a href="' + targetLink + '" class="btn-list-view-more" onclick="return false;">' + btnText + ' <i class="fas fa-chevron-right"></i></a>';
+				html += '</div>';
+			}
+
+			html += '</div>';
+
+			$('#live_preview_container').html(html);
+		}
+
+		function toggleViewMoreOption(doUpdate) {
+			var enabled = $('#show_view_more_check').is(':checked');
+			if (enabled) {
+				$('#view_more_url_container').show();
+				$('#view_more_disabled_msg').hide();
+			} else {
+				$('#view_more_url_container').hide();
+				$('#view_more_disabled_msg').show();
+			}
+			if (doUpdate !== false) {
+				updateLivePreview();
+			}
+		}
+
+		function initCardAppearance() {
+			var savedMetaStr = $('#saved_object_meta').val() || '';
+			var savedClasses = $('#saved_classes').val() || '';
+			var savedStyles = $('#saved_styles').val() || '';
+
+			if (savedClasses === 'null') savedClasses = '';
+			if (savedStyles === 'null') savedStyles = '';
+			if (savedMetaStr === 'null') savedMetaStr = '';
+
+			var theme = 'navy';
+			var icon = '';
+			var showViewMore = true;
+			var viewMoreUrl = $('#view_more_url_input').val() || '/Preview?page_id=196';
+
+			if (savedClasses.indexOf('list-card-light') > -1) {
+				theme = 'light';
+			} else if (savedClasses.indexOf('list-card-navy') > -1) {
+				theme = 'navy';
+			} else if (savedClasses.indexOf('list-card-custom') > -1) {
+				theme = 'custom';
+			}
+
+			if (savedMetaStr && savedMetaStr.trim().startsWith('{')) {
+				try {
+					var meta = JSON.parse(savedMetaStr);
+					if (meta.theme) theme = meta.theme;
+					if (meta.header_icon !== undefined) icon = meta.header_icon;
+					if (meta.show_view_more !== undefined) {
+						showViewMore = (meta.show_view_more === true || meta.show_view_more === 'true');
+					} else if (meta.view_more_url !== undefined) {
+						showViewMore = (meta.view_more_url && meta.view_more_url.trim() !== '' && meta.view_more_url !== '#');
+					}
+					if (meta.view_more_url !== undefined) viewMoreUrl = meta.view_more_url;
+					if (meta.bg_color) {
+						$('#list_bg_color').val(meta.bg_color);
+						$('#listCustomBgColor').val(meta.bg_color);
+						$('#listCustomBgColorText').val(meta.bg_color);
+					}
+					if (meta.text_color) {
+						$('#list_text_color').val(meta.text_color);
+						$('#listCustomTextColor').val(meta.text_color);
+						$('#listCustomTextColorText').val(meta.text_color);
+					}
+					if (meta.title_color) {
+						$('#list_title_color').val(meta.title_color);
+						$('#listCustomTitleColor').val(meta.title_color);
+						$('#listCustomTitleColorText').val(meta.title_color);
+					}
+				} catch (e) {
+					console.error('Error parsing saved_object_meta', e);
+				}
+			}
+
+			// Parse saved inline styles if custom and not already populated
+			if (savedStyles) {
+				(savedStyles || '').split(';').forEach(function (part) {
+					var idx = part.indexOf(':');
+					if (idx > -1) {
+						var k = part.slice(0, idx).trim().toLowerCase();
+						var v = part.slice(idx + 1).trim();
+						if (k === 'background-color') {
+							$('#list_bg_color').val(v);
+							$('#listCustomBgColor').val(v);
+							$('#listCustomBgColorText').val(v);
+						}
+						if (k === 'color') {
+							$('#list_text_color').val(v);
+							$('#listCustomTextColor').val(v);
+							$('#listCustomTextColorText').val(v);
+						}
+					}
+				});
+			}
+
+			// Default icon for light theme
+			if (theme === 'light' && !icon) {
+				icon = 'fas fa-search-plus';
+			}
+
+			selectListTheme(theme);
+
+			$('#header_icon_input').val(icon);
+			onHeaderIconInputChange();
+			$('#show_view_more_check').prop('checked', showViewMore);
+			toggleViewMoreOption(false);
+			$('#view_more_url_input').val(viewMoreUrl);
+
+			// Attach real-time input listeners to update preview and sync New badge buttons
+			$('#object_title, #object_title_hi').on('input', updateLivePreview);
+			$('#myList, #myList_Hindi').on('input', 'input', function () {
+				syncNewBadgeButtonStates();
+				updateLivePreview();
+			});
+
+			syncNewBadgeButtonStates();
+			updateLivePreview();
 		}
 	</script>
 <script>
@@ -731,17 +1471,44 @@ div:hover .deleteStyle {
 <script>
 		var inputElement;
 		var selectedButton;
-		function hyperlinksPopupMethod(el) {
-			event.preventDefault();
-			selectedButton = el;
+		var activeLinkInputTarget = null;
+
+		function openViewMoreLinkModal() {
+			activeLinkInputTarget = document.getElementById('view_more_url_input');
 			getPages();
 			getForms();
 			getDocs();
+			var modalEl = document.getElementById('hyperLinksPopup');
+			var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+			modal.show();
+		}
 
-		};
+		function hyperlinksPopupMethod(el) {
+			event.preventDefault();
+			selectedButton = el;
+			activeLinkInputTarget = $(el).closest('.input-group').find('.link')[0] || el.previousElementSibling;
+			getPages();
+			getForms();
+			getDocs();
+		}
+
 		function itemSelected(link) {
-			console.log(selectedButton.previousSibling);
-			selectedButton.previousSibling.value = link;
+			if (activeLinkInputTarget) {
+				activeLinkInputTarget.value = link;
+				if (activeLinkInputTarget.id === 'view_more_url_input') {
+					updateLivePreview();
+				} else {
+					syncLinkExp(activeLinkInputTarget, 'link');
+					updateLivePreview();
+				}
+			} else if (selectedButton && selectedButton.previousElementSibling) {
+				selectedButton.previousElementSibling.value = link;
+				syncLinkExp(selectedButton.previousElementSibling, 'link');
+				updateLivePreview();
+			}
+			var modalEl = document.getElementById('hyperLinksPopup');
+			var modal = bootstrap.Modal.getInstance(modalEl);
+			if (modal) modal.hide();
 		}
 		function getPages() {
 		var csrfToken = $('meta[name="_csrf"]').attr('content');
@@ -935,14 +1702,22 @@ $(document).ready(function() {
         animation: 150,
         handle: '.fa-grip-vertical', // Only drag using the grip icon
         draggable: '.list_items', // Make sure only your row divs are draggable
-        ghostClass: 'sortable-ghost'
+        ghostClass: 'sortable-ghost',
+        onEnd: function() {
+            syncHindiOrder();
+            updateLivePreview();
+        }
     });
 
     var myListHindiSortable = new Sortable(document.getElementById('myList_Hindi'), {
         animation: 150,
         handle: '.fa-grip-vertical',
         draggable: '.list_items',
-        ghostClass: 'sortable-ghost'
+        ghostClass: 'sortable-ghost',
+        onEnd: function() {
+            syncEnglishOrder();
+            updateLivePreview();
+        }
     });
 });
 </script>
@@ -970,7 +1745,8 @@ function sortItems() {
         container.appendChild(item);
     });
 
-    // Toggle for next click
+    syncHindiOrder();
+    updateLivePreview();
     isAscEnglish = !isAscEnglish;
 }
 
@@ -993,7 +1769,8 @@ function sortItems_hindi() {
         container.appendChild(item);
     });
 
-    // Toggle for next click
+    syncEnglishOrder();
+    updateLivePreview();
     isAscHindi = !isAscHindi;
 }
 
@@ -1017,35 +1794,37 @@ function sortListEnglish(listId, ascending) {
     const items = Array.from(list.querySelectorAll('.draggable'));
 
     items.sort((a, b) => {
-        const aValue = a.querySelector('input.item').value.trim().toLowerCase();
-        const bValue = b.querySelector('input.item').value.trim().toLowerCase();
+        const aValue = (a.querySelector('input.exp')?.value || a.querySelector('input.item')?.value || '').trim().toLowerCase();
+        const bValue = (b.querySelector('input.exp')?.value || b.querySelector('input.item')?.value || '').trim().toLowerCase();
         if (aValue < bValue) return ascending ? -1 : 1;
         if (aValue > bValue) return ascending ? 1 : -1;
         return 0;
     });
 
     items.forEach(item => list.appendChild(item));
+    syncHindiOrder();
+    updateLivePreview();
 }
+
 function sortListHindi(listId, ascending) {
     const list = document.getElementById(listId);
     const items = Array.from(list.querySelectorAll('.draggable'));
 
     items.sort((a, b) => {
-        const aValue = a.querySelector('input.item_hi').value.trim().toLowerCase();
-        const bValue = b.querySelector('input.item_hi').value.trim().toLowerCase();
+        const aValue = (a.querySelector('input.exp')?.value || a.querySelector('input.item_hi')?.value || '').trim().toLowerCase();
+        const bValue = (b.querySelector('input.exp')?.value || b.querySelector('input.item_hi')?.value || '').trim().toLowerCase();
         if (aValue < bValue) return ascending ? -1 : 1;
         if (aValue > bValue) return ascending ? 1 : -1;
         return 0;
     });
 
     items.forEach(item => list.appendChild(item));
+    syncEnglishOrder();
+    updateLivePreview();
 }
 
 
 </script>
-
-
-
 </body>
 
 </html>

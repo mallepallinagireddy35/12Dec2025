@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<title>Cards Designer - SVPNPA</title>
+<!-- Import CSS -->
+<link href="static/assets/bootstrap_5.3/css/bootstrap.css"
+	rel="stylesheet">
+<link href="static/assets/custom/css/style.css" rel="stylesheet">
+<link rel="icon" href="static/assets/img/academy_logo_lg.png">
+<link href="static/assets/fontawesome_6.4/css/all.min.css"
+	rel="stylesheet">
+
+<!-- Import JS -->
+<script src="static/assets/jQuery_3.6/jquery.min.js"></script>
+<script src="static/assets/bootstrap_5.3/js/bootstrap.bundle.min.js"></script>
+<script src="static/assets/fontawesome_6.4/js/all.min.js"></script>
+<script src="static/assets/Sortable.min.js"></script>
+
+<style>
+body {
+	font-family: 'Noto Sans', sans-serif !important;
+	background-color: #f4f6f9;
+}
+
+.designer-header {
+	background: #ffffff;
+	border-bottom: 2px solid #162f6a;
+	padding: 15px 25px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-item-box {
+	background: #ffffff;
+	border: 1px solid #d0d7de;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	margin-bottom: 20px;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card-item-box:hover {
+	border-color: #162f6a;
+	box-shadow: 0 3px 8px rgba(15, 44, 89, 0.12);
+}
+
+.card-item-header {
+	background: #f8fafc;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 10px 18px;
+	font-weight: 600;
+	color: #162f6a;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card-item-body {
+	padding: 18px;
+}
+
+.drag-handle {
+	cursor: grab;
+	color: #64748b;
+	margin-right: 10px;
+}
+
+.drag-handle:active {
+	cursor: grabbing;
+}
+
+.lang-badge-en {
+	background: #162f6a;
+	color: #fff;
+	font-size: 0.72rem;
+	padding: 2px 6px;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+
+.lang-badge-hi {
+	background: #b91c1c;
+	color: #fff;
+	font-size: 0.72rem;
+	padding: 2px 6px;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+
+.preview-card {
+	border: 1px solid #1a3b5c;
+	border-radius: 4px;
+	background: #ffffff;
+	padding: 16px 20px;
+	min-height: 120px;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.preview-card:hover {
+	box-shadow: 0 4px 12px rgba(26, 59, 92, 0.12);
+}
+
+.preview-card-title {
+	color: #162f6a;
+	font-size: 1.05rem;
+	font-weight: 700;
+	margin-bottom: 8px;
+	font-family: 'Noto Sans', sans-serif;
+}
+
+.preview-card-desc {
+	color: #334155;
+	font-size: 0.92rem;
+	line-height: 1.55;
+	margin-bottom: 0;
+	font-family: 'Noto Sans', sans-serif;
+}
+
+.preview-card-link {
+	color: #1a3b5c;
+	font-size: 0.88rem;
+	font-weight: 600;
+	text-decoration: none;
+	margin-top: 8px;
+	display: inline-block;
+}
+
+.img-preview-thumb {
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 4px;
+	border: 1px solid #cbd5e1;
+}
+
+.border-settings-panel {
+	background: #f8fafc;
+	border: 1px dashed #cbd5e1;
+	border-radius: 4px;
+	padding: 10px 12px;
+}
+
+.border-width-input {
+	text-align: center;
+}
+
+.border-width-input::-webkit-outer-spin-button, .border-width-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.border-width-input {
+	-moz-appearance: textfield;
+}
+
+/* DBIM Resources Styling */
+.dbim-card {
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	background: #ffffff;
+}
+.dbim-card:hover {
+	border-color: #0d6efd;
+	box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+	transform: translateY(-3px);
+}
+.dbim-card .dbim-img-wrapper {
+	height: 105px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f9fa;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	padding: 8px;
+}
+.dbim-card .dbim-img-wrapper img {
+	max-height: 85px;
+	max-width: 100%;
+	object-fit: contain;
+}
+.dbim-card .card-footer-custom {
+	padding: 6px 8px;
+	background: #ffffff;
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+.dbim-card .dbim-title {
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: #333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+}
+.dbim-tab-pane {
+	max-height: 520px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-right: 6px;
+}
+</style>
+<script>
+	$(function() {		
+		$("#includeFooter").load("footer.html");
+	});
+</script>
+</head>
+<body>
+	<div class="flex-wrapper">
+
+		<div id="includeHeader" th:replace="~{header.html::header}"></div>
+		<div class="container">
+			<h3
+				style="border-bottom: 2px solid orangered; padding-bottom: 5px; margin-top: 5px;">
+				<i class="fas fa-id-card me-2"></i>Design your Cards <span
+					th:if="${object_id != null}" class="badge bg-secondary fs-6 ms-2"
+					th:text="'Object ID: ' + ${object_id}"></span>
+			</h3>
+			<div class="d-flex flex-wrap gap-2 mb-3">
+				<a href="/home" class="btn btn-outline-secondary btn-sm"> <i
+					class="fas fa-arrow-left me-1"></i> Back to Dashboard
+				</a>
+				<button type="button" class="btn btn-info btn-sm text-white"
+					onclick="autoTranslateAll()">
+					<i class="fas fa-language me-1"></i> Translate All to Hindi
+				</button>
+				<button type="button" class="btn btn-primary btn-sm"
+					onclick="saveCardsData(event)"
+					style="background-color: #162f6a; border-color: #162f6a;">
+					<i class="fas fa-save me-1"></i> Save Cards
+				</button>
+			</div>
+
+			<div class="mb-5">
+				<div class="row">
+					<!-- Left: Form Controls (7 cols) -->
+					<div class="col-lg-7">
+						<!-- Section Titles -->
+						<div class="card mb-4 border-0 shadow-sm">
+							<div class="card-header bg-white border-bottom py-3">
+								<h5 class="mb-0 fw-bold text-dark">
+									<i class="fas fa-heading me-2 text-primary"></i>Section Title
+								</h5>
+							</div>
+							<div class="card-body">
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label class="form-label fw-semibold"> <span
+											class="lang-badge-en me-1">EN</span> Section Title (English)
+											<span class="text-danger">*</span>
+										</label> <input type="text" id="object_title" class="form-control"
+											placeholder="e.g. Training & Courses"
+											th:value="${object_title}" oninput="updateLivePreview()"
+											required>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label fw-semibold"> <span
+											class="lang-badge-hi me-1">HI</span> Section Title (Hindi)
+										</label>
+										<div class="input-group">
+											<input type="text" id="object_title_hi" class="form-control"
+												placeholder="उदा. प्रशिक्षण और पाठ्यक्रम"
+												th:value="${object_title_hi}" oninput="updateLivePreview()">
+											<button class="btn btn-outline-secondary" type="button"
+												onclick="translateField('object_title', 'object_title_hi')"
+												title="Translate Title">
+												<i class="fas fa-language"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+
+								<!-- Collapsible Advanced Settings -->
+								<div class="mt-3">
+									<button
+										class="btn btn-link btn-sm p-0 text-decoration-none text-muted"
+										type="button" data-bs-toggle="collapse"
+										data-bs-target="#advancedSettings">
+										<i class="fas fa-cog me-1"></i> Advanced Settings (Metadata,
+										SEO & Custom Styles)
+									</button>
+									<div class="collapse mt-3" id="advancedSettings">
+										<div class="row g-2 border rounded p-3 bg-light">
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Keywords
+													(EN)</label> <input type="text" id="keywords"
+													class="form-control form-control-sm" th:value="${keywords}"
+													placeholder="keywords, separated, by, commas">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Keywords
+													(HI)</label> <input type="text" id="keywords_hi"
+													class="form-control form-control-sm"
+													th:value="${keywords_hi}">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Description
+													(EN)</label> <input type="text" id="description"
+													class="form-control form-control-sm"
+													th:value="${description}">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Description
+													(HI)</label> <input type="text" id="description_hi"
+													class="form-control form-control-sm"
+													th:value="${description_hi}">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Help
+													Text (EN)</label> <input type="text" id="help_text"
+													class="form-control form-control-sm"
+													th:value="${help_text}">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Help
+													Text (HI)</label> <input type="text" id="help_text_hi"
+													class="form-control form-control-sm"
+													th:value="${help_text_hi}">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Custom
+													CSS Styles</label> <input type="text" id="styles"
+													class="form-control form-control-sm" th:value="${styles}"
+													placeholder="e.g. margin-top: 15px;"
+													oninput="syncSectionAppearanceFromStyles(); updateLivePreview();">
+											</div>
+											<div class="col-md-6">
+												<label class="form-label small fw-semibold">Custom
+													CSS Classes</label> <input type="text" id="classes"
+													class="form-control form-control-sm" th:value="${classes}"
+													placeholder="e.g. shadow-sm my-custom-card">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Section Appearance -->
+						<div class="card mb-4 border-0 shadow-sm">
+							<div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 fw-bold text-dark">
+									<i class="fas fa-palette me-2 text-primary"></i>Section Appearance
+								</h5>
+								<div class="form-check form-switch m-0">
+									<input class="form-check-input" type="checkbox" role="switch"
+										id="section_appearance_enabled"
+										onchange="onSectionAppearanceToggle()">
+									<label class="form-check-label small text-muted"
+										for="section_appearance_enabled">Enable</label>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row g-3 section-appearance-fields" style="display: none;">
+									<div class="col-md-4">
+										<label class="form-label small fw-semibold">Background Color</label>
+										<input type="color" id="section_bg_color"
+											class="form-control form-control-color" value="#f8f9fa"
+											oninput="onSectionAppearanceChange()">
+									</div>
+									<div class="col-md-4">
+										<label class="form-label small fw-semibold">Text Color</label>
+										<input type="color" id="section_text_color"
+											class="form-control form-control-color" value="#162f6a"
+											oninput="onSectionAppearanceChange()">
+									</div>
+									<div class="col-md-4">
+										<label class="form-label small fw-semibold">Padding (rem)</label>
+										<input type="number" id="section_padding" class="form-control"
+											min="0" max="10" step="0.25" value="1.5"
+											oninput="onSectionAppearanceChange()">
+									</div>
+									<div class="col-12 d-flex justify-content-between align-items-center">
+										<small class="text-muted">Applies to the whole cards section
+											(background, text color, padding).</small>
+										<button type="button" class="btn btn-outline-secondary btn-sm"
+											onclick="resetSectionAppearance()">
+											<i class="fas fa-undo me-1"></i>Reset
+										</button>
+									</div>
+								</div>
+								<div class="text-muted small section-appearance-disabled-note">
+									Enable to set a background color, text color and padding for the
+									entire cards section.
+								</div>
+							</div>
+						</div>
+
+						<!-- Card Layout -->
+						<div class="card mb-4 border-0 shadow-sm">
+							<div class="card-header bg-white border-bottom py-3">
+								<h5 class="mb-0 fw-bold text-dark">
+									<i class="fas fa-table-columns me-2 text-primary"></i>Card Layout
+								</h5>
+							</div>
+							<div class="card-body">
+								<div class="row g-3 align-items-end">
+									<div class="col-md-6">
+										<label class="form-label small fw-semibold">Number of Rows</label>
+										<select id="cards_rows" class="form-select"
+											onchange="onCardsRowsChange()">
+											<option value="auto">Auto (2 per row)</option>
+											<option value="1">1 row (carousel)</option>
+											<option value="2">2 rows</option>
+											<option value="3">3 rows</option>
+											<option value="4">4 rows</option>
+										</select>
+									</div>
+									<div class="col-12">
+										<small class="text-muted">Cards are split evenly across the chosen
+											number of rows. With a single row, left/right arrows are added so
+											the section scrolls like a carousel.</small>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Cards Repeater List -->
+						<div
+							class="d-flex justify-content-between align-items-center mb-3">
+							<h5 class="mb-0 fw-bold text-dark">
+								<i class="fas fa-th-large me-2 text-primary"></i>Card Items
+							</h5>
+							<button type="button" class="btn btn-success btn-sm"
+								onclick="addNewCard()">
+								<i class="fas fa-plus me-1"></i> Add New Card
+							</button>
+						</div>
+
+						<div id="cardsListContainer">
+							<!-- Cards dynamically rendered here -->
+						</div>
+
+						<div class="text-center py-3">
+							<button type="button" class="btn btn-outline-primary"
+								onclick="addNewCard()">
+								<i class="fas fa-plus me-1"></i> Add Another Card
+							</button>
+						</div>
+					</div>
+
+					<!-- Right: Live Preview (5 cols) -->
+					<div class="col-lg-5">
+						<div class="card border-0 shadow-sm">
+							<div
+								class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+								<h5 class="mb-0 fw-bold" style="color: #162f6a;">
+									<i class="fas fa-eye me-2"></i>Live Preview
+								</h5>
+								<ul class="nav nav-pills nav-fill" id="previewLangTab"
+									role="tablist" style="font-size: 0.85rem;">
+									<li class="nav-item" role="presentation">
+										<button class="nav-link active py-1 px-3" id="preview-en-tab"
+											data-bs-toggle="pill" data-bs-target="#preview-en"
+											type="button" role="tab">English</button>
+									</li>
+									<li class="nav-item" role="presentation">
+										<button class="nav-link py-1 px-3" id="preview-hi-tab"
+											data-bs-toggle="pill" data-bs-target="#preview-hi"
+											type="button" role="tab">हिंदी</button>
+									</li>
+								</ul>
+							</div>
+							<div class="card-body bg-light"
+								style="max-height: calc(100vh - 160px); overflow-y: auto;">
+								<div class="tab-content" id="previewTabContent">
+									<!-- English Preview -->
+									<div class="tab-pane fade show active" id="preview-en"
+										role="tabpanel">
+										<div class="p-2" id="previewSectionEn">
+											<h4 id="previewSectionTitleEn" class="fw-bold mb-3"
+												style="color: #162f6a; font-family: 'Noto Sans', sans-serif;">
+												Training & Courses</h4>
+											<div id="previewCardsGridEn">
+												<!-- Rendered dynamically -->
+											</div>
+										</div>
+									</div>
+
+									<!-- Hindi Preview -->
+									<div class="tab-pane fade" id="preview-hi" role="tabpanel">
+										<div class="p-2" id="previewSectionHi">
+											<h4 id="previewSectionTitleHi" class="fw-bold mb-3"
+												style="color: #162f6a; font-family: 'Noto Sans', sans-serif;">
+												प्रशिक्षण और पाठ्यक्रम</h4>
+											<div id="previewCardsGridHi">
+												<!-- Rendered dynamically -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Hidden inputs for existing data -->
+			<input type="hidden" id="page_id" th:value="${object_id}"> <input
+				type="hidden" id="type" value="11"> <input type="hidden"
+				id="initial_cards_en" th:value="${cards_json_en}"> <input
+				type="hidden" id="initial_cards_hi" th:value="${cards_json_hi}">
+
+			<!-- HyperLink Selection Modal -->
+			<div class="modal fade" id="hyperLinksPopup" tabindex="-1"
+				aria-labelledby="hyperLinksPopupLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title fw-bold" id="hyperLinksPopupLabel">
+								<i class="fas fa-link me-2 text-primary"></i>Select Internal
+								Page / Document
+							</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<div class="input-group">
+									<span class="input-group-text"><i class="fas fa-search text-muted"></i></span>
+									<input type="text" id="linkFilterInput" class="form-control" placeholder="Search pages, forms, documents..." oninput="filterModalLinks(this.value)">
+								</div>
+							</div>
+							<ul class="nav nav-tabs mb-3" id="linkTabs" role="tablist">
+								<li class="nav-item" role="presentation">
+									<button class="nav-link active" id="pages-tab"
+										data-bs-toggle="tab" data-bs-target="#pages-content"
+										type="button" role="tab">Pages</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button class="nav-link" id="forms-tab" data-bs-toggle="tab"
+										data-bs-target="#forms-content" type="button" role="tab">Forms</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button class="nav-link" id="docs-tab" data-bs-toggle="tab"
+										data-bs-target="#docs-content" type="button" role="tab">Documents</button>
+								</li>
+							</ul>
+							<div class="tab-content" id="linkTabsContent">
+								<div class="tab-pane fade show active" id="pages-content"
+									role="tabpanel" style="max-height: 400px; overflow-y: auto;">
+									<div class="text-center py-3">
+										<div class="spinner-border text-primary" role="status"></div>
+									</div>
+								</div>
+								<div class="tab-pane fade" id="forms-content" role="tabpanel"
+									style="max-height: 400px; overflow-y: auto;">
+									<div class="text-center py-3">
+										<div class="spinner-border text-primary" role="status"></div>
+									</div>
+								</div>
+								<div class="tab-pane fade" id="docs-content" role="tabpanel"
+									style="max-height: 400px; overflow-y: auto;">
+									<div class="text-center py-3">
+										<div class="spinner-border text-primary" role="status"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+let cardCount = 0;
+let activeLinkInputTarget = null;
+let cardsSortable = null;
+
+$(document).ready(function() {
+    // Initialize sortable on container
+    const container = document.getElementById('cardsListContainer');
+    cardsSortable = new Sortable(container, {
+        animation: 150,
+        handle: '.drag-handle',
+        onEnd: function() {
+            reIndexCards();
+            updateLivePreview();
+        }
+    });
+
+    // Load section-level appearance from saved styles
+    syncSectionAppearanceFromStyles();
+
+    // Load card layout (rows / carousel) from saved classes
+    syncCardsRowsFromClasses();
+
+    // Check if editing existing cards
+    const initialEnStr = $('#initial_cards_en').val();
+    const initialHiStr = $('#initial_cards_hi').val();
+
+    let loaded = false;
+    if (initialEnStr && initialEnStr.trim() !== '' && initialEnStr.trim() !== 'null') {
+        try {
+            let cleanEn = initialEnStr.trim();
+            if (cleanEn.startsWith('"') && cleanEn.endsWith('"')) {
+                cleanEn = JSON.parse(cleanEn);
+            }
+            const enData = typeof cleanEn === 'string' ? JSON.parse(cleanEn) : cleanEn;
+
+            let hiData = [];
+            if (initialHiStr && initialHiStr.trim() !== '' && initialHiStr.trim() !== 'null') {
+                try {
+                    let cleanHi = initialHiStr.trim();
+                    if (cleanHi.startsWith('"') && cleanHi.endsWith('"')) {
+                        cleanHi = JSON.parse(cleanHi);
+                    }
+                    hiData = typeof cleanHi === 'string' ? JSON.parse(cleanHi) : cleanHi;
+                } catch(e) { console.error('Error parsing hiData', e); }
+            }
+
+            if (Array.isArray(enData) && enData.length > 0) {
+                enData.forEach((item, index) => {
+                    const hiItem = hiData[index] || {};
+                    addNewCard(
+                        decodeSafe(item.title || ''),
+                        decodeSafe(hiItem.title || ''),
+                        decodeSafe(item.description || ''),
+                        decodeSafe(hiItem.description || ''),
+                        decodeSafe(item.link || ''),
+                        decodeSafe(item.image || ''),
+                        parseBorderFromCard(item),
+                        parseColorsFromCard(item)
+                    );
+                });
+                loaded = true;
+            }
+        } catch (e) {
+            console.error('Error loading existing cards', e);
+        }
+    }
+
+    // Default new: start with 2 initial cards if none loaded
+    if (!loaded) {
+        addNewCard('Basic Course', 'बुनियादी पाठ्यक्रम', 'Phase-I, Phase-II, Phase-III, Phase-IV, Phase-V, Surety Bond, Short Film on Training, Travel Plan.', 'चरण-I, चरण-II, चरण-III, चरण-IV, चरण-V, स्यूरिटी बॉन्ड, प्रशिक्षण पर लघु फिल्म, यात्रा योजना।', '/Preview?page_id=1', '');
+        addNewCard('MCTP', 'एम सी टी पी', 'Course information and phases.', 'पाठ्यक्रम संबंधी जानकारी एवं चरण।', '/Preview?page_id=2', '');
+    }
+
+    updateLivePreview();
+});
+
+function decodeSafe(str) {
+    if (!str) return '';
+    try {
+        return decodeURIComponent(str);
+    } catch(e) {
+        return str;
+    }
+}
+
+function parseBorderFromCard(item) {
+    if (!item) return null;
+    // New flat format
+    if (item.borderStyle !== undefined || item.borderEnabled !== undefined) {
+        return {
+            enabled: String(item.borderEnabled) === 'true',
+            style: item.borderStyle || 'solid',
+            color: item.borderColor || '#162f6a',
+            top: parseInt(item.borderTop, 10) || 0,
+            right: parseInt(item.borderRight, 10) || 0,
+            bottom: parseInt(item.borderBottom, 10) || 0,
+            left: parseInt(item.borderLeft, 10) || 0,
+            radius: parseInt(item.borderRadius, 10) || 0
+        };
+    }
+    // Legacy nested format
+    if (item.border && typeof item.border === 'object') {
+        return item.border;
+    }
+    return null;
+}
+
+function makeBorderFields(b) {
+    return {
+        borderEnabled: String(!!b.enabled),
+        borderStyle: b.style || 'solid',
+        borderColor: b.color || '#162f6a',
+        borderTop: String(b.top || 0),
+        borderRight: String(b.right || 0),
+        borderBottom: String(b.bottom || 0),
+        borderLeft: String(b.left || 0),
+        borderRadius: String(b.radius || 0)
+    };
+}
+
+function parseColorsFromCard(item) {
+    if (!item) return null;
+    if (item.colorEnabled !== undefined || item.bgColor !== undefined || item.textColor !== undefined) {
+        return {
+            enabled: String(item.colorEnabled) === 'true',
+            bg: item.bgColor || '#ffffff',
+            text: item.textColor || '#334155'
+        };
+    }
+    return null;
+}
+
+function makeColorFields(c) {
+    return {
+        colorEnabled: String(!!c.enabled),
+        bgColor: c.bg || '#ffffff',
+        textColor: c.text || '#334155'
+    };
+}
+
+function addNewCard(titleEn = '', titleHi = '', descEn = '', descHi = '', link = '', image = '', border = null, colors = null) {
+    cardCount++;
+    const cardId = 'card_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+    const b = Object.assign(
+        { enabled: true, style: 'solid', color: '#1a3b5c', top: 1, right: 1, bottom: 1, left: 1, radius: 4 },
+        border || {}
+    );
+    const c = Object.assign(
+        { enabled: false, bg: '#ffffff', text: '#334155' },
+        colors || {}
+    );
+    const borderEnabled = b.enabled && b.style !== 'none';
+    const borderFieldsDisplay = borderEnabled ? '' : 'd-none';
+    const colorFieldsDisplay = c.enabled ? '' : 'd-none';
+
+    const cardHtml = `
+        <div class="card-item-box" id="${cardId}">
+            <div class="card-item-header">
+                <div>
+                    <i class="fas fa-grip-vertical drag-handle" title="Drag to reorder"></i>
+                    <span class="card-num-label">Card #${$('.card-item-box').length + 1}</span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="deleteCard('${cardId}')" title="Delete Card">
+                        <i class="fas fa-trash me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+            <div class="card-item-body">
+                <div class="row g-3">
+                    <!-- Left: Image Upload -->
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">
+                            <i class="fas fa-image me-1 text-success"></i> Card Image (Optional)
+                        </label>
+                        <div class="card-image-upload-box text-center p-3 border rounded bg-light">
+                            <div id="${cardId}_img_preview_box" class="mb-2" style="${image ? '' : 'display: none;'} cursor: pointer;" onclick="openDbimModalForCard('${cardId}')" title="Click to change DBIM image">
+                                <img src="${getImageSrc(image)}" class="img-preview-thumb" id="${cardId}_img_thumb" alt="Preview">
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control card-image" placeholder="Image URL / filename" 
+                                       value="${escapeHtml(image)}" oninput="updateCardImagePreview('${cardId}'); updateLivePreview();">
+                                <button type="button" class="btn btn-outline-primary btn-sm mb-0" onclick="openDbimModalForCard('${cardId}')" title="Choose from DBIM Resources">
+                                    <i class="fa-solid fa-photo-film me-1"></i> Browse
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm mb-0" onclick="clearCardImage('${cardId}')" title="Remove image" id="${cardId}_clear_img_btn" style="${image ? '' : 'display: none;'}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Titles, Descriptions & Link (bottom aligned) -->
+                    <div class="col-md-8">
+                        <div class="d-flex flex-column justify-content-end h-100">
+                            <!-- Titles Row -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">
+                                        <span class="lang-badge-en me-1">EN</span> Card Title <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control card-title-en" placeholder="e.g. Basic Course" 
+                                           value="${escapeHtml(titleEn)}" oninput="updateLivePreview()" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">
+                                        <span class="lang-badge-hi me-1">HI</span> Card Title (Hindi)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control card-title-hi" placeholder="उदा. बुनियादी पाठ्यक्रम" 
+                                               value="${escapeHtml(titleHi)}" oninput="updateLivePreview()">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="translateCardTitle('${cardId}')" title="Translate Title">
+                                            <i class="fas fa-language"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description Row -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">
+                                        <span class="lang-badge-en me-1">EN</span> Description
+                                    </label>
+                                    <textarea class="form-control card-desc-en" rows="2" placeholder="Course information, phases, details..." 
+                                              oninput="updateLivePreview()">${escapeHtml(descEn)}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">
+                                        <span class="lang-badge-hi me-1">HI</span> Description (Hindi)
+                                    </label>
+                                    <div class="input-group">
+                                        <textarea class="form-control card-desc-hi" rows="2" placeholder="पाठ्यक्रम की जानकारी, चरण, विवरण..." 
+                                                  oninput="updateLivePreview()">${escapeHtml(descHi)}</textarea>
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="translateCardDesc('${cardId}')" title="Translate Description">
+                                            <i class="fas fa-language"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Navigation Link Row -->
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">
+                                        <i class="fas fa-link me-1 text-primary"></i> Page Navigation Link
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control card-link" placeholder="/Preview?page_id=... or https://..." 
+                                               value="${escapeHtml(link)}" oninput="updateLivePreview()">
+                                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="openLinkModal('${cardId}')" title="Choose Internal Page">
+                                            <i class="fas fa-list-check me-1"></i> Select Page
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Border Settings -->
+                <div class="mt-3 border-settings-panel">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-link btn-sm p-0 text-decoration-none text-muted" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#${cardId}_borderSettings">
+                            <i class="fas fa-border-all me-1"></i> Border Settings
+                        </button>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input card-border-enabled" type="checkbox" role="switch"
+                                   id="${cardId}_border_toggle" ${b.enabled ? 'checked' : ''}
+                                   onchange="toggleBorderSettings('${cardId}')">
+                            <label class="form-check-label small text-muted" for="${cardId}_border_toggle">Enable</label>
+                        </div>
+                    </div>
+                    <div class="collapse mt-2" id="${cardId}_borderSettings">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-2 border-config-fields ${borderFieldsDisplay}">
+                                <label class="form-label small fw-semibold">Style</label>
+                                <select class="form-select form-select-sm card-border-style" onchange="updateLivePreview()">
+                                    <option value="solid" ${b.style === 'solid' ? 'selected' : ''}>Solid</option>
+                                    <option value="dashed" ${b.style === 'dashed' ? 'selected' : ''}>Dashed</option>
+                                    <option value="dotted" ${b.style === 'dotted' ? 'selected' : ''}>Dotted</option>
+                                    <option value="double" ${b.style === 'double' ? 'selected' : ''}>Double</option>
+                                    <option value="none" ${b.style === 'none' ? 'selected' : ''}>No Border</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 border-config-fields ${borderFieldsDisplay}">
+                                <label class="form-label small fw-semibold">Color</label>
+                                <input type="color" class="form-control form-control-color form-control-sm w-100 card-border-color"
+                                       value="${b.color}" oninput="updateLivePreview()">
+                            </div>
+                            <div class="col-md-4 border-config-fields ${borderFieldsDisplay}">
+                                <label class="form-label small fw-semibold">
+                                    Width (px)
+                                    <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-decoration-none"
+                                            onclick="setAllBorderWidths('${cardId}')" title="Apply first value to all sides">Set All</button>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text py-0" title="Top"><i class="fas fa-arrows-alt-up"></i></span>
+                                    <input type="number" min="0" max="20" class="form-control border-width-input card-border-top"
+                                           value="${b.top}" oninput="updateLivePreview()">
+                                    <span class="input-group-text py-0" title="Right"><i class="fas fa-arrows-alt-right"></i></span>
+                                    <input type="number" min="0" max="20" class="form-control border-width-input card-border-right"
+                                           value="${b.right}" oninput="updateLivePreview()">
+                                    <span class="input-group-text py-0" title="Bottom"><i class="fas fa-arrows-alt-down"></i></span>
+                                    <input type="number" min="0" max="20" class="form-control border-width-input card-border-bottom"
+                                           value="${b.bottom}" oninput="updateLivePreview()">
+                                    <span class="input-group-text py-0" title="Left"><i class="fas fa-arrows-alt-left"></i></span>
+                                    <input type="number" min="0" max="20" class="form-control border-width-input card-border-left"
+                                           value="${b.left}" oninput="updateLivePreview()">
+                                </div>
+                            </div>
+                            <div class="col-md-2 border-config-fields ${borderFieldsDisplay}">
+                                <label class="form-label small fw-semibold">Radius (px)</label>
+                                <input type="number" min="0" max="50" class="form-control form-control-sm card-border-radius"
+                                       value="${b.radius}" oninput="updateLivePreview()">
+                            </div>
+                            <div class="col-md-2 border-config-fields ${borderFieldsDisplay}">
+                                <div id="${cardId}_border_preview" class="border-settings-demo small text-center text-muted py-1">Preview</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance / Colors Settings -->
+                <div class="mt-3 border-settings-panel">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-link btn-sm p-0 text-decoration-none text-muted" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#${cardId}_colorSettings">
+                            <i class="fas fa-palette me-1"></i> Appearance / Colors
+                        </button>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input card-colors-enabled" type="checkbox" role="switch"
+                                   id="${cardId}_colors_toggle" ${c.enabled ? 'checked' : ''}
+                                   onchange="toggleColorSettings('${cardId}')">
+                            <label class="form-check-label small text-muted" for="${cardId}_colors_toggle">Enable</label>
+                        </div>
+                    </div>
+                    <div class="collapse mt-2" id="${cardId}_colorSettings">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3 color-config-fields ${colorFieldsDisplay}">
+                                <label class="form-label small fw-semibold">Background</label>
+                                <input type="color" class="form-control form-control-color form-control-sm w-100 card-bg-color"
+                                       value="${c.bg}" oninput="updateLivePreview()">
+                            </div>
+                            <div class="col-md-3 color-config-fields ${colorFieldsDisplay}">
+                                <label class="form-label small fw-semibold">Text Color</label>
+                                <input type="color" class="form-control form-control-color form-control-sm w-100 card-text-color"
+                                       value="${c.text}" oninput="updateLivePreview()">
+                            </div>
+                            <div class="col-md-3 color-config-fields ${colorFieldsDisplay}">
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-4"
+                                        onclick="resetCardColors('${cardId}')">
+                                    <i class="fas fa-undo me-1"></i> Reset to Default
+                                </button>
+                            </div>
+                            <div class="col-md-3 color-config-fields ${colorFieldsDisplay}">
+                                <div id="${cardId}_color_preview" class="border-settings-demo small text-center py-1">Preview</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    $('#cardsListContainer').append(cardHtml);
+    reIndexCards();
+    updateLivePreview();
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;');
+}
+
+function deleteCard(cardId) {
+    if ($('.card-item-box').length <= 1) {
+        alert("At least one card is required.");
+        return;
+    }
+    $('#' + cardId).slideUp(200, function() {
+        $(this).remove();
+        reIndexCards();
+        updateLivePreview();
+    });
+}
+
+function reIndexCards() {
+    $('.card-item-box').each(function(index) {
+        $(this).find('.card-num-label').text('Card #' + (index + 1));
+    });
+}
+
+function toggleBorderSettings(cardId) {
+    const cardEl = $('#' + cardId);
+    const enabled = cardEl.find('.card-border-enabled').is(':checked');
+    if (enabled) {
+        cardEl.find('#' + cardId + '_borderSettings').collapse('show');
+        cardEl.find('.border-config-fields').removeClass('d-none');
+    } else {
+        cardEl.find('.border-config-fields').addClass('d-none');
+    }
+    updateLivePreview();
+}
+
+function setAllBorderWidths(cardId) {
+    const cardEl = $('#' + cardId);
+    const first = cardEl.find('.card-border-top').val();
+    cardEl.find('.card-border-right, .card-border-bottom, .card-border-left').val(first);
+    updateLivePreview();
+}
+
+function getCardBorderConfig(el) {
+    const enabled = el.find('.card-border-enabled').is(':checked');
+    const style = el.find('.card-border-style').val() || 'solid';
+    return {
+        enabled: enabled && style !== 'none',
+        style: style === 'none' ? 'solid' : style,
+        color: el.find('.card-border-color').val() || '#162f6a',
+        top: parseInt(el.find('.card-border-top').val(), 10) || 0,
+        right: parseInt(el.find('.card-border-right').val(), 10) || 0,
+        bottom: parseInt(el.find('.card-border-bottom').val(), 10) || 0,
+        left: parseInt(el.find('.card-border-left').val(), 10) || 0,
+        radius: parseInt(el.find('.card-border-radius').val(), 10) || 0
+    };
+}
+
+function buildBorderStyleAttr(b) {
+    if (!b) return 'border: 1px solid #1a3b5c; border-radius: 4px;';
+    if (!b.enabled) return 'border: none; border-radius: ' + (b.radius || 0) + 'px;';
+    return 'border-style: ' + b.style
+        + '; border-color: ' + b.color
+        + '; border-top-width: ' + b.top + 'px'
+        + '; border-right-width: ' + b.right + 'px'
+        + '; border-bottom-width: ' + b.bottom + 'px'
+        + '; border-left-width: ' + b.left + 'px'
+        + '; border-radius: ' + (b.radius || 0) + 'px;';
+}
+
+function updateBorderDemo(cardId) {
+    const cardEl = $('#' + cardId);
+    const b = getCardBorderConfig(cardEl);
+    const demo = $('#' + cardId + '_border_preview');
+    if (demo.length) {
+        demo.attr('style', 'background:#fff; ' + buildBorderStyleAttr(b));
+    }
+}
+
+function toggleColorSettings(cardId) {
+    const cardEl = $('#' + cardId);
+    const enabled = cardEl.find('.card-colors-enabled').is(':checked');
+    if (enabled) {
+        cardEl.find('#' + cardId + '_colorSettings').collapse('show');
+        cardEl.find('.color-config-fields').removeClass('d-none');
+    } else {
+        cardEl.find('.color-config-fields').addClass('d-none');
+    }
+    updateLivePreview();
+}
+
+function resetCardColors(cardId) {
+    const cardEl = $('#' + cardId);
+    cardEl.find('.card-bg-color').val('#ffffff');
+    cardEl.find('.card-text-color').val('#334155');
+    updateLivePreview();
+}
+
+function getCardColors(el) {
+    const enabled = el.find('.card-colors-enabled').is(':checked');
+    return {
+        enabled: enabled,
+        bg: el.find('.card-bg-color').val() || '#ffffff',
+        text: el.find('.card-text-color').val() || '#334155'
+    };
+}
+
+function buildColorsStyle(c) {
+    if (!c || !c.enabled) return '';
+    return 'background-color: ' + c.bg + '; color: ' + c.text + ';';
+}
+
+function updateColorDemo(cardId) {
+    const cardEl = $('#' + cardId);
+    const c = getCardColors(cardEl);
+    const demo = $('#' + cardId + '_color_preview');
+    if (demo.length) {
+        if (c.enabled) {
+            demo.attr('style', 'background:' + c.bg + '; color:' + c.text + '; border: 1px solid #cbd5e1;');
+        } else {
+            demo.attr('style', 'background:#fff; color:#64748b; border: 1px solid #cbd5e1;');
+        }
+    }
+}
+
+function getImageSrc(image) {
+    if (!image) return '';
+    if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/') || image.startsWith('static/')) {
+        return image;
+    }
+    return 'static/gallery/image/' + image;
+}
+
+let activeCardIdForDbim = null;
+let dbimDataLoaded = false;
+let dbimResourcesData = null;
+
+function updateCardImagePreview(cardId) {
+    const cardEl = $('#' + cardId);
+    const imgVal = cardEl.find('.card-image').val().trim();
+    const previewBox = $('#' + cardId + '_img_preview_box');
+    const thumb = $('#' + cardId + '_img_thumb');
+    const clearBtn = $('#' + cardId + '_clear_img_btn');
+
+    if (imgVal) {
+        thumb.attr('src', getImageSrc(imgVal));
+        previewBox.show();
+        if (clearBtn.length) clearBtn.show();
+    } else {
+        thumb.attr('src', '');
+        previewBox.hide();
+        if (clearBtn.length) clearBtn.hide();
+    }
+    updateLivePreview();
+}
+
+function clearCardImage(cardId) {
+    const cardEl = $('#' + cardId);
+    cardEl.find('.card-image').val('');
+    updateCardImagePreview(cardId);
+}
+
+function openDbimModalForCard(cardId) {
+    activeCardIdForDbim = cardId;
+    const cardEl = $('#' + cardId);
+    const cardTitle = cardEl.find('.card-title-en').val() || cardEl.find('.card-index-badge').text() || 'Card';
+    const badge = document.getElementById('targetCardBadge');
+    if (badge) {
+        badge.textContent = `Card: ${cardTitle}`;
+    }
+    const modalEl = document.getElementById('dbimResourcesModal');
+    if (modalEl) {
+        try {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        } catch (e) {
+            console.warn('bootstrap.Modal getOrCreateInstance error, trying jQuery modal:', e);
+            if (typeof $ !== 'undefined' && typeof $(modalEl).modal === 'function') {
+                $(modalEl).modal('show');
+            }
+        }
+    } else {
+        console.error('Modal element #dbimResourcesModal not found in DOM!');
+    }
+    if (!dbimDataLoaded) {
+        loadDbimResources();
+    }
+}
+
+const slugMeta = {
+    'banner-images': { title: 'Banner Images', icon: 'fa-images' },
+    'contextual-icons': { title: 'Contextual Icons', icon: 'fa-icons' },
+    'functional-icons': { title: 'Functional Icons', icon: 'fa-shapes' },
+    'persona-illustrations': { title: 'Persona Illustrations', icon: 'fa-user-group' },
+    'pm-images': { title: 'PM Images', icon: 'fa-user-tie' }
+};
+
+function formatSlugTitle(slug) {
+    if (slugMeta[slug] && slugMeta[slug].title) return slugMeta[slug].title;
+    return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function getSlugIcon(slug) {
+    if (slugMeta[slug] && slugMeta[slug].icon) return slugMeta[slug].icon;
+    return 'fa-folder';
+}
+
+function escapeJs(str) {
+    if (!str) return '';
+    return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+async function loadDbimResources() {
+    const spinner = document.getElementById('dbimLoadingSpinner');
+    if (spinner) spinner.style.display = 'block';
+
+    let data = null;
+    try {
+        const res = await fetch('/getDbimResources');
+        if (res.ok) {
+            const json = await res.json();
+            if (json && json.slugs && Object.keys(json.slugs).length > 0) {
+                data = json;
+            }
+        }
+    } catch (e) {
+        console.warn('Endpoint /getDbimResources not reachable, trying manifest.json directly:', e);
+    }
+
+    if (!data) {
+        try {
+            const res = await fetch('/static/assets/dbim-resources/manifest.json');
+            if (res.ok) {
+                data = await res.json();
+            }
+        } catch (e) {
+            console.error('Failed to load /static/assets/dbim-resources/manifest.json:', e);
+        }
+    }
+
+    if (!data || !data.slugs) {
+        if (spinner) {
+            spinner.innerHTML = '<div class="alert alert-danger my-3"><i class="fa fa-triangle-exclamation me-2"></i>Failed to load DBIM resources. Please ensure static files exist under /static/assets/dbim-resources/.</div>';
+        }
+        return;
+    }
+
+    dbimResourcesData = data;
+    dbimDataLoaded = true;
+    renderDbimTabs(data.slugs);
+}
+
+function renderDbimTabs(slugs) {
+    const navTabs = document.getElementById('dbimNavTabs');
+    const tabContent = document.getElementById('dbimTabContent');
+    if (!navTabs || !tabContent) return;
+
+    navTabs.innerHTML = '';
+    tabContent.innerHTML = '';
+
+    const slugKeys = Object.keys(slugs);
+    slugKeys.forEach((slug, index) => {
+        const items = slugs[slug] || [];
+        const isActive = (index === 0);
+        const tabId = 'tab-dbim-' + slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const paneId = 'pane-dbim-' + slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+        const li = document.createElement('li');
+        li.className = 'nav-item';
+        li.setAttribute('role', 'presentation');
+        li.innerHTML = `
+            <button class="nav-link ${isActive ? 'active' : ''}" id="${tabId}" data-bs-toggle="tab" data-bs-target="#${paneId}" type="button" role="tab" aria-controls="${paneId}" aria-selected="${isActive}">
+                <i class="fa ${getSlugIcon(slug)} me-1 text-primary"></i> ${formatSlugTitle(slug)}
+                <span class="badge bg-secondary-subtle text-dark border ms-1">${items.length}</span>
+            </button>
+        `;
+        navTabs.appendChild(li);
+
+        const pane = document.createElement('div');
+        pane.className = `tab-pane fade ${isActive ? 'show active' : ''} dbim-tab-pane`;
+        pane.id = paneId;
+        pane.setAttribute('role', 'tabpanel');
+        pane.setAttribute('aria-labelledby', tabId);
+
+        let gridHtml = `<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 dbim-grid" id="grid-${paneId}">`;
+
+        items.forEach(item => {
+            const filename = item.filename || '';
+            const title = item.title || filename;
+            const imgUrl = `/static/assets/dbim-resources/${slug}/${encodeURIComponent(filename)}`;
+            const safeTitle = escapeHtml(title);
+            const safeFilename = escapeHtml(filename);
+            const jsImgUrl = escapeJs(imgUrl);
+            const jsTitle = escapeJs(title);
+
+            gridHtml += `
+                <div class="col dbim-item-col" data-title="${safeTitle.toLowerCase()}" data-filename="${safeFilename.toLowerCase()}">
+                    <div class="card h-100 dbim-card shadow-sm" onclick="selectDbimCardImage('${jsImgUrl}', '${jsTitle}')" title="Click to select this image for card">
+                        <div class="dbim-img-wrapper">
+                            <img src="${imgUrl}" loading="lazy" alt="${safeTitle}">
+                        </div>
+                        <div class="card-footer-custom">
+                            <span class="dbim-title" title="${safeTitle}">${safeTitle}</span>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-1 py-0 px-1" style="font-size: 0.72rem;">
+                                <i class="fa fa-check me-1"></i>Select
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        gridHtml += '</div>';
+        pane.innerHTML = gridHtml;
+        tabContent.appendChild(pane);
+    });
+}
+
+function selectDbimCardImage(imageUrl, altText) {
+    if (activeCardIdForDbim) {
+        const cardEl = $('#' + activeCardIdForDbim);
+        cardEl.find('.card-image').val(imageUrl);
+        updateCardImagePreview(activeCardIdForDbim);
+        
+        showInsertionToast(altText || 'Image');
+        
+        const modalEl = document.getElementById('dbimResourcesModal');
+        if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+    }
+}
+
+function showInsertionToast(name) {
+    const toastEl = document.getElementById('dbimSuccessToast');
+    if (toastEl) {
+        const textEl = document.getElementById('dbimToastText');
+        if (textEl) textEl.textContent = `Selected "${name}" for card image`;
+        const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 });
+        toast.show();
+    }
+}
+
+// Search filtering logic for DBIM resources modal
+$(document).on('input', '#dbimSearchInput', function(e) {
+    const query = $(this).val().trim().toLowerCase();
+    $('#dbimSearchClear').toggle(Boolean(query));
+
+    const activePane = $('#dbimTabContent .tab-pane.active');
+    if (!activePane.length) return;
+
+    const items = activePane.find('.dbim-item-col');
+    let visibleCount = 0;
+    items.each(function() {
+        const title = $(this).attr('data-title') || '';
+        const filename = $(this).attr('data-filename') || '';
+        if (!query || title.includes(query) || filename.includes(query)) {
+            $(this).show();
+            visibleCount++;
+        } else {
+            $(this).hide();
+        }
+    });
+
+    let noMatch = activePane.find('.dbim-no-match');
+    if (visibleCount === 0 && items.length > 0) {
+        if (!noMatch.length) {
+            noMatch = $('<div class="dbim-no-match col-12 text-center py-4 text-muted"><i class="fa fa-search me-1"></i> No matching resources found in this tab.</div>');
+            activePane.find('.dbim-grid').append(noMatch);
+        }
+        noMatch.show();
+    } else if (noMatch.length) {
+        noMatch.hide();
+    }
+});
+
+$(document).on('click', '#dbimSearchClear', function() {
+    $('#dbimSearchInput').val('').trigger('input').focus();
+});
+
+$(document).on('shown.bs.tab', '#dbimNavTabs button', function() {
+    const searchVal = $('#dbimSearchInput').val();
+    if (searchVal) {
+        $('#dbimSearchInput').trigger('input');
+    }
+});
+
+// Upload Card Image via AJAX
+function uploadCardImage(inputEl, cardId) {
+    if (!inputEl.files || inputEl.files.length === 0) return;
+    const file = inputEl.files[0];
+
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const cardEl = $('#' + cardId);
+    const imgInput = cardEl.find('.card-image');
+
+    $.ajax({
+        type: 'POST',
+        url: '/uploadCardImage',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        },
+        success: function(res) {
+            if (res.success) {
+                imgInput.val(res.fileName || res.url);
+                updateCardImagePreview(cardId);
+            } else {
+                alert('Upload failed: ' + (res.message || 'Unknown error'));
+            }
+        },
+        error: function(err) {
+            console.error('Image upload error', err);
+            // Fallback: If dedicated upload endpoint fails, use object URL for local preview
+            const localUrl = URL.createObjectURL(file);
+            imgInput.val(file.name);
+            $('#' + cardId + '_img_thumb').attr('src', localUrl);
+            $('#' + cardId + '_img_preview_box').show();
+            updateLivePreview();
+            alert('Image selected: ' + file.name);
+        }
+    });
+}
+
+// Open Hyperlink Modal
+function openLinkModal(cardId) {
+    activeLinkInputTarget = $('#' + cardId).find('.card-link');
+    $('#linkFilterInput').val('');
+    const modalEl = document.getElementById('hyperLinksPopup');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+    loadPages();
+    loadForms();
+    loadDocs();
+}
+
+function selectLink(linkUrl) {
+    if (activeLinkInputTarget && activeLinkInputTarget.length) {
+        activeLinkInputTarget.val(linkUrl);
+        updateLivePreview();
+    }
+    const modalEl = document.getElementById('hyperLinksPopup');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+}
+
+function filterModalLinks(query) {
+    const q = (query || '').toLowerCase().trim();
+    $('.link-item-row').each(function() {
+        const text = $(this).text().toLowerCase();
+        if (!q || text.includes(q)) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+function loadPages() {
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+    $('#pages-content').html('<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>');
+    $.ajax({
+        type: 'GET',
+        url: '/getListPages',
+        beforeSend: function(xhr) { 
+            if (csrfToken && csrfHeader) xhr.setRequestHeader(csrfHeader, csrfToken); 
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (!data || data.length === 0) {
+                $('#pages-content').html('<div class="p-3 text-muted text-center">No pages found.</div>');
+                return;
+            }
+            let html = '<div class="list-group">';
+            data.forEach(item => {
+                const link = item.link || item.Link || (item.page_id ? ('/Preview?page_id=' + item.page_id) : '');
+                const isPublished = (item.status && item.status.toString().toLowerCase() === 'published');
+                html += `
+                    <div class="list-group-item link-item-row d-flex justify-content-between align-items-center py-2">
+                        <div class="me-3">
+                            <span class="badge ${isPublished ? 'bg-success' : 'bg-secondary'} me-2">${item.status || 'Draft'}</span>
+                            <strong>${item.page_name || 'Untitled Page'}</strong>
+                            <div class="small text-muted">${link || 'No URL'}</div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            ${link ? `<a href="${link}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>` : ''}
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectLink('${link}')">Select</button>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            $('#pages-content').html(html);
+            filterModalLinks($('#linkFilterInput').val());
+        },
+        error: function(xhr, status, error) { 
+            $('#pages-content').html('<div class="alert alert-danger m-2">Could not load pages: ' + (error || status) + '</div>'); 
+        }
+    });
+}
+
+function loadForms() {
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+    $('#forms-content').html('<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>');
+    $.ajax({
+        type: 'GET',
+        url: '/getListForms',
+        beforeSend: function(xhr) { 
+            if (csrfToken && csrfHeader) xhr.setRequestHeader(csrfHeader, csrfToken); 
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (!data || data.length === 0) {
+                $('#forms-content').html('<div class="p-3 text-muted text-center">No forms found.</div>');
+                return;
+            }
+            let html = '<div class="list-group">';
+            data.forEach(item => {
+                const link = item.link || item.Link || (item.form_id ? ('/getForm?form_id=' + item.form_id) : '');
+                html += `
+                    <div class="list-group-item link-item-row d-flex justify-content-between align-items-center py-2">
+                        <div class="me-3">
+                            <span class="badge bg-info text-dark me-2">${item.verify_status || 'Form'}</span>
+                            <strong>${item.form_name || 'Form #' + item.form_id}</strong>
+                            <div class="small text-muted">${link || ''}</div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            ${link ? `<a href="${link}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>` : ''}
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectLink('${link}')">Select</button>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            $('#forms-content').html(html);
+            filterModalLinks($('#linkFilterInput').val());
+        },
+        error: function(xhr, status, error) { 
+            $('#forms-content').html('<div class="alert alert-danger m-2">Could not load forms: ' + (error || status) + '</div>'); 
+        }
+    });
+}
+
+function loadDocs() {
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+    $('#docs-content').html('<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>');
+    $.ajax({
+        type: 'GET',
+        url: '/getListDocs',
+        beforeSend: function(xhr) { 
+            if (csrfToken && csrfHeader) xhr.setRequestHeader(csrfHeader, csrfToken); 
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (!data || data.length === 0) {
+                $('#docs-content').html('<div class="p-3 text-muted text-center">No documents found.</div>');
+                return;
+            }
+            let html = '<div class="list-group">';
+            data.forEach(item => {
+                const file = item.file || '';
+                html += `
+                    <div class="list-group-item link-item-row d-flex justify-content-between align-items-center py-2">
+                        <div class="me-3">
+                            <strong>${item.original_filename || file}</strong>
+                            <div class="small text-muted">${item.description || file || ''}</div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            ${file ? `<a href="${file}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>` : ''}
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectLink('${file}')">Select</button>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            $('#docs-content').html(html);
+            filterModalLinks($('#linkFilterInput').val());
+        },
+        error: function(xhr, status, error) { 
+            $('#docs-content').html('<div class="alert alert-danger m-2">Could not load documents: ' + (error || status) + '</div>'); 
+        }
+    });
+}
+
+// Translations using mymemory API
+async function translateText(text) {
+    if (!text || text.trim() === '') return '';
+    try {
+        const url = 'https://api.mymemory.translated.net/get';
+        const params = new URLSearchParams({ q: text, langpair: 'en|hi' });
+        const res = await fetch(`${url}?${params}`);
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+            return data.responseData.translatedText;
+        }
+    } catch(e) {
+        console.error('Translation error', e);
+    }
+    return text;
+}
+
+async function translateField(srcId, destId) {
+    const val = $('#' + srcId).val();
+    if (!val) return;
+    const translated = await translateText(val);
+    $('#' + destId).val(translated);
+    updateLivePreview();
+}
+
+async function translateCardTitle(cardId) {
+    const cardEl = $('#' + cardId);
+    const val = cardEl.find('.card-title-en').val();
+    if (!val) return;
+    const translated = await translateText(val);
+    cardEl.find('.card-title-hi').val(translated);
+    updateLivePreview();
+}
+
+async function translateCardDesc(cardId) {
+    const cardEl = $('#' + cardId);
+    const val = cardEl.find('.card-desc-en').val();
+    if (!val) return;
+    const translated = await translateText(val);
+    cardEl.find('.card-desc-hi').val(translated);
+    updateLivePreview();
+}
+
+async function autoTranslateAll() {
+    // Title
+    const titleEn = $('#object_title').val();
+    if (titleEn && !$('#object_title_hi').val()) {
+        $('#object_title_hi').val(await translateText(titleEn));
+    }
+
+    // Cards
+    const cards = $('.card-item-box');
+    for (let i = 0; i < cards.length; i++) {
+        const el = $(cards[i]);
+        const tEn = el.find('.card-title-en').val();
+        const tHi = el.find('.card-title-hi');
+        if (tEn && !tHi.val()) {
+            tHi.val(await translateText(tEn));
+        }
+
+        const dEn = el.find('.card-desc-en').val();
+        const dHi = el.find('.card-desc-hi');
+        if (dEn && !dHi.val()) {
+            dHi.val(await translateText(dEn));
+        }
+    }
+    updateLivePreview();
+    alert('Translation completed!');
+}
+
+// ===== Section-level Appearance =====
+function parseStyleDecls(str) {
+    const out = {};
+    (str || '').split(';').forEach(function(part) {
+        const i = part.indexOf(':');
+        if (i > -1) {
+            const k = part.slice(0, i).trim().toLowerCase();
+            const v = part.slice(i + 1).trim();
+            if (k) out[k] = v;
+        }
+    });
+    return out;
+}
+
+function toggleSectionAppearanceFields() {
+    const enabled = $('#section_appearance_enabled').is(':checked');
+    if (enabled) {
+        $('.section-appearance-fields').show();
+        $('.section-appearance-disabled-note').hide();
+    } else {
+        $('.section-appearance-fields').hide();
+        $('.section-appearance-disabled-note').show();
+    }
+}
+
+function syncSectionAppearanceFromStyles() {
+    const decls = parseStyleDecls($('#styles').val() || '');
+    const has = ('background-color' in decls) || ('color' in decls) || ('padding' in decls);
+    if (decls['background-color']) $('#section_bg_color').val(decls['background-color']);
+    if (decls['color']) $('#section_text_color').val(decls['color']);
+    if (decls['padding']) {
+        const p = parseFloat(decls['padding']);
+        if (!isNaN(p)) $('#section_padding').val(p);
+    }
+    $('#section_appearance_enabled').prop('checked', has);
+    toggleSectionAppearanceFields();
+    applySectionAppearancePreview();
+}
+
+function applySectionAppearanceToStyles() {
+    const enabled = $('#section_appearance_enabled').is(':checked');
+    const decls = parseStyleDecls($('#styles').val() || '');
+    delete decls['background-color'];
+    delete decls['color'];
+    delete decls['padding'];
+    if (enabled) {
+        decls['background-color'] = $('#section_bg_color').val() || '#f8f9fa';
+        decls['color'] = $('#section_text_color').val() || '#162f6a';
+        const pad = $('#section_padding').val();
+        if (pad !== '' && !isNaN(parseFloat(pad)) && parseFloat(pad) >= 0) {
+            decls['padding'] = parseFloat(pad) + 'rem';
+        }
+    }
+    const keys = Object.keys(decls);
+    const css = keys.map(function(k) { return k + ': ' + decls[k]; }).join('; ');
+    $('#styles').val(css ? css + ';' : '');
+}
+
+function applySectionAppearancePreview() {
+    const enabled = $('#section_appearance_enabled').is(':checked');
+    const bg = $('#section_bg_color').val() || '#f8f9fa';
+    const pad = $('#section_padding').val();
+    let styleStr = '';
+    if (enabled) {
+        styleStr = 'background-color: ' + bg + ';';
+        if (pad !== '' && !isNaN(parseFloat(pad)) && parseFloat(pad) >= 0) {
+            styleStr += ' padding: ' + parseFloat(pad) + 'rem;';
+        }
+    }
+    // .p-2 uses !important, so drop it when we apply our own padding
+    $('#previewSectionEn, #previewSectionHi').toggleClass('p-2', !enabled);
+    $('#previewSectionEn, #previewSectionHi').attr('style', styleStr);
+    const textColor = enabled ? ($('#section_text_color').val() || '#162f6a') : '#162f6a';
+    $('#previewSectionTitleEn, #previewSectionTitleHi').css('color', textColor);
+}
+
+function onSectionAppearanceToggle() {
+    toggleSectionAppearanceFields();
+    applySectionAppearanceToStyles();
+    updateLivePreview();
+}
+
+function onSectionAppearanceChange() {
+    applySectionAppearanceToStyles();
+    applySectionAppearancePreview();
+}
+
+function resetSectionAppearance() {
+    $('#section_bg_color').val('#f8f9fa');
+    $('#section_text_color').val('#162f6a');
+    $('#section_padding').val('1.5');
+    $('#section_appearance_enabled').prop('checked', false);
+    toggleSectionAppearanceFields();
+    applySectionAppearanceToStyles();
+    updateLivePreview();
+}
+
+// Live Preview Updater
+function updateLivePreview() {
+    // English Title
+    const titleEn = $('#object_title').val().trim() || 'Training & Courses';
+    $('#previewSectionTitleEn').text(titleEn);
+
+    // Hindi Title
+    const titleHi = $('#object_title_hi').val().trim() || titleEn;
+    $('#previewSectionTitleHi').text(titleHi);
+
+    // Cards (EN / HI)
+    const cardsEnHtml = [];
+    const cardsHiHtml = [];
+
+    $('.card-item-box').each(function() {
+        const el = $(this);
+        const tEn = el.find('.card-title-en').val().trim();
+        const tHi = el.find('.card-title-hi').val().trim() || tEn;
+        const dEn = el.find('.card-desc-en').val().trim();
+        const dHi = el.find('.card-desc-hi').val().trim() || dEn;
+        const link = el.find('.card-link').val().trim();
+        const img = el.find('.card-image').val().trim();
+        const border = getCardBorderConfig(el);
+        const colors = getCardColors(el);
+        const cardId = el.attr('id');
+        if (cardId) {
+            updateBorderDemo(cardId);
+            updateColorDemo(cardId);
+        }
+
+        // EN Card
+        cardsEnHtml.push(buildPreviewCardHtml(tEn || 'Card Title', dEn, link, img, border, colors));
+        // HI Card
+        cardsHiHtml.push(buildPreviewCardHtml(tHi || 'कार्ड शीर्षक', dHi, link, img, border, colors));
+    });
+
+    $('#previewCardsGridEn').html(buildPreviewLayoutHtml(cardsEnHtml));
+    $('#previewCardsGridHi').html(buildPreviewLayoutHtml(cardsHiHtml));
+
+    // Section-level appearance (background / text color / padding)
+    applySectionAppearancePreview();
+}
+
+// ===== Card Layout (rows / single-row carousel) =====
+function getCardsRowsSetting() {
+    const n = parseInt($('#cards_rows').val(), 10);
+    return (isNaN(n) || n < 1) ? 0 : n; // 0 = auto
+}
+
+function syncCardsRowsFromClasses() {
+    const classes = $('#classes').val() || '';
+    const m = classes.match(/cards-rows-(\d+)/);
+    if (m) {
+        const n = parseInt(m[1], 10);
+        $('#cards_rows').val((n >= 1 && n <= 6) ? String(n) : 'auto');
+    } else {
+        $('#cards_rows').val('auto');
+    }
+}
+
+function applyCardsRowsToClasses() {
+    const parts = ($('#classes').val() || '').split(/\s+/).filter(function(c) {
+        return c && !/^cards-rows-\d+$/.test(c);
+    });
+    const rows = getCardsRowsSetting();
+    if (rows > 0) parts.push('cards-rows-' + rows);
+    $('#classes').val(parts.join(' '));
+}
+
+function onCardsRowsChange() {
+    applyCardsRowsToClasses();
+    updateLivePreview();
+}
+
+function buildPreviewLayoutHtml(cards) {
+    if (!cards || cards.length === 0) return '';
+    const rows = getCardsRowsSetting();
+
+    // Single row -> horizontal carousel with prev/next arrows
+    if (rows === 1) {
+        let items = '';
+        cards.forEach(function(card) {
+            items += card.replace('class="col"', 'class="col cards-carousel-item"');
+        });
+        return '<div class="cards-carousel-wrap">' +
+            '<button type="button" class="cards-carousel-nav cards-carousel-prev" aria-label="Previous" onclick="scrollCardsCarousel(this,-1)"><i class="fa-solid fa-chevron-left"></i></button>' +
+            '<div class="cards-carousel-track">' + items + '</div>' +
+            '<button type="button" class="cards-carousel-nav cards-carousel-next" aria-label="Next" onclick="scrollCardsCarousel(this,1)"><i class="fa-solid fa-chevron-right"></i></button>' +
+            '</div>';
+    }
+
+    // Multiple rows -> split cards evenly across the requested rows
+    if (rows > 1) {
+        const n = cards.length;
+        const base = Math.floor(n / rows);
+        const rem = n % rows;
+        let out = '';
+        let idx = 0;
+        for (let r = 0; r < rows && idx < n; r++) {
+            const cnt = base + (r < rem ? 1 : 0);
+            if (cnt <= 0) continue;
+            out += '<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-' + Math.min(cnt, 6) + ' g-3">';
+            for (let c = 0; c < cnt && idx < n; c++) {
+                out += cards[idx++];
+            }
+            out += '</div>';
+        }
+        return out;
+    }
+
+    // Auto -> default layout
+    return '<div class="row row-cols-1 row-cols-md-2 g-3">' + cards.join('') + '</div>';
+}
+
+function buildPreviewCardHtml(title, desc, link, image, border, colors) {
+    const colorOn = colors && colors.enabled;
+    const textColor = colorOn ? colors.text : '';
+    const titleColor = colorOn ? textColor : '#162f6a';
+    const linkColor = colorOn ? textColor : '#1a3b5c';
+
+    let titleTag = '';
+    if (title) {
+        if (link && link !== '#') {
+            titleTag = `<h5 class="preview-card-title"><a href="${escapeHtml(link)}" class="text-decoration-none" style="color: ${titleColor};">${escapeHtml(title)}</a></h5>`;
+        } else {
+            titleTag = `<h5 class="preview-card-title"${colorOn ? ` style="color: ${titleColor};"` : ''}>${escapeHtml(title)}</h5>`;
+        }
+    }
+
+    let descTag = '';
+    if (desc) {
+        descTag = `<p class="preview-card-desc"${colorOn ? ` style="color: ${textColor};"` : ''}>${escapeHtml(desc)}</p>`;
+    }
+
+    let linkTag = '';
+    if (link && link !== '#') {
+        linkTag = `<a href="${escapeHtml(link)}" class="preview-card-link"${colorOn ? ` style="color: ${linkColor};"` : ''}>Read more <i class="fa-solid fa-arrow-right ms-1"></i></a>`;
+    }
+
+    let innerHtml;
+    if (image) {
+        // Image present: row with col-4 image + col-8 title, then next row for description
+        innerHtml = `
+            <div class="row g-3 align-items-start">
+                <div class="col-4">
+                    <img src="${getImageSrc(image)}" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;" alt="${escapeHtml(title)}">
+                </div>
+                <div class="col-8">
+                    ${titleTag}
+                    ${linkTag}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    ${descTag}
+                </div>
+            </div>
+        `;
+    } else {
+        // No image: stacked layout
+        innerHtml = `
+            ${titleTag}
+            <div class="flex-grow-1">${descTag}</div>
+            ${linkTag}
+        `;
+    }
+
+    return `
+        <div class="col">
+            <div class="preview-card h-100 d-flex flex-column" style="${buildBorderStyleAttr(border)}${buildColorsStyle(colors)}">
+                ${innerHtml}
+            </div>
+        </div>
+    `;
+}
+
+// Save Cards Data
+function saveCardsData(event) {
+    event.preventDefault();
+
+    const titleEn = $('#object_title').val().trim();
+    if (!titleEn) {
+        alert('Please fill in Section Title (English)');
+        $('#object_title').focus();
+        return;
+    }
+
+    const titleHi = $('#object_title_hi').val().trim() || titleEn;
+
+    const cardsEn = [];
+    const cardsHi = [];
+
+    const cardBoxes = $('.card-item-box');
+    if (cardBoxes.length === 0) {
+        alert('Please add at least one card.');
+        return;
+    }
+
+    let hasValidationError = false;
+    cardBoxes.each(function(idx) {
+        const el = $(this);
+        const tEn = el.find('.card-title-en').val().trim();
+        const tHi = el.find('.card-title-hi').val().trim() || tEn;
+        const dEn = el.find('.card-desc-en').val().trim();
+        const dHi = el.find('.card-desc-hi').val().trim() || dEn;
+        const link = el.find('.card-link').val().trim() || '#';
+        const img = el.find('.card-image').val().trim();
+
+        if (!tEn) {
+            alert(`Card #${idx + 1} is missing a Title.`);
+            el.find('.card-title-en').focus();
+            hasValidationError = true;
+            return false;
+        }
+
+        const border = getCardBorderConfig(el);
+        const borderFields = makeBorderFields(border);
+        const colors = getCardColors(el);
+        const colorFields = makeColorFields(colors);
+        const styleFields = Object.assign({}, borderFields, colorFields);
+
+        cardsEn.push(Object.assign({
+            title: encodeURIComponent(tEn),
+            description: encodeURIComponent(dEn),
+            link: encodeURIComponent(link),
+            image: img
+        }, styleFields));
+
+        cardsHi.push(Object.assign({
+            title: encodeURIComponent(tHi),
+            description: encodeURIComponent(dHi),
+            link: encodeURIComponent(link),
+            image: img
+        }, styleFields));
+    });
+
+    if (hasValidationError) return;
+
+    const hindiMeta = {
+        keywords: $('#keywords_hi').val() || '',
+        description: $('#description_hi').val() || '',
+        title: titleHi,
+        help_text: $('#help_text_hi').val() || ''
+    };
+
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+    const payload = {
+        object_id: $('#page_id').val() || '',
+        imgType: '',
+        jsonString: JSON.stringify(cardsEn),
+        jsonString_hi: JSON.stringify(cardsHi),
+        type: '11',
+        marquee: '',
+        linksString: JSON.stringify([]),
+        newJson: '',
+        list_type: 'grid-2',
+        expString: JSON.stringify([]),
+        object_title: titleEn,
+        object_title_hi: titleHi,
+        styles: $('#styles').val() || '',
+        classes: $('#classes').val() || '',
+        description: $('#description').val() || '',
+        help_text: $('#help_text').val() || '',
+        alternate_text: '',
+        keywords: $('#keywords').val() || '',
+        meta_hi: JSON.stringify(hindiMeta)
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/save',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        },
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'X-XSRF-HEADER': csrfHeader
+        },
+        success: function(response) {
+            alert(response.success || 'Cards saved successfully!');
+            window.location.href = '/home';
+        },
+        error: function(xhr, status, error) {
+            console.error('Error saving cards:', error);
+            alert('Error saving cards: ' + error);
+        }
+    });
+}
+</script>
+
+<!-- DBIM Resources Modal for Cards -->
+<div class="modal fade" id="dbimResourcesModal" tabindex="-1" aria-labelledby="dbimResourcesModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content shadow-lg border-0">
+			<div class="modal-header bg-light py-2 px-3 border-bottom">
+				<div class="d-flex align-items-center flex-grow-1 flex-wrap gap-2">
+					<h5 class="modal-title fs-5 mb-0" id="dbimResourcesModalLabel">
+						<i class="fa-solid fa-photo-film text-primary me-2"></i>DBIM Resources Library
+					</h5>
+					<span class="badge bg-secondary-subtle text-secondary border ms-2">
+						Target: <strong id="targetCardBadge" class="text-primary">Card Image</strong>
+					</span>
+				</div>
+				<div class="d-flex align-items-center gap-2">
+					<div class="input-group input-group-sm" style="width: 260px;">
+						<span class="input-group-text bg-white"><i class="fa fa-search text-muted"></i></span>
+						<input type="text" id="dbimSearchInput" class="form-control" placeholder="Search resources...">
+						<button class="btn btn-outline-secondary" type="button" id="dbimSearchClear" title="Clear search" style="display: none;">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+					<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+			</div>
+			
+			<div class="modal-body p-3">
+				<!-- Tabs Navigation -->
+				<ul class="nav nav-tabs mb-3" id="dbimNavTabs" role="tablist">
+					<!-- Dynamically populated tabs -->
+				</ul>
+				
+				<!-- Tabs Content Panes -->
+				<div class="tab-content" id="dbimTabContent">
+					<div class="text-center py-5" id="dbimLoadingSpinner">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Loading resources...</span>
+						</div>
+						<p class="mt-2 text-muted">Loading DBIM resources library...</p>
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal-footer bg-light py-2 px-3 border-top d-flex justify-content-between align-items-center">
+				<div class="small text-muted" id="dbimStatusText">
+					<i class="fa fa-info-circle me-1 text-primary"></i>Click any item to select it as the card image.
+				</div>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Toast Notification for Insert Confirmation -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+	<div id="dbimSuccessToast" class="toast align-items-center text-bg-success border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div class="toast-body">
+				<i class="fa fa-check-circle me-2"></i><span id="dbimToastText">Image selected successfully!</span>
+			</div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

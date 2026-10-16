@@ -1,0 +1,1109 @@
+/**
+ * ==============================================================================
+ * SVPNPA / MHA Government Portal - Unified Carousel Styles
+ * Extracted and imported directly from reference: SVPNPA_mha.htm
+ *
+ * Covers:
+ *  1. Owl Carousel v2.3.4 Core Engine & Stage Architecture
+ *  2. Home Banner Slider (.homebanner, .banner_slider, #banner-sec)
+ *  3. MHA Navigation Controls (Square/Rounded dark chevron buttons)
+ *  4. MHA Indicator Dots & Active Highlight Pills
+ *  5. MHA Autoplay Play/Pause Toggle Controls (.pp_btn, #pause-btn, #play-btn)
+ *  6. Infographic & Photo Gallery Slider (#info-sec, .infographic, #persona)
+ *  7. Client Logos / Associated Organisation Carousel (#clientlogos, .client-logos)
+ *  8. Bootstrap 5 Carousel Harmonization (.carousel, #carouselExampleCaptions)
+ *  9. High-Contrast WOB (White-on-Black) Accessibility Rules (.wob)
+ * 10. Responsive Breakpoint Adaptations (1600px, 1366px, 991px, 768px, 480px)
+ * ==============================================================================
+ */
+
+/* --------------------------------------------------------------------------
+ * 1. OWL CAROUSEL v2.3.4 CORE STRUCTURE (from SVPNPA_mha.htm line 14435)
+ * -------------------------------------------------------------------------- */
+.owl-carousel,
+.owl-carousel .owl-item {
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.owl-carousel {
+    display: none;
+    width: 100%;
+    z-index: 1;
+}
+
+.owl-carousel .owl-stage {
+    position: relative;
+    -ms-touch-action: pan-Y;
+    touch-action: manipulation;
+    -moz-backface-visibility: hidden;
+}
+
+.owl-carousel .owl-stage:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+.owl-carousel .owl-stage-outer {
+    position: relative;
+    overflow: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
+.owl-carousel .owl-item,
+.owl-carousel .owl-wrapper {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+}
+
+.owl-carousel .owl-item {
+    min-height: 1px;
+    float: left;
+    -webkit-backface-visibility: hidden;
+    -webkit-touch-callout: none;
+}
+
+.owl-carousel .owl-item img {
+    display: block;
+    width: 100%;
+}
+
+.owl-carousel .owl-dots.disabled,
+.owl-carousel .owl-nav.disabled {
+    display: none;
+}
+
+.no-js .owl-carousel,
+.owl-carousel.owl-loaded {
+    display: block;
+}
+
+.owl-carousel .owl-dot,
+.owl-carousel .owl-nav .owl-next,
+.owl-carousel .owl-nav .owl-prev {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.owl-carousel .owl-nav button.owl-next,
+.owl-carousel .owl-nav button.owl-prev,
+.owl-carousel button.owl-dot {
+    background: 0 0;
+    color: inherit;
+    border: none;
+    padding: 0 !important;
+    font: inherit;
+}
+
+.owl-carousel.owl-loading {
+    opacity: 0;
+    display: block;
+}
+
+.owl-carousel.owl-hidden {
+    opacity: 0;
+}
+
+.owl-carousel.owl-refresh .owl-item {
+    visibility: hidden;
+}
+
+.owl-carousel.owl-drag .owl-item {
+    -ms-touch-action: pan-y;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.owl-carousel.owl-grab {
+    cursor: move;
+    cursor: grab;
+}
+
+.owl-carousel.owl-rtl {
+    direction: rtl;
+}
+
+.owl-carousel.owl-rtl .owl-item {
+    float: right;
+}
+
+.owl-carousel .animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.owl-carousel .owl-animated-in {
+    z-index: 0;
+}
+
+.owl-carousel .owl-animated-out {
+    z-index: 1;
+}
+
+.owl-carousel .fadeOut {
+    animation-name: fadeOut;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.owl-height {
+    transition: height .5s ease-in-out;
+}
+
+.owl-carousel .owl-item .owl-lazy {
+    opacity: 0;
+    transition: opacity .4s ease;
+}
+
+.owl-carousel .owl-item .owl-lazy:not([src]),
+.owl-carousel .owl-item .owl-lazy[src^=""] {
+    max-height: 0;
+}
+
+.owl-carousel .owl-item img.owl-lazy {
+    transform-style: preserve-3d;
+}
+
+/* --------------------------------------------------------------------------
+ * 2. HOME BANNER SLIDER (SVPNPA_mha.htm lines 14660-14681, 14810, 14834, 15553)
+ * -------------------------------------------------------------------------- */
+.banner_slider {
+    position: relative;
+    width: 100%;
+}
+
+.homebanner {
+    position: relative;
+    background: var(--sttl-theme-150202, #150202);
+    overflow: hidden;
+}
+
+.homeBannerImg {
+    position: relative;
+    width: 100%;
+}
+
+.homeBannerImg a,
+.homeBannerImg a img,
+.homeBannerImg img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* Banner Nav Controls (Next / Prev) */
+.homebanner .owl-carousel .owl-nav button.owl-prev,
+.homebanner .owl-carousel .owl-nav button.owl-next {
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-prev {
+    left: 40px;
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-next {
+    right: 40px;
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-prev:before,
+.homebanner .owl-carousel .owl-nav button.owl-next:before {
+    position: absolute;
+    color: var(--sttl-theme-white, #ffffff);
+    font-family: "Font Awesome 6 Free", "FontAwesome", sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1;
+    width: 35px;
+    height: 35px;
+    background: var(--sttl-theme-black, #000000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-prev:before {
+    content: '\f104'; /* fa-angle-left */
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-next:before {
+    content: '\f105'; /* fa-angle-right */
+}
+
+.homebanner .owl-carousel .owl-nav button.owl-prev:hover:before,
+.homebanner .owl-carousel .owl-nav button.owl-next:hover:before {
+    background: var(--sttl-theme-blue, #162f6a);
+    color: var(--sttl-theme-white, #ffffff);
+    transform: scale(1.08);
+}
+
+.homebanner .owl-nav button {
+    width: 40px;
+    height: 40px;
+    background: var(--sttl-theme-black, #000000);
+    z-index: 999999;
+    border-radius: 2px;
+}
+
+.homebanner .owl-theme .owl-controls .owl-nav {
+    color: var(--sttl-theme-white, #ffffff);
+    font-size: var(--sttl-theme-font-14, 14px);
+    margin: 5px;
+    padding: 10px 7px 20px;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 3px;
+    background: #121212 !important;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+}
+
+.infographic .owl-nav button span,
+.homebanner .owl-carousel .owl-nav button span {
+    z-index: -999;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* --------------------------------------------------------------------------
+ * 3. MHA BANNER DOTS (Pagination)
+ * -------------------------------------------------------------------------- */
+.homebanner .owl-dots {
+    position: absolute;
+    z-index: 9;
+    bottom: 18px;
+    right: 170px;
+    background: var(--sttl-theme-white, #ffffff);
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.homebanner .owl-theme .owl-dots .owl-dot span {
+    width: 12px;
+    height: 12px;
+    margin: 3px 3px 0;
+    background: var(--sttl-theme-5279d7, #5279d7);
+    display: block;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.homebanner .owl-carousel .owl-dots button.owl-dot.active span {
+    background: var(--sttl-theme-blue, #162f6a);
+    border-radius: 0;
+    width: 16px;
+}
+
+.homebanner .owl-carousel .owl-dots button span {
+    background: var(--sttl-theme-lblue, #d2dfff);
+    margin: 5px 4px;
+    display: flex;
+    width: 10px;
+    height: 10px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.homebanner .owl-carousel .owl-dots button:hover span {
+    background: var(--sttl-theme-blue, #162f6a);
+}
+
+/* --------------------------------------------------------------------------
+ * 4. MHA PLAY / PAUSE BUTTONS (.pp_btn)
+ * -------------------------------------------------------------------------- */
+.homebanner .pp_btn {
+    position: absolute;
+    right: 118px;
+    bottom: 15px;
+    z-index: 10;
+    cursor: pointer;
+    color: #4a2809;
+    font-size: var(--sttl-theme-font-24, 24px);
+    width: 40px;
+    height: 40px;
+    background: var(--sttl-theme-150202, #150202);
+    border-radius: 50%;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.homebanner .pp_btn:hover {
+    background: var(--sttl-theme-blue, #162f6a);
+    transform: scale(1.06);
+}
+
+.homebanner .pp_btn img {
+    width: 18px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.homebanner .pp_btn.play img {
+    width: 18px;
+    margin: 14px auto;
+    display: block;
+}
+
+.homebanner #pause-btn img {
+    width: 22px;
+    display: none;
+}
+
+.homebanner #play-btn {
+    display: none;
+}
+
+/* SVG icon masks for Play & Pause (exact matches from SVPNPA_mha.htm) */
+.homebanner .pp_btn:after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23fff'%3E%3Cpath d='M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z'/%3E%3C/svg%3E");
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.homebanner .pp_btn#pause-btn:after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23fff'%3E%3Cpath d='M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z'/%3E%3C/svg%3E");
+    width: 24px;
+    height: 24px;
+    left: 8px;
+    top: 8px;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* State toggle helper classes */
+.pp_btn.hidestop {
+    display: none !important;
+}
+
+.pp_btn.showplay {
+    display: flex !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 5. CAROUSEL CAPTION & TITLE STYLES (SVPNPA_mha.htm)
+ * -------------------------------------------------------------------------- */
+.carousel-title-type-2 {
+    position: absolute;
+    bottom: 25px;
+    left: 40px;
+    z-index: 8;
+    color: var(--sttl-theme-white, #ffffff);
+    font-size: var(--sttl-theme-font-24, 24px);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    max-width: 60%;
+}
+
+.bannerCaption {
+    position: absolute;
+    bottom: 30px;
+    left: 50px;
+    z-index: 8;
+    background: rgba(22, 47, 106, 0.85);
+    color: var(--sttl-theme-white, #ffffff);
+    padding: 12px 24px;
+    border-radius: 4px;
+    max-width: 650px;
+    backdrop-filter: blur(4px);
+    border-left: 4px solid var(--sttl-theme-5279d7, #5279d7);
+}
+
+.bannerCaption h3 {
+    font-size: var(--sttl-theme-font-22, 22px);
+    font-weight: 700;
+    color: var(--sttl-theme-white, #ffffff);
+    margin: 0 0 6px 0;
+}
+
+.bannerCaption p {
+    font-size: var(--sttl-theme-font-15, 15px);
+    margin: 0;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --------------------------------------------------------------------------
+ * 6. INFOGRAPHIC & PHOTO GALLERY CAROUSEL (#info-sec, .infographic, #persona)
+ * -------------------------------------------------------------------------- */
+.infographic,
+#info-sec {
+    position: relative;
+    width: 100%;
+}
+
+div#block-mha-dbim-views-block-photo-gallery-block-1,
+.infographic,
+#info-sec,
+#info-sec .owl-stage-outer,
+#info-sec .owl-stage,
+#info-sec .owl-item.cloned,
+#info-sec .item,
+#info-sec .item img {
+    height: 100%;
+}
+
+.infographic .owl-carousel.owl-drag .owl-item {
+    height: 100%;
+}
+
+.infographic .owl-carousel .owl-item img {
+    object-fit: cover;
+    height: 276px;
+    border-radius: 4px;
+}
+
+.infographic .owl-carousel .owl-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.infographic .owl-carousel button.owl-dot {
+    background: rgba(82, 121, 215, 0.6);
+    margin: 5px 4px;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.infographic .owl-carousel button.owl-dot.active {
+    background: var(--sttl-theme-5279d7, #5279d7);
+    border-radius: 0;
+    width: 16px;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. CLIENT LOGOS & PARTNER CAROUSEL (#clientlogos, .client-logos, .clientlogos)
+ * -------------------------------------------------------------------------- */
+.clientlogos,
+.client-logos {
+    position: relative;
+    padding: 15px 0;
+    background: var(--sttl-theme-f1f1f1, #f1f1f1);
+}
+
+.client-logos .owl-carousel .owl-item img,
+.clientlogos .owl-item img,
+#clientlogos .item img {
+    padding: 10px;
+    object-fit: contain;
+    height: 100%;
+    max-height: 80px;
+    margin: 0 auto;
+    filter: grayscale(20%);
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.client-logos .owl-carousel .owl-item img:hover,
+.clientlogos .owl-item img:hover,
+#clientlogos .item img:hover {
+    filter: grayscale(0%);
+    transform: scale(1.05);
+}
+
+.clientlogos .owl-nav button.owl-prev,
+.clientlogos .owl-nav button.owl-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--sttl-theme-white, #ffffff);
+    border: 1px solid var(--sttl-theme-cccccc, #cccccc);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sttl-theme-blue, #162f6a);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.clientlogos .owl-nav button.owl-prev {
+    left: -15px;
+}
+
+.clientlogos .owl-nav button.owl-next {
+    right: -15px;
+}
+
+.clientlogos .owl-nav button.owl-prev:hover,
+.clientlogos .owl-nav button.owl-next:hover {
+    background: var(--sttl-theme-blue, #162f6a);
+    color: var(--sttl-theme-white, #ffffff);
+}
+
+/* --------------------------------------------------------------------------
+ * 8. BOOTSTRAP 5 CAROUSEL HARMONIZATION WITH MHA STYLING
+ *    (Applies to .carousel, #carouselExampleCaptions, #carouselExample)
+ * -------------------------------------------------------------------------- */
+.carousel {
+    position: relative;
+}
+
+.carousel.pointer-event {
+    touch-action: pan-y;
+}
+
+.carousel-inner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-inner::after {
+    display: block;
+    clear: both;
+    content: "";
+}
+
+.carousel-item {
+    position: relative;
+    display: none;
+    float: left;
+    width: 100%;
+    margin-right: -100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transition: transform 0.6s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carousel-item {
+        transition: none;
+    }
+}
+
+.carousel-item.active,
+.carousel-item-next,
+.carousel-item-prev {
+    display: block;
+}
+
+.carousel-item-next:not(.carousel-item-start),
+.active.carousel-item-end {
+    transform: translateX(100%);
+}
+
+.carousel-item-prev:not(.carousel-item-end),
+.active.carousel-item-start {
+    transform: translateX(-100%);
+}
+
+.carousel-fade .carousel-item {
+    opacity: 0;
+    transition-property: opacity;
+    transform: none;
+}
+
+.carousel-fade .carousel-item.active,
+.carousel-fade .carousel-item-next.carousel-item-start,
+.carousel-fade .carousel-item-prev.carousel-item-end {
+    z-index: 1;
+    opacity: 1;
+}
+
+.carousel-fade .active.carousel-item-start,
+.carousel-fade .active.carousel-item-end {
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0s 0.6s;
+}
+
+/* Full-width Banner Images inside Bootstrap Carousels */
+.carousel,
+.homebanner,
+.banner_slider,
+#banner-sec,
+#carouselExampleCaptions,
+div[id^="carouselExample"],
+.carousel-banner {
+    position: relative;
+    background: var(--sttl-theme-150202, #150202);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.carousel .carousel-inner,
+.homebanner .carousel-inner,
+div[id^="carouselExample"] .carousel-inner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.carousel .carousel-inner > .carousel-item,
+.homebanner .carousel-inner > .carousel-item,
+div[id^="carouselExample"] .carousel-inner > .carousel-item,
+.carousel .carousel-item {
+    height: auto !important;
+    min-height: 280px;
+    text-align: center;
+}
+
+.carousel .carousel-item img,
+.carousel-inner > .carousel-item > img,
+.homebanner .carousel-item img,
+div[id^="carouselExample"] .carousel-item img,
+.carousel-banner .carousel-item img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 420px !important;
+    min-height: 280px !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 auto !important;
+    border-radius: 4px;
+}
+
+/* MHA Styled Navigation Controls for Bootstrap Carousel */
+.carousel .carousel-control-prev,
+.carousel .carousel-control-next,
+.homebanner .carousel-control-prev,
+.homebanner .carousel-control-next,
+#carouselExampleCaptions .carousel-control-prev,
+#carouselExampleCaptions .carousel-control-next,
+div[id^="carouselExample"] .carousel-control-prev,
+div[id^="carouselExample"] .carousel-control-next,
+.carousel-banner .carousel-control-prev,
+.carousel-banner .carousel-control-next {
+    width: 48px !important;
+    height: 48px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    bottom: auto !important;
+    background: transparent !important;
+    border: none !important;
+    opacity: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10 !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+}
+
+.carousel .carousel-control-prev,
+.homebanner .carousel-control-prev,
+#carouselExampleCaptions .carousel-control-prev,
+div[id^="carouselExample"] .carousel-control-prev,
+.carousel-banner .carousel-control-prev {
+    left: 25px !important;
+}
+
+.carousel .carousel-control-next,
+.homebanner .carousel-control-next,
+#carouselExampleCaptions .carousel-control-next,
+div[id^="carouselExample"] .carousel-control-next,
+.carousel-banner .carousel-control-next {
+    right: 25px !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon,
+.carousel-dark .carousel-control-prev-icon,
+.carousel-dark .carousel-control-next-icon,
+.carousel .carousel-control-prev-icon,
+.carousel .carousel-control-next-icon {
+    width: 38px !important;
+    height: 38px !important;
+    background-color: var(--sttl-theme-black, #000000) !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45) !important;
+    transition: background-color 0.3s ease, transform 0.2s ease !important;
+    filter: none !important;
+    background-size: 55% 55% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+.carousel-control-prev-icon,
+.carousel-dark .carousel-control-prev-icon,
+.carousel .carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3E%3Cpath fill-rule='evenodd' d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E") !important;
+}
+
+.carousel-control-next-icon,
+.carousel-dark .carousel-control-next-icon,
+.carousel .carousel-control-next-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon,
+.carousel-dark .carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-dark .carousel-control-next:hover .carousel-control-next-icon,
+.carousel .carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel .carousel-control-next:hover .carousel-control-next-icon {
+    background-color: var(--sttl-theme-blue, #162f6a) !important;
+    transform: scale(1.08) !important;
+}
+
+/* Indicators Harmonization */
+.carousel-indicators,
+.carousel .carousel-indicators,
+div[id^="carouselExample"] .carousel-indicators,
+#carouselExampleCaptions .carousel-indicators,
+.carousel.homebanner .carousel-indicators,
+.carousel-banner .carousel-indicators {
+    position: absolute !important;
+    right: 170px !important;
+    left: auto !important;
+    bottom: 18px !important;
+    margin: 0 !important;
+    background: var(--sttl-theme-lblue, #d2dfff) !important;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) !important;
+    z-index: 9 !important;
+    width: max-content !important;
+}
+
+.carousel-indicators [data-bs-target],
+.carousel-indicators button,
+.carousel-indicators li,
+.carousel .carousel-indicators [data-bs-target] {
+    box-sizing: content-box !important;
+    width: 10px !important;
+    height: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    background-color: var(--sttl-theme-5279d7, #5279d7) !important;
+    border: none !important;
+    opacity: 0.85 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    text-indent: -9999px !important;
+}
+
+.carousel-indicators .active,
+.carousel-indicators button.active,
+.carousel-indicators li.active,
+.carousel .carousel-indicators .active {
+    width: 16px !important;
+    height: 10px !important;
+    border-radius: 3px !important;
+    background-color: var(--sttl-theme-blue, #162f6a) !important;
+    opacity: 1 !important;
+}
+
+/* Caption Harmonization */
+.carousel-caption,
+#carouselExampleCaptions .carousel-caption,
+div[id^="carouselExample"] .carousel-caption,
+.carousel-banner .carousel-caption {
+    position: absolute !important;
+    bottom: 30px !important;
+    left: 45px !important;
+    right: auto !important;
+    text-align: left !important;
+    background: rgba(22, 47, 106, 0.88) !important;
+    color: var(--sttl-theme-white, #ffffff) !important;
+    padding: 12px 20px !important;
+    border-radius: 4px !important;
+    border-left: 4px solid var(--sttl-theme-5279d7, #5279d7) !important;
+    backdrop-filter: blur(4px) !important;
+    max-width: 60% !important;
+}
+
+.carousel-caption h5,
+#carouselExampleCaptions .carousel-caption h5,
+div[id^="carouselExample"] .carousel-caption h5,
+.carousel-banner .carousel-caption h5 {
+    font-size: var(--sttl-theme-font-20, 20px) !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+    color: #fff !important;
+}
+
+.carousel-caption p,
+#carouselExampleCaptions .carousel-caption p,
+div[id^="carouselExample"] .carousel-caption p,
+.carousel-banner .carousel-caption p {
+    font-size: var(--sttl-theme-font-14, 14px) !important;
+    margin-bottom: 0 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+@media (max-width: 768px) {
+    .carousel .carousel-item img,
+    .carousel-inner > .carousel-item > img,
+    div[id^="carouselExample"] .carousel-item img {
+        max-height: 260px !important;
+        min-height: 180px !important;
+    }
+    .carousel .carousel-control-prev,
+    div[id^="carouselExample"] .carousel-control-prev {
+        left: 8px !important;
+    }
+    .carousel .carousel-control-next,
+    div[id^="carouselExample"] .carousel-control-next {
+        right: 8px !important;
+    }
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    .carousel-indicators {
+        right: 15px !important;
+        bottom: 12px !important;
+    }
+    .carousel-caption {
+        left: 15px !important;
+        bottom: 15px !important;
+        max-width: 80% !important;
+        padding: 8px 12px !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+ * 9. HIGH-CONTRAST ACCESSIBILITY MODE (WOB - White on Black)
+ *    (SVPNPA_mha.htm lines 15747-15940)
+ * -------------------------------------------------------------------------- */
+.wob .homebanner .owl-nav .owl-prev:after,
+.wob .homebanner .owl-nav .owl-prev:before,
+.wob .homebanner .owl-nav .owl-next:after,
+.wob .homebanner .owl-nav .owl-next:before,
+.wob .homebanner .owl-carousel .owl-nav button.owl-prev:before,
+.wob .homebanner .owl-carousel .owl-nav button.owl-next:before,
+.wob #carouselExampleCaptions .carousel-control-prev-icon,
+.wob #carouselExampleCaptions .carousel-control-next-icon {
+    background: var(--sttl-theme-black, #000000) !important;
+    color: var(--sttl-theme-yellow, #ffff00) !important;
+    border: 1px solid var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+.wob .homebanner .pp_btn#pause-btn:after,
+.wob .homebanner .pp_btn:after {
+    filter: brightness(1.2) invert(1) !important;
+}
+
+.wob .homebanner .owl-dots,
+.wob #carouselExampleCaptions .carousel-indicators {
+    background: var(--sttl-theme-black, #000000) !important;
+    border: 1px solid var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+.wob .homebanner .owl-theme .owl-dots .owl-dot span,
+.wob #carouselExampleCaptions .carousel-indicators [data-bs-target] {
+    background: var(--sttl-theme-white, #ffffff) !important;
+}
+
+.wob .homebanner .owl-carousel .owl-dots button.owl-dot.active span,
+.wob #carouselExampleCaptions .carousel-indicators .active {
+    background: var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+.wob .carousel-title-type-2,
+.wob .bannerCaption h3 {
+    color: var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+.wob .infographic .owl-carousel .owl-dots {
+    background: var(--sttl-theme-dark, #282828) !important;
+}
+
+.wob .infographic .owl-carousel button.owl-dot {
+    background: var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+.wob .infographic .owl-carousel button.owl-dot.active {
+    background: var(--sttl-theme-green, #198754) !important;
+}
+
+.wob .client-logos .owl-prev::before,
+.wob .client-logos .owl-next::before {
+    color: var(--sttl-theme-yellow, #ffff00) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 10. RESPONSIVE BREAKPOINT ADAPTATIONS (SVPNPA_mha.htm lines 16151-16430)
+ * -------------------------------------------------------------------------- */
+@media (max-width: 1600px) {
+    .homebanner .pp_btn {
+        width: 30px;
+        height: 30px;
+    }
+    .homebanner .pp_btn#pause-btn:after,
+    .homebanner .pp_btn:after {
+        content: "";
+        width: 15px;
+        height: 15px;
+        left: 7px;
+        top: 8px;
+        background-size: 100%;
+    }
+    .homebanner .owl-dots {
+        bottom: 13px;
+    }
+    .homebanner .owl-carousel .owl-nav button.owl-prev:before,
+    .homebanner .owl-carousel .owl-nav button.owl-next:before {
+        font: normal normal normal 25px / 1 FontAwesome;
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media (max-width: 1366px) {
+    .homebanner .pp_btn {
+        right: 15px;
+    }
+    .homebanner .owl-dots {
+        right: 65px;
+    }
+    #carouselExampleCaptions .carousel-indicators {
+        right: 65px !important;
+    }
+    .infographic .owl-carousel .owl-item img {
+        object-fit: cover;
+        height: 100%;
+    }
+    .infographic .owl-carousel .owl-stage-outer .item {
+        height: 300px;
+    }
+}
+
+@media (max-width: 991px) {
+    .homebanner .owl-carousel .owl-nav button.owl-prev,
+    .homebanner .owl-carousel .owl-nav button.owl-next {
+        height: auto;
+        width: auto;
+    }
+    .homebanner .owl-carousel .owl-nav button.owl-prev {
+        left: 15px;
+    }
+    .homebanner .owl-carousel .owl-nav button.owl-next {
+        right: 15px;
+    }
+    #carouselExampleCaptions .carousel-control-prev {
+        left: 15px !important;
+    }
+    #carouselExampleCaptions .carousel-control-next {
+        right: 15px !important;
+    }
+    .carousel-title-type-2 {
+        font-size: var(--sttl-theme-font-18, 18px);
+        left: 20px;
+        max-width: 75%;
+    }
+}
+
+@media (max-width: 767px) {
+    .homebanner .owl-dots {
+        right: 50px;
+        left: 0;
+        margin: 0 auto;
+        width: fit-content;
+    }
+    .homebanner .pp_btn {
+        right: auto;
+        left: 50%;
+        margin-left: 65px;
+    }
+    #carouselExampleCaptions .carousel-indicators {
+        right: 0 !important;
+        left: 0 !important;
+        margin: 0 auto !important;
+        width: fit-content;
+    }
+    .bannerCaption {
+        display: none;
+    }
+    .carousel-title-type-2 {
+        display: none;
+    }
+    div#block-mha-dbim-views-block-photo-gallery-block-1,
+    .infographic,
+    #info-sec,
+    #info-sec .owl-stage-outer,
+    #info-sec .owl-stage,
+    #info-sec .owl-item.cloned,
+    #info-sec .item,
+    #info-sec .item img {
+        height: 300px;
+    }
+    .client-logos .owl-carousel .owl-item img {
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+        padding: 10px;
+    }
+}
