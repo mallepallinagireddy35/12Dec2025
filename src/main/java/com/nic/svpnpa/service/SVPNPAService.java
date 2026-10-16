@@ -2941,20 +2941,15 @@ System.out.println("objects===="+objects);
 				new Object[] { groupId, mediaType }
 			);
 
-			String folderPath = "";
-			if (mediaType == 2) folderPath = galleryAbsolutePath + File.separator + "image" + File.separator;
-			else if (mediaType == 3) folderPath = galleryAbsolutePath + File.separator + "audio" + File.separator;
-			else if (mediaType == 4) folderPath = galleryAbsolutePath + File.separator + "video" + File.separator;
-			else if (mediaType == 5) folderPath = galleryAbsolutePath + File.separator + "docs" + File.separator;
-
-			File folder = new File(folderPath);
-			if (folder.exists() && folder.isDirectory()) {
-				File[] files = folder.listFiles();
-				if (files != null) {
-					for (File file : files) {
-						file.delete();
-					}
-				}
+			// Delete only files referenced by the selected group's gallery records.
+			Path galleryRoot = Paths.get(galleryAbsolutePath).toAbsolutePath().normalize();
+			for (Map<String, Object> file : filesToDelete) {
+				System.out.println("path==="+file.get("path"));
+				System.out.println("file_name==="+file.get("file_name"));
+				System.out.println("galleryRoot==="+galleryRoot);
+				
+				deleteGalleryFile(file.get("path"), file.get("file_name"), galleryRoot);
+				deleteGalleryFile(file.get("path"), file.get("thumbnail_filename"), galleryRoot);
 			}
 
 			result.put("success", true);
@@ -2963,6 +2958,7 @@ System.out.println("objects===="+objects);
 			result.put("loggedRecords", filesToDelete.size());
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getMessage());
 			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getCause());
 			logger.error("Exception in SVPNPAService::deleteGalleryFolder::" + e.getClass() + "::" + e.getLocalizedMessage());
@@ -2970,6 +2966,38 @@ System.out.println("objects===="+objects);
 			result.put("message", "Error deleting folder: " + e.getMessage());
 		}
 		return result;
+	}
+
+	private void deleteGalleryFile(Object storedPath, Object fileName, Path galleryRoot) {
+		if (storedPath == null || fileName == null || fileName.toString().trim().isEmpty()) {
+			return;
+		}
+
+		try {
+			Path directory = Paths.get(storedPath.toString()).toAbsolutePath().normalize();
+			System.out.println("directory==="+directory);
+			System.out.println("1==="+!directory.startsWith(galleryRoot));
+			
+			if (!directory.startsWith(galleryRoot)) {
+				logger.warn("Skipping gallery file outside gallery root: {}", directory);
+				return;
+			}
+
+			Path target = directory.resolve(fileName.toString()).normalize();
+			System.out.println("target==="+target.getParent());
+			System.out.println("2==="+!directory.equals(target.getParent()));
+			if (!directory.equals(target.getParent())) {
+				logger.warn("Skipping invalid gallery file name: {}", fileName);
+				return;
+			}
+			System.out.println("3==="+(Files.isRegularFile(target) && Files.deleteIfExists(target)));
+			if (Files.isRegularFile(target) && Files.deleteIfExists(target)) {
+				logger.info("Deleted gallery file: {}", target);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("Unable to delete gallery file {} from {}: {}", fileName, storedPath, e.getMessage());
+		}
 	}
 
 }
